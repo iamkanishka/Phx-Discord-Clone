@@ -1,4 +1,5 @@
-defmodule DiscordCloneWeb.CustomComponents.Modals.CreateChannel do
+
+defmodule DiscordCloneWeb.CustomComponents.Modals.CreateChannelModal do
   use DiscordCloneWeb, :live_component
 
   def render(assigns) do
@@ -25,5 +26,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.CreateChannel do
 
   @impl true
   def update(assigns, socket) do
+    {:ok, socket}
   end
 end

@@ -1,4 +1,4 @@
-defmodule DiscordCloneWeb.CustomComponents.Chat.ChtaVideoButton do
+defmodule DiscordCloneWeb.CustomComponents.Chat.ChatVideoButton do
   use DiscordCloneWeb, :live_component
 
   @impl true

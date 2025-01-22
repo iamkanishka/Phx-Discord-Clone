@@ -4,9 +4,11 @@ defmodule DiscordClone.Accounts do
   """
 
   import Ecto.Query, warn: false
+  alias Ueberauth.Auth
   alias DiscordClone.Repo
 
   alias DiscordClone.Accounts.User
+
 
   @doc """
   Returns the list of users.
@@ -101,4 +103,23 @@ defmodule DiscordClone.Accounts do
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
   end
+
+
+  def find_or_create_user(%Auth{info: info, credentials: credentials}) do
+    case Repo.get_by(User, email: info.email) do
+      nil ->
+        %User{}
+        |> User.changeset(%{
+          email: info.email,
+          name: info.name,
+          image: info.image,
+          token: credentials.token
+        })
+        |> Repo.insert()
+
+      user ->
+        {:ok, user}
+    end
+  end
+
 end

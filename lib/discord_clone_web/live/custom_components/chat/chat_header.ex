@@ -1,3 +1,4 @@
+
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
   use DiscordCloneWeb, :live_component
 

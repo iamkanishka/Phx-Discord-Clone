@@ -9,6 +9,6 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationAction do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket|> assign(assigns)}
   end
 end

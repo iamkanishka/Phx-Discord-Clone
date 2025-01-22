@@ -14,6 +14,13 @@ defmodule DiscordCloneWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/auth", DiscordCloneWeb do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+  end
+
   scope "/", DiscordCloneWeb do
     pipe_through :browser
 

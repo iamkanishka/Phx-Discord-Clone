@@ -10,6 +10,15 @@ config :discord_clone, DiscordClone.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+config :ueberauth, Ueberauth,
+  providers: [
+    google: {Ueberauth.Strategy.Google, []}
+  ]
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+
 # For development, we disable any cache and enable
 # debugging and code reloading.
 #

@@ -23,11 +23,7 @@ defmodule DiscordCloneWeb.Router do
     get "/google/callback", AuthController, :callback
     live "/sign-in", Auth.SignIn, :show
     live "/sign-up", Auth.SignUp, :show
-
-
   end
-
-
 
   scope "/", DiscordCloneWeb do
     pipe_through :browser
@@ -37,7 +33,6 @@ defmodule DiscordCloneWeb.Router do
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show
     live "/servers/:server_id/conversation/:conversation_id", Conversations.Conversation, :show
-
   end
 
   # Other scopes may use custom stacks.

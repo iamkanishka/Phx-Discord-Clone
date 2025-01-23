@@ -22,6 +22,8 @@ defmodule DiscordCloneWeb.Router do
     get "/google", AuthController, :request
     get "/google/callback", AuthController, :callback
     live "/sign-in", Auth.SignIn, :show
+    live "/sign-up", Auth.SignUp, :show
+
 
   end
 

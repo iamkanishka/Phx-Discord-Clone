@@ -1,4 +1,5 @@
 defmodule DiscordCloneWeb.Router do
+  alias DiscordCloneWeb.Conversations
   alias DiscordCloneWeb.Channels
   use DiscordCloneWeb, :router
 
@@ -28,7 +29,7 @@ defmodule DiscordCloneWeb.Router do
     # get "/", PageController, :home
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show
-
+    live "/servers/:server_id/conversation/:conversation_id", Conversations.Conversation, :show
 
   end
 

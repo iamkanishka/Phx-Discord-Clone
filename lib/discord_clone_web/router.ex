@@ -27,6 +27,7 @@ defmodule DiscordCloneWeb.Router do
     pipe_through :browser
 
     # get "/", PageController, :home
+    live "/invite/:invite_id", Invite.Invite, :show
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show
     live "/servers/:server_id/conversation/:conversation_id", Conversations.Conversation, :show

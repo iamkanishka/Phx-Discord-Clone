@@ -24,7 +24,9 @@ defmodule DiscordCloneWeb.Router do
   scope "/", DiscordCloneWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    # get "/", PageController, :home
+    live "/servers/:server_id", Servers.Server, :show
+
   end
 
   # Other scopes may use custom stacks.

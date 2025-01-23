@@ -10,6 +10,6 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket |> assign(assigns)}
   end
 end

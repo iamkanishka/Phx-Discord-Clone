@@ -9,8 +9,8 @@ defmodule DiscordClone.DirectMessages.DirectMessage do
     field :file_url, :string
     field :deleted, :boolean, default: false
 
-    belongs_to :member, YourApp.Members.Member, foreign_key: :member_id, type: :binary_id, on_replace: :delete
-    belongs_to :conversation, YourApp.Conversations.Conversation, foreign_key: :conversation_id, type: :binary_id, on_replace: :delete
+    belongs_to :member, DiscordClone.Members.Member, foreign_key: :member_id, type: :binary_id, on_replace: :delete
+    belongs_to :conversation, DiscordClone.Conversations.Conversation, foreign_key: :conversation_id, type: :binary_id, on_replace: :delete
 
     timestamps(type: :utc_datetime)
   end

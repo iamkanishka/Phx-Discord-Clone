@@ -5,10 +5,10 @@ defmodule DiscordClone.Conversations.Conversation do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "conversations" do
-    belongs_to :member_one, YourApp.Members.Member, foreign_key: :member_one_id, type: :binary_id, on_replace: :delete
-    belongs_to :member_two, YourApp.Members.Member, foreign_key: :member_two_id, type: :binary_id, on_replace: :delete
+    belongs_to :member_one, DiscordClone.Members.Member, foreign_key: :member_one_id, type: :binary_id, on_replace: :delete
+    belongs_to :member_two, DiscordClone.Members.Member, foreign_key: :member_two_id, type: :binary_id, on_replace: :delete
 
-    has_many :direct_messages, YourApp.DirectMessages.DirectMessage
+    has_many :direct_messages, DiscordClone.DirectMessages.DirectMessage
 
     timestamps(type: :utc_datetime)
   end

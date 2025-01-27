@@ -8,10 +8,10 @@ defmodule DiscordClone.Channels.Channel do
     field :name, :string
     field :type, Ecto.Enum, values: [:TEXT, :VOICE], default: :TEXT
 
-    belongs_to :profile, YourApp.Profiles.Profile, type: :binary_id, on_replace: :delete
-    belongs_to :server, YourApp.Servers.Server, type: :binary_id, on_replace: :delete
+    belongs_to :profile, DiscordClone.Profiles.Profile, type: :binary_id, on_replace: :delete
+    belongs_to :server, DiscordClone.Servers.Server, type: :binary_id, on_replace: :delete
 
-    has_many :messages, YourApp.Messages.Message
+    has_many :messages, DiscordClone.Messages.Message
 
 
     timestamps(type: :utc_datetime)

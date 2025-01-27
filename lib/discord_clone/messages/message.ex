@@ -9,8 +9,8 @@ defmodule DiscordClone.Messages.Message do
     field :file_url, :string
     field :deleted, :boolean, default: false
 
-    belongs_to :member, YourApp.Members.Member, type: :binary_id, on_replace: :delete
-    belongs_to :channel, YourApp.Channels.Channel, type: :binary_id, on_replace: :delete
+    belongs_to :member, DiscordClone.Members.Member, type: :binary_id, on_replace: :delete
+    belongs_to :channel, DiscordClone.Channels.Channel, type: :binary_id, on_replace: :delete
 
 
     timestamps(type: :utc_datetime)

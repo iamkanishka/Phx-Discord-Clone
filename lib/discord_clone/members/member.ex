@@ -7,14 +7,14 @@ defmodule DiscordClone.Members.Member do
   schema "members" do
     field :role, Ecto.Enum, values: [:GUEST, :USER, :ADMIN], default: :GUEST
 
-    belongs_to :profile, YourApp.Profiles.Profile, type: :binary_id, on_replace: :delete
-    belongs_to :server, YourApp.Servers.Server, type: :binary_id, on_replace: :delete
+    belongs_to :profile, DiscordClone.Profiles.Profile, type: :binary_id, on_replace: :delete
+    belongs_to :server, DiscordClone.Servers.Server, type: :binary_id, on_replace: :delete
 
-    has_many :messages, YourApp.Messages.Message
-    has_many :direct_messages, YourApp.Messages.DirectMessage
+    has_many :messages, DiscordClone.Messages.Message
+    has_many :direct_messages, DiscordClone.Messages.DirectMessage
 
-    has_many :conversations_initiated, YourApp.Conversations.Conversation, foreign_key: :member_one_id
-    has_many :conversations_received, YourApp.Conversations.Conversation, foreign_key: :member_two_id
+    has_many :conversations_initiated, DiscordClone.Conversations.Conversation, foreign_key: :member_one_id
+    has_many :conversations_received, DiscordClone.Conversations.Conversation, foreign_key: :member_two_id
 
 
     timestamps(type: :utc_datetime)

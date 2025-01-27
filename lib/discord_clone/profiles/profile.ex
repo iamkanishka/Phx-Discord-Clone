@@ -11,9 +11,9 @@ defmodule DiscordClone.Profiles.Profile do
     field :image_url, :string
     field :email, :string
 
-    has_many :servers, YourApp.Servers.Server
-    has_many :members, YourApp.Members.Member
-    has_many :channels, YourApp.Channels.Channel
+    has_many :servers, DiscordClone.Servers.Server
+    has_many :members, DiscordClone.Members.Member
+    has_many :channels, DiscordClone.Channels.Channel
 
 
     timestamps(type: :utc_datetime)

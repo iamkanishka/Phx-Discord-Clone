@@ -1,5 +1,5 @@
 defmodule DiscordCloneWeb.AuthController do
-  alias DiscordClone.Accounts
+  alias DiscordClone.Accounts.Accounts
   alias Ueberauth.Auth
   use DiscordCloneWeb, :controller
 

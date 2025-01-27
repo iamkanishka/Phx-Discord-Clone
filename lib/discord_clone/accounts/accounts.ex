@@ -1,4 +1,4 @@
-defmodule DiscordClone.Accounts do
+defmodule DiscordClone.Accounts.Accounts do
   @moduledoc """
   The Accounts context.
   """

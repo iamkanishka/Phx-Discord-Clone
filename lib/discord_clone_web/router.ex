@@ -19,16 +19,17 @@ defmodule DiscordCloneWeb.Router do
   scope "/auth", DiscordCloneWeb do
     pipe_through :browser
 
-    get "/google", AuthController, :request
-    get "/google/callback", AuthController, :callback
     live "/sign-in", Auth.SignIn, :show
     live "/sign-up", Auth.SignUp, :show
+
+    get "/google", AuthController, :request
+    get "/google/callback", AuthController, :callback
   end
 
   scope "/", DiscordCloneWeb do
     pipe_through :browser
 
-    # get "/", PageController, :home
+    get "/", PageController, :home
     live "/invite/:invite_id", Invite.Invite, :show
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show

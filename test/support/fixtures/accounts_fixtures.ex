@@ -13,7 +13,7 @@ defmodule DiscordClone.AccountsFixtures do
       |> Enum.into(%{
 
       })
-      |> DiscordClone.Accounts.create_user()
+      |> DiscordClone.Accounts.Accounts.create_user()
 
     user
   end

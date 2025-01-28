@@ -60,7 +60,8 @@ defmodule DiscordClone.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:ueberauth, "~> 0.10"},
-      {:ueberauth_google, "~> 0.10"}
+      {:ueberauth_google, "~> 0.10"},
+      {:lucide_icons, "~> 2.0"}
     ]
   end
 

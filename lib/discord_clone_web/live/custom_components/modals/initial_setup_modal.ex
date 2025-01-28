@@ -1,5 +1,5 @@
 
-defmodule DiscordCloneWeb.CustomComponents.Modals.InitialModal do
+defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
   use DiscordCloneWeb, :live_component
 
   @impl true

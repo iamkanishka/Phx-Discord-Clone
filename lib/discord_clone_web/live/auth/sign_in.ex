@@ -1,5 +1,6 @@
 defmodule DiscordCloneWeb.Auth.SignIn do
   use DiscordCloneWeb, :live_view
+  import Lucideicons
 
   @impl true
   def render(assigns) do
@@ -11,13 +12,13 @@ defmodule DiscordCloneWeb.Auth.SignIn do
         <p class="text-gray-600 mb-6">to continue to discord-clone</p>
 
     <!-- Google Login Button -->
-   <a href="/auth/google" class="flex items" >
-        <button  class="flex items-center justify-center w-full bg-white text-gray-700 py-2 px-4 rounded-lg border border-gray-300 mb-4 hover:bg-gray-200 transition">
-          <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="w-5 h-5 mr-2" />
-          Continue with Google
-        </button>
+        <a href="/auth/google" class="flex items">
+          <button class="flex items-center justify-center w-full bg-white text-gray-700 py-2 px-4 rounded-lg border border-gray-300 mb-4 hover:bg-gray-200 transition">
+            <img src="https://www.google.com/favicon.ico" alt="Google Icon" class="w-5 h-5 mr-2" />
+            Continue with Google
+          </button>
         </a>
-    <!-- Divider -->
+        <!-- Divider -->
         <div class="flex items-center my-4">
           <div class="flex-grow h-px bg-gray-300"></div>
            <span class="px-3 text-gray-500 text-sm">or</span>
@@ -31,14 +32,12 @@ defmodule DiscordCloneWeb.Auth.SignIn do
           class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
 
-
-          <!-- password Field -->
-          <input
+    <!-- password Field -->
+        <input
           type="password"
           placeholder="Password"
           class="w-full p-3 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
-
 
     <!-- Continue Button -->
         <button class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition">

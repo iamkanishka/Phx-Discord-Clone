@@ -20,28 +20,33 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerChannel do
       <%= if @channel.name != "general" and @role != "Guest" do %>
         <div class="ml-auto flex items-center gap-x-2">
           <%!-- <ActionTooltip label="Edit"> --%>
-          <.icon
-            name="hero-pencil"
+          <button
             phx-click="edit_click"
             phx-target={@myself}
             class="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
-          /> <%!-- </ActionTooltip> --%> <%!-- <ActionTooltip label="Delete"> --%>
-          <.icon
-            name="hero-trash"
+          >
+            <.icon name="hero-pencil" class="w-4 h-4" />
+          </button>
+           <%!-- </ActionTooltip> --%> <%!-- <ActionTooltip label="Delete"> --%>
+          <button
             phx-click="delete_click"
             phx-target={@myself}
             class="hidden group-hover:block w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
-          /> <%!-- </ActionTooltip> --%>
+          >
+            <.icon name="hero-trash" class="w-4 h-4" />
+          </button>
+           <%!-- </ActionTooltip> --%>
         </div>
       <% end %>
 
       <%= if @channel.name == "general" do %>
-        <.icon
-          name="hero-lock-closed"
+        <button
           phx-click="delete_click"
           phx-target={@myself}
           class="ml-auto w-4 h-4 text-zinc-500 dark:text-zinc-400"
-        />
+        >
+          <.icon name="hero-lock-closed" class="w-4 h-4" />
+        </button>
       <% end %>
     </button>
     """

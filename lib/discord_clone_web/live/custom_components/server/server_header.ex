@@ -23,7 +23,14 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         aria-labelledby="dropdownDefaultButton"
       >
         <%= for {dropdown_option, index} <- Enum.with_index(@dropdown_options)do %>
-          <li phx-click="open_modal" phx-target={@myself} phx-value-index={index}>
+          <li
+            phx-click="open_modal"
+            phx-target={@myself}
+            phx-value-index={index}
+            phx-click="open_modal"
+            phx-value-module={dropdown_option[:module]}
+            phx-value-id={dropdown_option[:id]}
+          >
             <a
               href="#"
               class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white "
@@ -107,6 +114,8 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
   end
 
   @impl true
-  def handle_event(event, unsigned_params, socket) do
+  def handle_event("open_modal", unsigned_params, socket) do
+    # send through the process to layout component
+    {:noreply, socket |> assign(:selected_modal, unsigned_params)}
   end
 end

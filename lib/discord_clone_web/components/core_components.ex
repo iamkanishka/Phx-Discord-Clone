@@ -673,4 +673,19 @@ defmodule DiscordCloneWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+
+  attr :class, :string, default: ""
+  slot :inner_content, required: true
+
+  def scroll_area(assigns) do
+    ~H"""
+    <div class={"relative overflow-hidden #{@class}"}>
+      <div class="h-full w-full rounded-[inherit] overflow-auto custom-scrollbar">
+        <%= render_slot(@inner_content) %>
+      </div>
+    </div>
+    """
+  end
+
 end

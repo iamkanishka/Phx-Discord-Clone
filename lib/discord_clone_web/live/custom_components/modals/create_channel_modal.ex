@@ -4,6 +4,35 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.CreateChannelModal do
 
   def render(assigns) do
     ~H"""
+
+
+    <div>
+      <.header>
+      Create Channel
+
+      </.header>
+
+      <.simple_form
+        for={@form}
+        id="product-form"
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.input field={@form[:channel_name]} type="text" label="Channel Name" />
+        <.input
+            field={@form[:channel_type]}
+            type="select"
+            label="channel Type"
+            options={["TEXT", "AUDIO", "VIDEO"]}
+            />
+        <:actions>
+          <.button phx-disable-with="Creating...">Create</.button>
+        </:actions>
+      </.simple_form>
+    </div>
+
+
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
@@ -80,11 +109,19 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.CreateChannelModal do
         </Form>
       </DialogContent>
     </Dialog>
+
+
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket|> assign(assigns)|>assign_form()}
   end
+
+  defp assign_form(socket) do
+    form = Phoenix.HTML.FormData.to_form(%{}, as: :form)
+    assign(socket, %{form: form})
+  end
+
 end

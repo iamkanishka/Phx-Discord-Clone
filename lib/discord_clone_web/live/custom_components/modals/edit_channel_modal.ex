@@ -5,11 +5,11 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditChannelModal do
   @impl true
   def render(assigns) do
     ~H"""
-     <Dialog open={isModalOpen} onOpenChange={handleClose}>
+      <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create Channel
+            Edit Channel
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
@@ -74,7 +74,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditChannelModal do
             </div>
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>
-                Create
+                Save
               </Button>
             </DialogFooter>
           </form>

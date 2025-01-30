@@ -5,74 +5,60 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
   @impl true
   def render(assigns) do
     ~H"""
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
-        <DialogHeader className="pt-8 px-6">
-          <DialogTitle className="text-2xl text-center font-bold">
-            Customize your server
-          </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
-            Give your server a personality with a name and an image. You can always change it later.
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-8 px-6">
-              <div className="flex items-center justify-center text-center">
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <FileUpload
-                          endpoint="serverImage"
-                          value={field.value}
-                          onChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
+     <div class="bg-white text-black p-0 overflow-hidden">
+      <.header class="pt-8 px-6">
+        <span  class="text-2xl text-center font-bold">Edit your server</span>
+        <:subtitle>
+        <span class="text-center text-zinc-500">
+        Give your server a personality with a name and an image. You can always change it later. </span></:subtitle>
+      </.header>
 
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel
-                      className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70"
-                    >
-                      Server name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        disabled={isLoading}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+      <.simple_form
+        for={@form}
+        id="product-form"
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+        class="space-y-8"
+      >
+      <div class="space-y-8 px-6">
+              <div class="flex items-center justify-center text-center">
+              <.input
+            field={@form[:server_image]}
+            type="file"
+            label="Server Image"
+            />
+        </div>
+
+
+
+        <.input field={@form[:server_name]} type="text" label="Server Name"
+          className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                         placeholder="Enter server name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant="primary" disabled={isLoading}>
-                Save
+         />
+
+        <:actions>
+        <div className="bg-gray-100 px-6 py-4">
+
+          <.button phx-disable-with="Creating..."  disabled={@isLoading}>Save</.button>
+              <Button variant="primary">
+                Create
               </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+            </div>
+        </:actions>
+      </.simple_form>
+    </div>
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket|> assign(assigns)|>assign_form()}
   end
+
+  defp assign_form(socket) do
+    form = Phoenix.HTML.FormData.to_form(%{}, as: :form)
+    assign(socket, %{form: form})
+  end
+
 end

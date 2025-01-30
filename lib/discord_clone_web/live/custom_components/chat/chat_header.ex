@@ -1,29 +1,35 @@
-
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
   use DiscordCloneWeb, :live_component
 
   @impl true
   def render(assigns) do
     ~H"""
-     <div className="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2">
-      <MobileToggle serverId={serverId} />
-      {type === "channel" && (
-        <Hash className="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
-      )}
-      {type === "conversation" && (
-        <UserAvatar
-          src={imageUrl}
-          className="h-8 w-8 md:h-8 md:w-8 mr-2"
+    <div class="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2">
+      <%= if @type === "channel" do %>
+        <.icon name="hero-hash" class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
+      <% end %>
+
+      <%= if @type === "conversation" do %>
+        <img
+          class="h-8 w-8 md:h-8 md:w-8 mr-2 rounded-full"
+          src="/docs/images/people/profile-picture-5.jpg"
+          alt="Rounded avatar"
         />
-      )}
-      <p className="font-semibold text-md text-black dark:text-white">
-        {name}
+      <% end %>
+
+      <p class="font-semibold text-md text-black dark:text-white">
+        {@name}
       </p>
-      <div className="ml-auto flex items-center">
-        {type === "conversation" && (
-          <ChatVideoButton />
-        )}
-        <SocketIndicator />
+
+      <div class="ml-auto flex items-center">
+        <%= if @type === "conversation" do %>
+          <button onClick={onClick} class="hover:opacity-75 transition mr-4">
+
+        <.icon name={"hero-#{@video_icon}"} class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
+
+          </button>
+        <% end %>
+
       </div>
     </div>
     """
@@ -31,6 +37,9 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns)}
+
+     video_icon = if assigns.is_video, do:  "video-camera", else: "video-camera-slash";
+
+    {:ok, socket |> assign(assigns)|> assign(video_icon: video_icon)}
   end
 end

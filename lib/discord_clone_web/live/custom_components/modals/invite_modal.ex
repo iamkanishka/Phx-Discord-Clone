@@ -5,50 +5,73 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   @impl true
   def render(assigns) do
     ~H"""
-      <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent class="bg-white text-black p-0 overflow-hidden">
-        <DialogHeader class="pt-8 px-6">
-          <DialogTitle class="text-2xl text-center font-bold">
-            Invite Friends
-          </DialogTitle>
-        </DialogHeader>
+
+    <div class="bg-white text-black p-0 overflow-hidden">
+      <.header class="pt-8 px-6">
+     <span class="text-2xl text-center font-bold">Invite Friends</span>
+
+      </.header>
+
+
         <div class="p-6">
-          <Label
+          <.label
             class="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70"
           >
             Server invite link
-          </Label>
+          </.label>
           <div class="flex items-center mt-2 gap-x-2">
-            <Input
-              disabled={isLoading}
+            <div
+              disabled={@isLoading}
               class="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
-              value={inviteUrl}
-            />
-            <Button disabled={isLoading} onClick={onCopy} size="icon">
-              {copied
-                ? <Check class="w-4 h-4" />
-                : <Copy class="w-4 h-4" />
-              }
-            </Button>
+
+            >
+            {@inviteUrl}
+            </div>
+            <.button disabled={@isLoading}   phx.click="copy"
+            phx-target={@myself} size="icon">
+            <%= if @copied  do  %>
+              <.icon name="hero-check" class="w-4 h-4" />
+
+              <% else %>
+
+               <.icon name="hero-clipboard" class="w-4 h-4" />
+
+
+               <% end %>
+
+
+            </.button>
           </div>
-          <Button
-            onClick={onNew}
-            disabled={isLoading}
-            variant="link"
-            size="sm"
-            class="text-xs text-zinc-500 mt-4"
+          <.button
+        phx.click="generate"
+        phx-target={@myself}
+            disabled={@isLoading}
+
+            class="text-xs text-zinc-500 mt-4 link btn-sm"
           >
             Generate a new link
-            <RefreshCw class="w-4 h-4 ml-2" />
-          </Button>
+            <.icon name="hero-arrow-path" class="w-4 h-4 ml-2" />
+             </.button>
         </div>
-      </DialogContent>
-    </Dialog>
+        </div>
+
+
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket|> assign(assigns)}
+  end
+
+  @impl true
+  def handle_event("generate", unsigned_params, socket) do
+    {:noreply, socket}
+
+  end
+  @impl true
+  def handle_event("copy", unsigned_params, socket) do
+    {:noreply, socket}
+
   end
 end

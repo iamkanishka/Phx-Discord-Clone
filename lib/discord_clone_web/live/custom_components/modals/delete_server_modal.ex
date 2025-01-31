@@ -17,12 +17,12 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.DeleteServerModal do
 
       <div class=" flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 bg-gray-100 px-6 py-4">
         <div class="flex items-center justify-between w-full">
-          <.button disabled={isLoading} phx-click="on_close" phx-target={@myself} class="ghost">
+          <.button disabled={@isLoading} phx-click="on_close" phx-target={@myself} class="ghost">
             Cancel
           </.button>
 
           <.button
-            disabled={isLoading}
+            disabled={@isLoading}
             class="primary"
             phc-click="on_delete_confirm"
             phx-target={@myself}
@@ -32,8 +32,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.DeleteServerModal do
         </div>
       </div>
     </div>
-
-
     """
   end
 

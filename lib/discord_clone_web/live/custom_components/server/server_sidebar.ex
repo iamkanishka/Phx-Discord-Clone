@@ -144,43 +144,67 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
   @impl true
   def update(assigns, socket) do
 
+    role_icon_map = %{
+      :guest => nil,
+      :moderator => %{name: "shield_check", class: "h-4 w-4 ml-2 text-indigo-500"},
+      :admin => %{name: "shield_alert", class: "h-4 w-4 ml-2 text-rose-500"}
+    }
+
+
+    text_channels_data =  Enum.map(assigns.text_channels, fn channel ->
+      %{
+        id: channel.id,
+        name: channel.name,
+        icon: role_icon_map[channel.type]
+      }
+  end)
+
+  audio_channels_data =  Enum.map(assigns.text_channels, fn channel ->
+    %{
+      id: channel.id,
+      name: channel.name,
+      icon: role_icon_map[channel.type]
+    }
+end)
+
+video_channels_data =  Enum.map(assigns.text_channels, fn channel ->
+  %{
+    id: channel.id,
+    name: channel.name,
+    icon: role_icon_map[channel.type]
+  }
+end)
+
+members_channels_data =  Enum.map(assigns.text_channels, fn channel ->
+  %{
+    id: channel.id,
+    name: channel.name,
+    icon: role_icon_map[channel.type]
+  }
+end)
+
+
 
     data=[
       %{
         label: "Text Channels",
         type: "channel",
-        data: textChannels?.map((channel) => ({
-          id: channel.id,
-          name: channel.name,
-          icon: iconMap[channel.type],
-        }))
+        data: text_channels_data
       },
       %{
         label: "Voice Channels",
         type: "channel",
-        data: audioChannels?.map((channel) => ({
-          id: channel.id,
-          name: channel.name,
-          icon: iconMap[channel.type],
-        }))
+        data: audio_channels_data
       },
       %{
         label: "Video Channels",
         type: "channel",
-        data: videoChannels?.map((channel) => ({
-          id: channel.id,
-          name: channel.name,
-          icon: iconMap[channel.type],
-        }))
+        data: video_channels_data
       },
       %{
         label: "Members",
         type: "member",
-        data: members?.map((member) => ({
-          id: member.id,
-          name: member.profile.name,
-          icon: roleIconMap[member.role],
-        }))
+        data: members_channels_data
       },
     ]
 

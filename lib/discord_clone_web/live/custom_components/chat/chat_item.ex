@@ -48,7 +48,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
 
             <div class="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
 
-              <.icon name="hero-document" class=class="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
+              <.icon name="hero-document" class="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
 
               <a
                 href={@fileUrl}
@@ -62,7 +62,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             <% end %>
             <%= if !@fileUrl && !@isEditing do %>
 
-            <p class={"text-sm text-zinc-600 dark:text-zinc-300",
+            <p class={"text-sm text-zinc-600 dark:text-zinc-300" <>
               if @deleted, do: "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1", else: "" }>
               {@content}
             <%= if @isUpdated && @deleted do %>
@@ -140,7 +140,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
       :admin => %{name: "shield_alert", class: "h-4 w-4 ml-2 text-rose-500"}
     }
 
-    icon = Map.get(role_icon_map, member.role, nil)
+    icon = Map.get(role_icon_map, assigns.member.role, nil)
 
     {:ok, socket |> assign(assigns) |> assign(icon: icon)}
   end

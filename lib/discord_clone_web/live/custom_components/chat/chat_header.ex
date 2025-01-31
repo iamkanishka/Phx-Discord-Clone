@@ -23,7 +23,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
 
       <div class="ml-auto flex items-center">
         <%= if @type === "conversation" do %>
-          <button onClick={onClick} class="hover:opacity-75 transition mr-4">
+          <button phx-click="video_click" phx-target={@myself} class="hover:opacity-75 transition mr-4">
 
         <.icon name={"hero-#{@video_icon}"} class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
 
@@ -41,5 +41,11 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
      video_icon = if assigns.is_video, do:  "video-camera", else: "video-camera-slash";
 
     {:ok, socket |> assign(assigns)|> assign(video_icon: video_icon)}
+
   end
+
+  def handle_event("video_click", unsigned_params, socket) do
+    {:noreply, socket}
+  end
+
 end

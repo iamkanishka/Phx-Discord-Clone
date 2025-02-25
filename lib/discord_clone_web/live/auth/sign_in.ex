@@ -1,6 +1,6 @@
 defmodule DiscordCloneWeb.Auth.SignIn do
   use DiscordCloneWeb, :live_view
-  import Lucideicons
+
 
   @impl true
   def render(assigns) do

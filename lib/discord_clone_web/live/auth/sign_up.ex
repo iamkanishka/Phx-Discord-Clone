@@ -4,6 +4,7 @@ defmodule DiscordCloneWeb.Auth.SignUp do
   @impl true
   def render(assigns) do
     ~H"""
+    <.live_component module={DiscordCloneWeb.CustomComponents.Auth.Auth} id={:signup_auth} />
     """
   end
 

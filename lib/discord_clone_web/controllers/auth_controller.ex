@@ -7,7 +7,7 @@ defmodule DiscordCloneWeb.AuthController do
   plug Ueberauth
 
 
-  def request(conn, _params) do
+  def request(_conn, _params) do
     # Ueberauth automatically handles this redirection
   end
 

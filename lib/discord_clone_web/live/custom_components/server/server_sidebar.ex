@@ -35,100 +35,100 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
   <div class="flex-grow border-t border-gray-400"></div>
 </div>
 
-  <%= if @textChannels.length  %>
+<%= if @text_channels != [] do %>
+  <div class="mb-2">
+    <.live_component
+      module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
+      id="text_channels"
+      section_type="channels"
+      channel_type="text"
+      role={@role}
+      label="Text Channels"
+    />
+    <div class="space-y-[2px]">
+      <%= for channel <- @text_channels do %>
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Server.ServerChannel}
+          id={"text_channel_#{channel.id}"}
+          channel={channel}
+          role={@role}
+          server={@server}
+        />
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
-          <div class="mb-2">
-            <ServerSection
-              sectionType="channels"
-              channelType={ChannelType.TEXT}
-              role={role}
-              label="Text Channels"
-            />
+<%= if @audio_channels != [] do %>
+  <div class="mb-2">
+    <.live_component
+      module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
+      id="audio_channels"
+      section_type="channels"
+      channel_type="audio"
+      role={@role}
+      label="Voice Channels"
+    />
+    <div class="space-y-[2px]">
+      <%= for channel <- @audio_channels do %>
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Server.ServerChannel}
+          id={"audio_channel_#{channel.id}"}
+          channel={channel}
+          role={@role}
+          server={@server}
+        />
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
-            <.live_component
-    module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
-    id={:server_section}
-    sectionType="channels"
-              channelType={"TEXT"}
-              role={@role}
-              label="Text Channels"
+<%= if @video_channels != [] do %>
+  <div class="mb-2">
+    <.live_component
+      module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
+      id="video_channels"
+      section_type="channels"
+      channel_type="video"
+      role={@role}
+      label="Video Channels"
+    />
+    <div class="space-y-[2px]">
+      <%= for channel <- @video_channels do %>
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Server.ServerChannel}
+          id={"video_channel_#{channel.id}"}
+          channel={channel}
+          role={@role}
+          server={@server}
+        />
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
-  />
-            <div class="space-y-[2px]">
-              {textChannels.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  role={role}
-                  server={server}
-                />
-              ))}
-            </div>
-          </div>
-        <% end %>
-
-
-
-
-        {!!audioChannels?.length && (
-          <div class="mb-2">
-            <ServerSection
-              sectionType="channels"
-              channelType={ChannelType.AUDIO}
-              role={role}
-              label="Voice Channels"
-            />
-            <div class="space-y-[2px]">
-              {audioChannels.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  role={role}
-                  server={server}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {!!videoChannels?.length && (
-          <div class="mb-2">
-            <ServerSection
-              sectionType="channels"
-              channelType={ChannelType.VIDEO}
-              role={role}
-              label="Video Channels"
-            />
-            <div class="space-y-[2px]">
-              {videoChannels.map((channel) => (
-                <ServerChannel
-                  key={channel.id}
-                  channel={channel}
-                  role={role}
-                  server={server}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-        {!!members?.length && (
-          <div class="mb-2">
-            <ServerSection
-              sectionType="members"
-              role={role}
-              label="Members"
-              server={server}
-            />
-            <div class="space-y-[2px]">
-              {members.map((member) => (
-                <ServerMember
-                  key={member.id}
-                  member={member}
-                  server={server}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+<%= if @members != [] do %>
+  <div class="mb-2">
+    <.live_component
+      module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
+      id="members"
+      section_type="members"
+      role={@role}
+      label="Members"
+      server={@server}
+    />
+    <div class="space-y-[2px]">
+      <%= for member <- @members do %>
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Server.ServerMember}
+          id={"member_#{member.id}"}
+          member={member}
+          server={@server}
+        />
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
 
 

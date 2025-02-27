@@ -688,4 +688,84 @@ defmodule DiscordCloneWeb.CoreComponents do
     """
   end
 
+  @doc """
+  Renders a tooltip component that works with any trigger content.
+
+  ## Parameters
+    - label: The text to display in the tooltip (required)
+    - side: Position of tooltip ("top", "right", "bottom", "left") - defaults to "top"
+    - align: Alignment of tooltip ("start", "center", "end") - defaults to "center"
+
+  ## Slots
+    - default: The trigger content that shows the tooltip on hover
+  """
+  attr :label, :string, required: true
+  attr :side, :string, default: "top", values: ~w(top right bottom left)
+  attr :align, :string, default: "center", values: ~w(start center end)
+  slot :inner_block, required: true
+
+  def tooltip(assigns) do
+    ~H"""
+    <div class="relative group inline-block">
+      <!-- Trigger content -->
+      <div class="inline-block">
+        <%= render_slot(@inner_block) %>
+      </div>
+
+      <!-- Tooltip content -->
+      <div
+        class={[
+          "absolute z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100",
+          "transition-opacity duration-75 pointer-events-none",
+          @side == "top" && "bottom-full left-1/2 -translate-x-1/2 mb-2",
+          @side == "bottom" && "top-full left-1/2 -translate-x-1/2 mt-2",
+          @side == "left" && "right-full top-1/2 -translate-y-1/2 mr-2",
+          @side == "right" && "left-full top-1/2 -translate-y-1/2 ml-2",
+          @align == "start" && (@side in ["top", "bottom"] && "left-0 translate-x-0" || "top-0 translate-y-0"),
+          @align == "end" && (@side in ["top", "bottom"] && "right-0 translate-x-0" || "bottom-0 translate-y-0")
+        ]}
+      >
+        <div class="bg-gray-800 text-white px-2 py-1 rounded-md shadow-lg whitespace-nowrap">
+          <p class="font-semibold text-sm capitalize">
+            <%= String.downcase(@label) %>
+          </p>
+        </div>
+        <!-- Arrow -->
+        <div
+          class={[
+            "absolute w-2 h-2 bg-gray-800 rotate-45",
+            @side == "top" && "bottom-[-4px] left-1/2 -translate-x-1/2",
+            @side == "bottom" && "top-[-4px] left-1/2 -translate-x-1/2",
+            @side == "left" && "right-[-4px] top-1/2 -translate-y-1/2",
+            @side == "right" && "left-[-4px] top-1/2 -translate-y-1/2"
+          ]}
+        ></div>
+      </div>
+    </div>
+    """
+  end
+
+#   <.tooltip label="Click me" side="top" align="center">
+#   <button class="px-4 py-2 bg-blue-500 text-white rounded">
+#     Button
+#   </button>
+# </.tooltip>
+
+# # Or as a live component
+# <%= live_component YourAppWeb.UIComponents,
+#     :tooltip,
+#     label: "Click me",
+#     side: "top",
+#     align: "center" do %>
+#   <button class="px-4 py-2 bg-blue-500 text-white rounded">
+#     Button
+#   </button>
+# <% end %>
+
+# # Still works with any content
+# <.tooltip label="Image hover" side="bottom" align="start">
+#   <img src="/images/example.jpg" alt="Example" class="w-12 h-12" />
+# </.tooltip>
+
+
 end

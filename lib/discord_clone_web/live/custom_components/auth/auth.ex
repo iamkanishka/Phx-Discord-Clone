@@ -1,13 +1,12 @@
-
 defmodule DiscordCloneWeb.CustomComponents.Auth.Auth do
   use DiscordCloneWeb, :live_component
 
   @impl true
   def render(assigns) do
     ~H"""
-
-    <div class="flex items-center justify-center min-h-fit bg-white">
-      <div class="bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+    <div class="flex items-center justify-center min-h-screen ">
+      <div class=" flex flex-col items-center justify-center bg-white shadow-lg rounded-lg p-8 max-w-md w-full">
+        <img src="/images/discord_clone.png" height="50" width="50" class="mr-2" />
         <h2 class="text-2xl font-semibold mb-4">Sign in</h2>
 
         <p class="text-gray-600 mb-6">to continue to discord-clone</p>
@@ -19,7 +18,8 @@ defmodule DiscordCloneWeb.CustomComponents.Auth.Auth do
             Continue with Google
           </button>
         </a>
-        <!-- Divider -->
+
+      <!-- Divider -->
         <div class="flex items-center my-4">
           <div class="flex-grow h-px bg-gray-300"></div>
            <span class="px-3 text-gray-500 text-sm">or</span>
@@ -50,8 +50,8 @@ defmodule DiscordCloneWeb.CustomComponents.Auth.Auth do
           No account? <a href="#" class="text-blue-600 hover:underline">Sign up</a>
         </p>
       </div>
+      </div>
     </div>
-
     """
   end
 

@@ -31,9 +31,11 @@ defmodule DiscordCloneWeb.Router do
 
     get "/", PageController, :home
     live "/invite/:invite_id", Invite.Invite, :show
+    live "/initial-setup", Setup.InitialSetup, :show
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show
     live "/servers/:server_id/conversation/:conversation_id", Conversations.Conversation, :show
+
   end
 
   # Other scopes may use custom stacks.

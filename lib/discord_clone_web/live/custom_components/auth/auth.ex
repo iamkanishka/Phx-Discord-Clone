@@ -19,7 +19,7 @@ defmodule DiscordCloneWeb.CustomComponents.Auth.Auth do
           </button>
         </a>
 
-      <!-- Divider -->
+        <%!-- <!-- Divider -->
         <div class="flex items-center my-4">
           <div class="flex-grow h-px bg-gray-300"></div>
            <span class="px-3 text-gray-500 text-sm">or</span>
@@ -49,7 +49,7 @@ defmodule DiscordCloneWeb.CustomComponents.Auth.Auth do
         <p class="text-center text-gray-600 mt-4">
           No account? <a href="#" class="text-blue-600 hover:underline">Sign up</a>
         </p>
-      </div>
+      </div> --%>
       </div>
     </div>
     """

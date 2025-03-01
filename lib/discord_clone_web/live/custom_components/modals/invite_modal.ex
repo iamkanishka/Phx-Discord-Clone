@@ -5,24 +5,24 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   def render(assigns) do
     ~H"""
     <div class="bg-white text-black p-0 overflow-hidden">
-      <.header class="pt-8 px-6">
-        <span class="text-2xl text-center font-bold">Invite Friends</span>
+      <.header>
+        <div class="text-2xl text-center font-bold">Invite Friends</div>
       </.header>
 
-      <div class="p-6">
+      <div class="py-6">
         <.label class="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
           Server invite link
         </.label>
 
-        <div class="flex items-center mt-2 gap-x-2">
+        <div class="flex items-center mt-2  gap-x-2">
           <div
-            disabled={@isLoading}
-            class="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+            cla
+            class=" flex-1 bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 p-3 rounded-lg"
           >
-            {@inviteUrl}
+            {@invite_url}
           </div>
 
-          <.button disabled={@isLoading} phx.click="copy" phx-target={@myself} size="icon">
+          <.button disabled={@is_loading} phx.click="copy" phx-target={@myself} size="icon">
             <%= if @copied  do %>
               <.icon name="hero-check" class="w-4 h-4" />
             <% else %>
@@ -32,10 +32,10 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
         </div>
 
         <.button
-          phx.click="generate"
+          phx-click="generate"
           phx-target={@myself}
-          disabled={@isLoading}
-          class="text-xs text-zinc-500 mt-4 link btn-sm"
+          disabled={@is_loading}
+          class="text-md text-white mt-4 link btn-sm"
         >
           Generate a new link <.icon name="hero-arrow-path" class="w-4 h-4 ml-2" />
         </.button>
@@ -45,8 +45,14 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   end
 
   @impl true
+  @spec update(maybe_improper_list() | map(), any()) :: {:ok, any()}
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns)}
+    {:ok,
+     socket
+     |> assign(:is_loading, false)
+     |> assign(:invite_url, ~c"hhtps://www.google.com")
+     |> assign(:copied, false)
+     |> assign(assigns)}
   end
 
   @impl true

@@ -21,6 +21,8 @@ defmodule DiscordClone.Conversations.Conversation do
     # |> validate_unique_pair(:member_one_id, :member_two_id)
     |> foreign_key_constraint(:member_one_id)
     |> foreign_key_constraint(:member_two_id)
+    |> unique_constraint([:member_one_id, :member_two_id])
+
   end
 
   # defp validate_unique_pair(changeset, field_one, field_two) do

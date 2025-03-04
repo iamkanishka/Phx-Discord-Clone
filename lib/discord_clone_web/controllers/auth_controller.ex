@@ -3,9 +3,7 @@ defmodule DiscordCloneWeb.AuthController do
   alias Ueberauth.Auth
   use DiscordCloneWeb, :controller
 
-
   plug Ueberauth
-
 
   def request(_conn, _params) do
     # Ueberauth automatically handles this redirection
@@ -17,12 +15,12 @@ defmodule DiscordCloneWeb.AuthController do
         conn
         |> put_session(:user_id, user.id)
         |> put_flash(:info, "Welcome back, #{user.name}!")
-        |> redirect(to: "/")
+        |> redirect(to: "/initial-setup/#{user.id}")
 
       {:error, reason} ->
         conn
         |> put_flash(:error, "Authentication failed: #{reason}")
-        |> redirect(to: "/")
+        |> redirect(to: "/auth/sign-in")
     end
   end
 
@@ -41,6 +39,4 @@ defmodule DiscordCloneWeb.AuthController do
     |> put_flash(:error, "Authentication failed: #{errors}")
     |> redirect(to: "/")
   end
-
-
 end

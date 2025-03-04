@@ -27,6 +27,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
           <.live_component
             module={DiscordCloneWeb.CustomComponents.Shared.ProfileImageUpload}
             id={:profile_image_upload}
+            value={@value}
           />
           <.input
             field={@form[:server_name]}
@@ -49,10 +50,10 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok,
+     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:is_loading, false)
+      |> assign(:is_loading, false)
      |> assign_form()}
   end
 
@@ -61,7 +62,8 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
     assign(socket, %{form: form})
   end
 
-  def handle_event("save", unsigned_params, socket) do
+  def handle_event("validate", unsigned_params, socket) do
+    IO.inspect(unsigned_params)
     {:noreply, socket}
   end
 end

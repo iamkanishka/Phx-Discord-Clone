@@ -8,6 +8,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
       <.live_component
         module={DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal}
         id={:initial_setup_modal}
+        value={@file_content}
       />
     </.modal>
     """
@@ -15,6 +16,36 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
 
   @impl true
   def mount(params, session, socket) do
-    {:ok, socket}
+
+    {:ok, socket
+     |> assign(:file_content, %{
+      "name" => "",
+      "size" => "",
+      "type" => "",
+      "data" => "",
+      "lastModified" => ""
+     })
+  }
+  end
+
+  @impl true
+  def handle_event(
+        "file_selected",
+        %{"name" => name, "size" => size, "type" => type, "content" => base64_content},
+        socket
+      ) do
+        IO.inspect(name)
+        IO.inspect(size)
+        IO.inspect(type)
+
+
+    {:noreply,
+     assign(socket, :file_content, %{
+       "name" => name,
+       "size" => size,
+       "type" => type,
+       "data" => base64_content,
+       "lastModified" => DateTime.utc_now()
+     })}
   end
 end

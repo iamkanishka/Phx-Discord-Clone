@@ -46,7 +46,6 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
               name="inputfile"
               accept="image/*,application/pdf"
             />
-
           </label>
         </div>
       <% end %>
@@ -55,7 +54,15 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
         <div class="flex flex-row items-center justify-center ">
           <div class="relative h-20 w-20">
             <!-- Loader -->
-
+            <%= if @is_loading do %>
+              <div
+                class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 rounded-full"
+                id="loader"
+              >
+                <div class="animate-spin h-6 w-6 border-2 border-white border-t-transparent rounded-full">
+                </div>
+              </div>
+            <% end %>
 
     <!-- Image -->
             <img src={@file_data} class="rounded-full h-full w-full object-cover" />
@@ -77,8 +84,6 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
         <div class="flex flex-col items-center justify-center ">
           <div class="relative flex items-center p-2 mt-2 rounded-md bg-gray-100 dark:bg-gray-800">
             <.icon name="hero-document-text" class="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
-
-
             <button
               phx-click="clear_file"
               phx-target={@myself}
@@ -88,8 +93,9 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
               <.icon name="hero-x-mark" class="h-4 w-4" />
             </button>
           </div>
-          <div>
-          </div>
+
+          <div></div>
+
           <div>{@value["name"]}</div>
         </div>
       <% end %>
@@ -100,17 +106,15 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
 
   @impl true
   def update(assigns, socket) do
-
     file_type = if String.contains?(assigns.value["extras"], "image"), do: "img", else: "pdf"
 
-     {:ok,
+    {:ok,
      socket
      |> assign(assigns)
      |> assign(:file_type, file_type)
      |> assign(:file_data, "#{assigns.value["extras"]},#{assigns.value["data"]}")
      |> assign(:is_loading, true)}
   end
-
 
   @impl true
   def handle_event("clear_file", _unsigned_params, socket) do
@@ -125,5 +129,4 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
        "type" => ""
      })}
   end
-
 end

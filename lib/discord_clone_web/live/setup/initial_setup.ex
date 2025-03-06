@@ -23,6 +23,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
       "size" => "",
       "type" => "",
       "data" => "",
+      "extras" => "",
       "lastModified" => ""
      })
   }
@@ -31,7 +32,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
   @impl true
   def handle_event(
         "file_selected",
-        %{"name" => name, "size" => size, "type" => type, "content" => base64_content},
+        %{"name" => name, "size" => size, "type" => type, "content" => base64_content, "extras" => extras},
         socket
       ) do
         IO.inspect(name)
@@ -45,6 +46,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
        "size" => size,
        "type" => type,
        "data" => base64_content,
+       "extras" => extras,
        "lastModified" => DateTime.utc_now()
      })}
   end

@@ -1,5 +1,6 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
   use DiscordCloneWeb, :live_component
+  alias Appwrite.Services.Storage
 
   @impl true
   def render(assigns) do
@@ -25,7 +26,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
       >
         <div class="space-y-8 px-6">
           <.live_component
-            module={DiscordCloneWeb.CustomComponents.Shared.ProfileImageUpload}
+            module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
             id={:profile_image_upload}
             value={@value}
           />
@@ -50,10 +51,10 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
 
   @impl true
   def update(assigns, socket) do
-     {:ok,
+    {:ok,
      socket
      |> assign(assigns)
-      |> assign(:is_loading, false)
+     |> assign(:is_loading, false)
      |> assign_form()}
   end
 
@@ -62,8 +63,17 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
     assign(socket, %{form: form})
   end
 
+  @impl true
   def handle_event("validate", unsigned_params, socket) do
     IO.inspect(unsigned_params)
     {:noreply, socket}
   end
+
+
+  @impl true
+  def handle_event("save", unsigned_params, socket) do
+    Storage.create_file()
+    {:noreply, socket}
+  end
+
 end

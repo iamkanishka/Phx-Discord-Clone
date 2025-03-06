@@ -61,7 +61,8 @@ defmodule DiscordClone.MixProject do
       {:bandit, "~> 1.5"},
       {:ueberauth, "~> 0.10"},
       {:ueberauth_google, "~> 0.10"},
-      {:lucide_icons, "~> 2.0"}
+      {:appwrite, "~> 0.1.9"}
+
     ]
   end
 

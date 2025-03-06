@@ -6,12 +6,14 @@ export default {
       if (file) {
         let reader = new FileReader();
         reader.onload = (event) => {
-          let base64Content = event.target.result.split(",")[1];
+          let imageDataSplit = event.target.result.split(",") 
+         
           this.pushEvent("file_selected", {
             name: file.name,
             size: file.size,
             type: file.type,
-            content: base64Content,
+            content: imageDataSplit[1], //base64Content
+            extras: imageDataSplit[0]
           });
         };
         reader.readAsDataURL(file);

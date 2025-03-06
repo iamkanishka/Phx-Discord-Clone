@@ -109,4 +109,18 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
   end
 
 
+  @impl true
+  def handle_event("clear_file", _unsigned_params, socket) do
+    {:noreply,
+     socket
+     |> assign(:value, %{
+       "data" => "",
+       "extras" => "",
+       "lastModified" => "",
+       "name" => "",
+       "size" => "",
+       "type" => ""
+     })}
+  end
+
 end

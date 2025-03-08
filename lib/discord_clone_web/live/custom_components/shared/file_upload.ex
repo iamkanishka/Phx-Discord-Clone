@@ -1,5 +1,4 @@
 defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
-  alias Appwrite.Services.Storage
   use DiscordCloneWeb, :live_component
 
   @impl true
@@ -68,14 +67,16 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
             <img src={@file_data} class="rounded-full h-full w-full object-cover" />
 
     <!-- Clear button -->
-            <button
-              phx-click="clear_file"
-              phx-target={@myself}
-              class="bg-rose-500 text-white p-0.5 rounded-full absolute top-0 right-0 shadow-sm"
-              type="button"
-            >
-              <.icon name="hero-x-mark" class="h-4 w-4" />
-            </button>
+            <%= if !@is_loading do %>
+              <button
+                phx-click="clear_file"
+                phx-target={@myself}
+                class="bg-rose-500 text-white p-0.5 rounded-full absolute top-0 right-0 shadow-sm"
+                type="button"
+              >
+                <.icon name="hero-x-mark" class="h-4 w-4" />
+              </button>
+            <% end %>
           </div>
         </div>
       <% end %>
@@ -112,8 +113,7 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
      socket
      |> assign(assigns)
      |> assign(:file_type, file_type)
-     |> assign(:file_data, "#{assigns.value["extras"]},#{assigns.value["data"]}")
-     |> assign(:is_loading, true)}
+     |> assign(:file_data, "#{assigns.value["extras"]},#{assigns.value["data"]}")}
   end
 
   @impl true

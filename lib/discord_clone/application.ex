@@ -7,6 +7,9 @@ defmodule DiscordClone.Application do
 
   @impl true
   def start(_type, _args) do
+    # Set DNS nameservers globally
+    #  :inet.setopts(:inet_db, [{:nameservers, [{8, 8, 8, 8}, {8, 8, 4, 4}]}])
+    :inet_db.add_ns({8, 8, 8, 8})
     children = [
       DiscordCloneWeb.Telemetry,
       DiscordClone.Repo,

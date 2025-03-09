@@ -9,15 +9,17 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
         module={DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal}
         id={:initial_setup_modal}
         value={@file_content}
+        user_id={@user_id}
+
       />
     </.modal>
     """
   end
 
   @impl true
-  def mount(params, session, socket) do
-
-    {:ok, socket
+  def mount(_params, session, socket) do
+  {:ok, socket
+     |> assign(:user_id, session["user_id"].id)
      |> assign(:file_content, %{
       "name" => "",
       "size" => "",
@@ -35,12 +37,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
         %{"name" => name, "size" => size, "type" => type, "content" => base64_content, "extras" => extras},
         socket
       ) do
-        IO.inspect(name)
-        IO.inspect(size)
-        IO.inspect(type)
-
-
-    {:noreply,
+       {:noreply,
      assign(socket, :file_content, %{
        "name" => name,
        "size" => size,

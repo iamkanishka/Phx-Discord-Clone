@@ -7,7 +7,7 @@ defmodule DiscordClone.Repo.Migrations.CreateProfiles do
       add :image_url, :text
       add :email, :text, null: false
 
-      timestamps(type: :utc_datetime)
+      timestamps()
     end
   end
 end

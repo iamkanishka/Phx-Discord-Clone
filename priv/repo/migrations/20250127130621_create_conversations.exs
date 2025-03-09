@@ -3,7 +3,7 @@ defmodule DiscordClone.Repo.Migrations.CreateConversations do
 
   def change do
     create table(:conversations) do
-      timestamps(type: :utc_datetime)
+      timestamps()
     end
   end
 end

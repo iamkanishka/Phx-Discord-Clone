@@ -6,7 +6,7 @@ defmodule DiscordClone.Repo.Migrations.CreateChannels do
       add :name, :string, null: false
       add :type, :string, null: false, default: "TEXT"
 
-      timestamps(type: :utc_datetime)
+      timestamps()
     end
   end
 end

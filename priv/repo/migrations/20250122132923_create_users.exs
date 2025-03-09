@@ -3,14 +3,15 @@ defmodule DiscordClone.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-      add :email, :string, null: true
-      add :name, :string, null: true
-      add :image, :string
-      add :token, :string
+      add :email, :string, null: false
+      add :name, :string, null: false
+      add :image, :string, null: false
+      add :token, :string, null: false
 
-      timestamps(type: :utc_datetime)
+      timestamps()
     end
 
-    create unique_index(:users, [:email]) # Ensure email is unique
+    # Ensure email is unique
+    create unique_index(:users, [:email])
   end
 end

@@ -1,7 +1,9 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
+  alias DiscordClone.Servers.Servers
+  alias DiscordClone.Profiles.Profiles
   use DiscordCloneWeb, :live_component
   alias Appwrite.Services.Storage
-  alias Appwrite.MissingBucketIdError
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -72,24 +74,39 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
   end
 
   @impl true
-  def handle_event("save", _unsigned_params, socket) do
+  def handle_event("save", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
-    profile_image = Map.delete(socket.assigns.value, "extras")
-    IO.inspect(profile_image)
-    :inet_db.add_ns({8, 8, 8, 8})
-      uploaded_file=
+
+     case upload_file(socket) do
+      {:ok, uploaded_file} ->
+        profile_image_url =
+          "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"
+
+        case Profiles.create_profile(socket.assigns.user_id) do
+          {:ok, created_profile} ->
+            Servers.create_server(created_profile.id, profile_image_url, params["server_name"])
+
+          {:error, error} ->
+            {:error, error}
+        end
+    end
+
+    {:noreply,
+     socket
+     |> assign(:is_loading, false)}
+  end
+
+  defp upload_file(socket) do
+    try do
       Storage.create_file(
         get_bucket_id(),
         nil,
         socket.assigns.value,
         nil
       )
-
-     IO.inspect(uploaded_file)
-
-    {:noreply,
-     socket
-     |> assign(:is_loading, false)}
+    catch
+      error -> IO.inspect(error)
+    end
   end
 
   defp get_bucket_id() do
@@ -99,6 +116,16 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
 
       bucket_id ->
         bucket_id
+    end
+  end
+
+  defp get_project_id() do
+    case Application.get_env(:appwrite, :project_id) do
+      nil ->
+        raise Appwrite.MissingProjectIdError
+
+      project_id ->
+        project_id
     end
   end
 end

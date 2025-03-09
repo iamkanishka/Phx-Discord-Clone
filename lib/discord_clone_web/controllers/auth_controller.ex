@@ -13,7 +13,7 @@ defmodule DiscordCloneWeb.AuthController do
     case Accounts.find_or_create_user(auth) do
       {:ok, user} ->
         conn
-        |> put_session(:user_id, user.id)
+        |> put_session(:current_user, user)
         |> put_flash(:info, "Welcome back, #{user.name}!")
         |> redirect(to: "/initial-setup/#{user.id}")
 

@@ -12,7 +12,7 @@ defmodule DiscordClone.Messages.Message do
     belongs_to :channel, DiscordClone.Channels.Channel, type: :binary_id, on_replace: :delete
 
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

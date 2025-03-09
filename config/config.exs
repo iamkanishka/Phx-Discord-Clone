@@ -9,7 +9,9 @@ import Config
 
 config :discord_clone,
   ecto_repos: [DiscordClone.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  migration_primary_key: [type: :binary_id],
+  migration_foreign_key: [type: :binary_id]
 
 # Configures the endpoint
 config :discord_clone, DiscordCloneWeb.Endpoint,

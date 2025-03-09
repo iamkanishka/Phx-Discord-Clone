@@ -8,7 +8,7 @@ defmodule DiscordClone.Repo.Migrations.CreateDirectMessages do
       add :file_url, :text
       add :deleted, :boolean, default: false
 
-      timestamps(type: :utc_datetime)
+      timestamps()
     end
 
   end

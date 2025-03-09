@@ -2,17 +2,15 @@ defmodule DiscordClone.DirectMessages.DirectMessage do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "direct_messages" do
     field :content, :string
     field :file_url, :string
     field :deleted, :boolean, default: false
 
-    belongs_to :member, DiscordClone.Members.Member, foreign_key: :member_id, type: :binary_id, on_replace: :delete
-    belongs_to :conversation, DiscordClone.Conversations.Conversation, foreign_key: :conversation_id, type: :binary_id, on_replace: :delete
+    belongs_to :member, DiscordClone.Members.Member, foreign_key: :member_id, on_replace: :delete
+    belongs_to :conversation, DiscordClone.Conversations.Conversation, foreign_key: :conversation_id, on_replace: :delete
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

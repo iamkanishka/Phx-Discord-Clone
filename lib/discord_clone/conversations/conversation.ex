@@ -10,7 +10,7 @@ defmodule DiscordClone.Conversations.Conversation do
 
     has_many :direct_messages, DiscordClone.DirectMessages.DirectMessage
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

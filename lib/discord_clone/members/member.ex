@@ -17,7 +17,7 @@ defmodule DiscordClone.Members.Member do
     has_many :conversations_received, DiscordClone.Conversations.Conversation, foreign_key: :member_two_id
 
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

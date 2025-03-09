@@ -8,7 +8,7 @@ defmodule DiscordClone.Accounts.User do
     field :image, :string
     field :token, :string
 
-    timestamps(type: :utc_datetime)
+    timestamps()
   end
 
   @doc false

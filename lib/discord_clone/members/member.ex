@@ -3,6 +3,7 @@ defmodule DiscordClone.Members.Member do
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
   @foreign_key_type :binary_id
   schema "members" do
     field :role, Ecto.Enum, values: [:GUEST, :USER, :ADMIN], default: :GUEST

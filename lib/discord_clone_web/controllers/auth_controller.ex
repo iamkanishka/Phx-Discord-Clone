@@ -1,5 +1,5 @@
 defmodule DiscordCloneWeb.AuthController do
-  alias DiscordClone.Accounts.Accounts
+  alias DiscordClone.Users.Users
   alias Ueberauth.Auth
   use DiscordCloneWeb, :controller
 
@@ -10,7 +10,7 @@ defmodule DiscordCloneWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: %Auth{} = auth}} = conn, _params) do
-    case Accounts.find_or_create_user(auth) do
+    case Users.find_or_create_user(auth) do
       {:ok, user} ->
         conn
         |> put_session(:current_user, user)

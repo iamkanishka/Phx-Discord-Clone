@@ -3,19 +3,21 @@ defmodule DiscordClone.Channels.Channel do
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
   @foreign_key_type :binary_id
+
   schema "channels" do
     field :name, :string
     field :type, Ecto.Enum, values: [:TEXT, :VOICE], default: :TEXT
 
-    belongs_to :profile, DiscordClone.Profiles.Profile,   on_replace: :delete
-    belongs_to :server, DiscordClone.Servers.Server,  on_replace: :delete
+    belongs_to :profile, DiscordClone.Profiles.Profile, on_replace: :delete
+    belongs_to :server, DiscordClone.Servers.Server, on_replace: :delete
 
     has_many :messages, DiscordClone.Messages.Message
 
-
     timestamps()
   end
+
 
   @doc false
   def changeset(channel, attrs) do

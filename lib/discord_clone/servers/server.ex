@@ -2,6 +2,9 @@ defmodule DiscordClone.Servers.Server do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
+  @foreign_key_type :binary_id
   schema "servers" do
     field :name, :string
     field :image_url, :string

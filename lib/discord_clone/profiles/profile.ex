@@ -2,6 +2,9 @@ defmodule DiscordClone.Profiles.Profile do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
+  @foreign_key_type :binary_id
   schema "profiles" do
     belongs_to :user, DiscordClone.Accounts.User
 
@@ -18,6 +21,6 @@ defmodule DiscordClone.Profiles.Profile do
     |> cast(attrs, [:user_id])
     |> validate_required([:user_id])
     |> unique_constraint(:user_id)
-    |> assoc_constraint(:user_id)
+    |> assoc_constraint(:user)
   end
 end

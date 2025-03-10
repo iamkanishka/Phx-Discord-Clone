@@ -2,7 +2,8 @@ defmodule DiscordClone.Repo.Migrations.CreateMembers do
   use Ecto.Migration
 
   def change do
-    create table(:members) do
+    create table(:members, primary_key: false) do
+      add :id, :binary_id, primary_key: true
       timestamps()
     end
   end

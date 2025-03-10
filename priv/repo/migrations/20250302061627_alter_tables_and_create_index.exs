@@ -7,57 +7,52 @@ defmodule DiscordClone.Repo.Migrations.AlterTablesAndCreateIndex do
     alter table(:members) do
       add :role, :string, null: false, default: "GUEST"
 
-      add :profile_id, references(:profiles, on_delete: :delete_all),
+      add :profile_id, references(:profiles, type: :binary_id, on_delete: :delete_all),
         null: false
 
-      add :server_id, references(:servers, on_delete: :delete_all), null: false
+      add :server_id, references(:servers, type: :binary_id, on_delete: :delete_all), null: false
     end
-
 
     # Channels
 
     alter table(:channels) do
-      add :profile_id, references(:profiles, on_delete: :delete_all),
+      add :profile_id, references(:profiles, type: :binary_id, on_delete: :delete_all),
         null: false
 
-      add :server_id, references(:servers, on_delete: :delete_all), null: false
+      add :server_id, references(:servers, type: :binary_id, on_delete: :delete_all), null: false
     end
 
     # Messages
     alter table(:messages) do
-      add :member_id, references(:members, on_delete: :delete_all), null: false
-      add :channel_id, references(:channels, on_delete: :delete_all), null: false
+      add :member_id, references(:members, type: :binary_id, on_delete: :delete_all), null: false
+
+      add :channel_id, references(:channels, type: :binary_id, on_delete: :delete_all),
+        null: false
     end
 
     # conversations
     alter table(:conversations) do
-      add :member_one_id, references(:members, on_delete: :delete_all),
+      add :member_one_id, references(:members, type: :binary_id, on_delete: :delete_all),
         null: false
 
-      add :member_two_id, references(:members, on_delete: :delete_all),
+      add :member_two_id, references(:members, type: :binary_id, on_delete: :delete_all),
         null: false
     end
 
     # Direct Messages
     alter table(:direct_messages) do
-      add :member, references(:members, on_delete: :delete_all), null: false
+      add :member, references(:members, type: :binary_id, on_delete: :delete_all), null: false
 
-      add :conversation, references(:conversations, on_delete: :delete_all),
+      add :conversation, references(:conversations, type: :binary_id, on_delete: :delete_all),
         null: false
     end
 
-    # Profiles
+    # Servers
 
-    alter table(:profiles) do
-      add :user_id, references(:users, on_delete: :delete_all), null: false
+    alter table(:servers) do
+      add :profile_id, references(:profiles, type: :binary_id, on_delete: :delete_all),
+        null: false
     end
-
-      # Servers
-
-      alter table(:servers) do
-        add :profile_id, references(:profiles, on_delete: :delete_all), null: false
-      end
-
 
     ##### Indexes
 

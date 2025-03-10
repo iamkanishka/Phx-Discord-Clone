@@ -19,7 +19,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
   @impl true
   def mount(_params, session, socket) do
   {:ok, socket
-     |> assign(:user_id, session["user_id"].id)
+     |> assign(:user_id, session["current_user"].id)
      |> assign(:file_content, %{
       "name" => "",
       "size" => "",

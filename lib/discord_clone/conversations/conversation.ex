@@ -3,10 +3,18 @@ defmodule DiscordClone.Conversations.Conversation do
   import Ecto.Changeset
 
   @primary_key {:id, :binary_id, autogenerate: true}
+  @derive {Phoenix.Param, key: :id}
   @foreign_key_type :binary_id
   schema "conversations" do
-    belongs_to :member_one, DiscordClone.Members.Member, foreign_key: :member_one_id, type: :binary_id, on_replace: :delete
-    belongs_to :member_two, DiscordClone.Members.Member, foreign_key: :member_two_id, type: :binary_id, on_replace: :delete
+    belongs_to :member_one, DiscordClone.Members.Member,
+      foreign_key: :member_one_id,
+      type: :binary_id,
+      on_replace: :delete
+
+    belongs_to :member_two, DiscordClone.Members.Member,
+      foreign_key: :member_two_id,
+      type: :binary_id,
+      on_replace: :delete
 
     has_many :direct_messages, DiscordClone.DirectMessages.DirectMessage
 
@@ -22,7 +30,6 @@ defmodule DiscordClone.Conversations.Conversation do
     |> foreign_key_constraint(:member_one_id)
     |> foreign_key_constraint(:member_two_id)
     |> unique_constraint([:member_one_id, :member_two_id])
-
   end
 
   # defp validate_unique_pair(changeset, field_one, field_two) do

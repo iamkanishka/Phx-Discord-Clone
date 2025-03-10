@@ -77,7 +77,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
   def handle_event("save", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
 
-     case upload_file(socket) do
+    case upload_file(socket) do
       {:ok, uploaded_file} ->
         profile_image_url =
           "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"

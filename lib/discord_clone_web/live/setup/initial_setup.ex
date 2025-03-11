@@ -1,5 +1,7 @@
 defmodule DiscordCloneWeb.Setup.InitialSetup do
+alias DiscordClone.Servers.Servers
   use DiscordCloneWeb, :live_view
+
 
   @impl true
   def render(assigns) do
@@ -10,34 +12,36 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
         id={:initial_setup_modal}
         value={@file_content}
         user_id={@user_id}
-
       />
     </.modal>
     """
   end
 
   @impl true
+  @impl true
   def mount(_params, session, socket) do
-  {:ok, socket
-     |> assign(:user_id, session["current_user"].id)
-     |> assign(:file_content, %{
-      "name" => "",
-      "size" => "",
-      "type" => "",
-      "data" => "",
-      "extras" => "",
-      "lastModified" => ""
-     })
-  }
+
+
+    {:ok,
+     socket
+     |> assign_user_id(session)
+     |> init_fie_content}
   end
+
 
   @impl true
   def handle_event(
         "file_selected",
-        %{"name" => name, "size" => size, "type" => type, "content" => base64_content, "extras" => extras},
+        %{
+          "name" => name,
+          "size" => size,
+          "type" => type,
+          "content" => base64_content,
+          "extras" => extras
+        },
         socket
       ) do
-       {:noreply,
+    {:noreply,
      assign(socket, :file_content, %{
        "name" => name,
        "size" => size,
@@ -46,5 +50,20 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
        "extras" => extras,
        "lastModified" => DateTime.utc_now()
      })}
+  end
+
+  defp assign_user_id(socket, session) do
+    assign(socket, :user_id, session["current_user"].id)
+  end
+
+  defp init_fie_content(socket) do
+    assign(socket, :file_content, %{
+      "name" => "",
+      "size" => "",
+      "type" => "",
+      "data" => "",
+      "extras" => "",
+      "lastModified" => ""
+    })
   end
 end

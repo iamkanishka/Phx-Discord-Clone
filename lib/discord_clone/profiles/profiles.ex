@@ -13,6 +13,21 @@ defmodule DiscordClone.Profiles.Profiles do
     end
   end
 
+  defp create_profile(user_id) do
+    profile_changeset =
+      Profile.changeset(%Profile{}, %{
+        user_id: user_id
+        # name: "#{user.first_name} #{user.last_name}",
+        # image_url: user.image_url,
+        # email: user.email
+      })
+
+    case Repo.insert(profile_changeset) do
+      {:ok, profile} -> {:ok, profile}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
 
 
   # def create_profile(user_id) do

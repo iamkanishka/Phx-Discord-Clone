@@ -4,6 +4,7 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
   @impl true
   def render(assigns) do
     ~H"""
+    <div>
     <.tooltip side="right" align="center" label={@name}>
       <button phx-click="server_click" phx-value-id={@id} class="group relative flex items-center">
         <div class={[
@@ -19,6 +20,7 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
         </div>
       </button>
     </.tooltip>
+    </div>
     """
   end
 

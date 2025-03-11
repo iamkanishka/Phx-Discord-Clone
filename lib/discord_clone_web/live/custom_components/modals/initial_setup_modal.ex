@@ -82,12 +82,14 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
         profile_image_url =
           "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"
 
-        case Profiles.create_profile(socket.assigns.user_id) do
+      case Profiles.create_profile(socket.assigns.user_id) do
           {:ok, created_profile} ->
             Servers.create_server(created_profile.id, profile_image_url, params["server_name"])
 
-          {:error, error} ->
-            {:error, error}
+          {:error, %Ecto.Changeset{} = changeset} ->
+            # Handle the error properly, e.g., log or send back an error message
+            IO.inspect(changeset, label: "Profile creation failed")
+            {:error, changeset}
         end
     end
 

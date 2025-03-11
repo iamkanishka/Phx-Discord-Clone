@@ -55,6 +55,15 @@ defmodule DiscordClone.Servers.Servers do
     end
   end
 
+  defp get_server_by_profile(profile_id) do
+    Repo.one(
+      from s in Server,
+        join: m in assoc(s, :members),
+        where: m.profile_id == ^profile_id,
+        limit: 1
+    )
+  end
+
 
 
 end

@@ -5,8 +5,6 @@ defmodule DiscordClone.Repo.Migrations.AlterTablesAndCreateIndex do
     # Members
 
     alter table(:members) do
-      add :role, :string, null: false, default: "GUEST"
-
       add :profile_id, references(:profiles, type: :binary_id, on_delete: :delete_all),
         null: false
 

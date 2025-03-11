@@ -12,7 +12,7 @@ defmodule DiscordClone.Members.Member do
     belongs_to :server, DiscordClone.Servers.Server, type: :binary_id, on_replace: :delete
 
     has_many :messages, DiscordClone.Messages.Message
-    has_many :direct_messages, DiscordClone.Messages.DirectMessage
+    has_many :direct_messages, DiscordClone.DirectMessages.DirectMessage
 
     has_many :conversations_initiated, DiscordClone.Conversations.Conversation, foreign_key: :member_one_id
     has_many :conversations_received, DiscordClone.Conversations.Conversation, foreign_key: :member_two_id

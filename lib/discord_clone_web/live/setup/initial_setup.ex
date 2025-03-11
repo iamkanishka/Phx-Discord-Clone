@@ -20,7 +20,19 @@ alias DiscordClone.Servers.Servers
   @impl true
   @impl true
   def mount(_params, session, socket) do
+    socket =
+      case Servers.find_and_redirect_to_server(session["current_user"].id) do
+        {:redirect, path} ->
+          push_navigate(socket, to: path, replace: true)
 
+        {:ok, :no_server_found} ->
+          IO.puts("No server found, show server creation UI")
+          socket
+
+        {:error, changeset} ->
+          IO.inspect(changeset, label: "Error creating profile")
+          socket
+      end
 
     {:ok,
      socket

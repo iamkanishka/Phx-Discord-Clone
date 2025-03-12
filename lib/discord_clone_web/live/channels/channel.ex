@@ -9,6 +9,22 @@ defmodule DiscordCloneWeb.Channels.Channel do
     ~H"""
     <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
     <ChatHeader name={@channel.name} server_id={@channel.server_id} type="channel" />
+
+    <%= case @channel.type do %>
+        <% "text" -> %>
+          <.live_component module={ChatMessages}
+            id={"chat_#{@channel.id}"}
+            member={@member}
+            name={@channel.name}
+            chat_id={@channel.id}
+            type="channel"
+            api_url="/api/messages"
+            socket_url="/api/socket/messages"
+            socket_query={%{channel_id: @channel.id, server_id: @channel.server_id}}
+            param_key="channelId"
+            param_value={@channel.id}
+          />
+
     </div>
     """
   end

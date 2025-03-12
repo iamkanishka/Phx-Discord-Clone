@@ -80,7 +80,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
     case upload_file(socket) do
       {:ok, uploaded_file} ->
         profile_image_url =
-          "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"
+          "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"
 
       case Profiles.create_profile(socket.assigns.user_id) do
           {:ok, created_profile} ->

@@ -26,15 +26,14 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:server_id, params["server_id"])
      |> assign_user_id(session)
-
-    }
+     |> assign_user_profile_image(session)}
   end
-
 
   defp assign_user_id(socket, session) do
     assign(socket, :user_id, session["current_user"].id)
   end
 
-
-
+  defp assign_user_profile_image(socket, session) do
+    assign(socket, :user_image, session["current_user"].image)
+  end
 end

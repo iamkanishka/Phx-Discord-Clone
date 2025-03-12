@@ -682,7 +682,7 @@ defmodule DiscordCloneWeb.CoreComponents do
     ~H"""
     <div class={"relative overflow-hidden #{@class}"}>
       <div class="h-full w-full rounded-[inherit] overflow-auto custom-scrollbar">
-        <%= render_slot(@inner_content) %>
+      <%= render_slot(@inner_block) %>
       </div>
     </div>
     """
@@ -715,7 +715,7 @@ defmodule DiscordCloneWeb.CoreComponents do
       <!-- Tooltip content -->
       <div
         class={[
-          "absolute z-10 invisible group-hover:visible opacity-0 group-hover:opacity-100",
+          "absolute z-[1000] invisible group-hover:visible opacity-0 group-hover:opacity-100",
           "transition-opacity duration-75 pointer-events-none",
           @side == "top" && "bottom-full left-1/2 -translate-x-1/2 mb-2",
           @side == "bottom" && "top-full left-1/2 -translate-x-1/2 mt-2",
@@ -725,7 +725,7 @@ defmodule DiscordCloneWeb.CoreComponents do
           @align == "end" && (@side in ["top", "bottom"] && "right-0 translate-x-0" || "bottom-0 translate-y-0")
         ]}
       >
-        <div class="bg-gray-800 text-white px-2 py-1 rounded-md shadow-lg whitespace-nowrap">
+        <div class="bg-gray-800 text-white px-2 py-1 rounded-md shadow-lg whitespace-nowrap break-words">
           <p class="font-semibold text-sm capitalize">
             <%= String.downcase(@label) %>
           </p>

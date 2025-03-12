@@ -4,7 +4,7 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
   @impl true
   def render(assigns) do
     ~H"""
-    <%!--
+     <%!--
     <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
      <.live_component
         module={MyAppWeb.ChatHeaderComponent}
@@ -14,8 +14,7 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
         server_id={@conversation.server_id}
         type="conversation"
       />
-
-        <%= if @video do %>
+      <%= if @video do %>
         <.live_component
           module={MyAppWeb.MediaRoomComponent}
           id="media-room"
@@ -23,8 +22,7 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
           video={true}
           audio={true}
         />
-
-          <% else %>
+      <% else %>
         <.live_component
           module={MyAppWeb.ChatMessagesComponent}
           id="chat-messages"
@@ -38,9 +36,15 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
           socket_url="/api/socket/direct-messages"
           socket_query={%{conversation_id: @conversation.id}}
         />
-
-
-
+        <.live_component
+          module={MyAppWeb.ChatInputComponent}
+          id="chat-input"
+          name={@other_member.profile.name}
+          type="conversation"
+          api_url="/api/socket/direct-messages"
+          query={%{conversation_id: @conversation.id}}
+        />
+      <% end %>
     </div> --%>
 
 

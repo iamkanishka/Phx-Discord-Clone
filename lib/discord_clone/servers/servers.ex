@@ -6,7 +6,6 @@ defmodule DiscordClone.Servers.Servers do
   alias DiscordClone.Channels.Channel
   alias DiscordClone.Members.Member
 
-
   def create_server(profile_id, image_url, name) do
     Repo.transaction(fn ->
       {:ok, server} =
@@ -41,7 +40,6 @@ defmodule DiscordClone.Servers.Servers do
     end)
   end
 
-
   def find_and_redirect_to_server(user_id) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          server <- get_server_by_profile(profile.id) do
@@ -64,6 +62,19 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
+  def find_servers(user_id) do
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         servers <- get_servers_by_profile(profile.id) do
+          if Enum.empty?(servers) do
+            {:ok, :no_server_found}
+          else
+            {:ok, servers}
+          end
+    else
+      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
 
 
 end

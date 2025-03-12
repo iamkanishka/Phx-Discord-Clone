@@ -24,6 +24,22 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
           audio={true}
         />
 
+          <% else %>
+        <.live_component
+          module={MyAppWeb.ChatMessagesComponent}
+          id="chat-messages"
+          member={@current_member}
+          name={@other_member.profile.name}
+          chat_id={@conversation.id}
+          type="conversation"
+          api_url="/api/direct-messages"
+          param_key="conversationId"
+          param_value={@conversation.id}
+          socket_url="/api/socket/direct-messages"
+          socket_query={%{conversation_id: @conversation.id}}
+        />
+
+
 
     </div> --%>
 

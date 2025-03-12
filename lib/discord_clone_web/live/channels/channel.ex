@@ -24,6 +24,12 @@ defmodule DiscordCloneWeb.Channels.Channel do
             param_key="channelId"
             param_value={@channel.id}
           />
+          <.live_component module={ChatInput}
+            name={@channel.name}
+            type="channel"
+            api_url="/api/socket/messages"
+            query={%{channel_id: @channel.id, server_id: @channel.server_id}}
+          />
 
     </div>
     """

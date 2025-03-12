@@ -7,10 +7,10 @@ defmodule DiscordCloneWeb.Channels.Channel do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
-    <ChatHeader name={@channel.name} server_id={@channel.server_id} type="channel" />
+   <%!-- <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
+      <ChatHeader name={@channel.name} server_id={@channel.server_id} type="channel" />
 
-    <%= case @channel.type do %>
+      <%= case @channel.type do %>
         <% "text" -> %>
           <.live_component module={ChatMessages}
             id={"chat_#{@channel.id}"}
@@ -31,13 +31,14 @@ defmodule DiscordCloneWeb.Channels.Channel do
             query={%{channel_id: @channel.id, server_id: @channel.server_id}}
           />
 
-          <% "audio" -> %>
+        <% "audio" -> %>
           <.live_component module={MediaRoom}
             chat_id={@channel.id}
             video={false}
             audio={true}
           />
-          <% "video" -> %>
+
+        <% "video" -> %>
           <.live_component module={MediaRoom}
             chat_id={@channel.id}
             video={true}

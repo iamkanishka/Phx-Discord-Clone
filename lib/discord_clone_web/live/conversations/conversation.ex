@@ -15,6 +15,16 @@ defmodule DiscordCloneWeb.Conversations.Conversation do
         type="conversation"
       />
 
+        <%= if @video do %>
+        <.live_component
+          module={MyAppWeb.MediaRoomComponent}
+          id="media-room"
+          chat_id={@conversation.id}
+          video={true}
+          audio={true}
+        />
+
+
     </div> --%>
 
 

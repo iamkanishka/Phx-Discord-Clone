@@ -75,6 +75,12 @@ defmodule DiscordClone.Servers.Servers do
       {:error, changeset} -> {:error, changeset}
     end
   end
-
+  defp get_servers_by_profile(profile_id) do
+    Repo.all(
+      from s in Server,
+        join: m in assoc(s, :members),
+        where: m.profile_id == ^profile_id
+    )
+  end
 
 end

@@ -23,7 +23,10 @@ defmodule DiscordCloneWeb.Servers.Server do
   @impl true
   def mount(params, session, socket) do
     {:ok,
-     socket }
+     socket
+     |> assign(:server_id, params["server_id"])
+
+    }
   end
 
 

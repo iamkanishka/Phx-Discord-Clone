@@ -31,6 +31,13 @@ defmodule DiscordCloneWeb.Channels.Channel do
             query={%{channel_id: @channel.id, server_id: @channel.server_id}}
           />
 
+          <% "audio" -> %>
+          <.live_component module={MediaRoom}
+            chat_id={@channel.id}
+            video={false}
+            audio={true}
+          />
+
     </div>
     """
   end

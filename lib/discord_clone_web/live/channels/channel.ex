@@ -37,8 +37,14 @@ defmodule DiscordCloneWeb.Channels.Channel do
             video={false}
             audio={true}
           />
-
-    </div>
+          <% "video" -> %>
+          <.live_component module={MediaRoom}
+            chat_id={@channel.id}
+            video={true}
+            audio={true}
+          />
+      <% end %>
+      </div> --%>
     """
   end
 

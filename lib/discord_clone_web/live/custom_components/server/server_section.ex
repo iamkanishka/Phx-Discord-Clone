@@ -38,7 +38,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSection do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket |> assign(assigns)}
   end
 
   @impl true

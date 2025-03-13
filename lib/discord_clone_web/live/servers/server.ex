@@ -4,7 +4,8 @@ defmodule DiscordCloneWeb.Servers.Server do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="h-full">
+    <div>
+    <%!-- <div class="h-full">
       <div class="hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0">
         <.live_component
           module={DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar}
@@ -16,7 +17,20 @@ defmodule DiscordCloneWeb.Servers.Server do
       </div>
 
       <main class="md:pl-[72px] h-full"></main>
-    </div>
+    </div> --%>
+
+    <.live_component
+          module={DiscordCloneWeb.Layouts.ServerMainLayout}
+          id={:server_side_bar}
+          user_id={@user_id}
+          user_image={@user_image}
+          server_id={@server_id}
+        >
+
+        </.live_component>
+        </div>
+
+
     """
   end
 

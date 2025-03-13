@@ -9,6 +9,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
         module={DiscordCloneWeb.CustomComponents.Server.ServerHeader}
         id={:server_header}
         role={@role}
+        is_admin={true}
       />
       <.scroll_area class="flex-1 px-3 h-64 w-80 border rounded-lg shadow">
         <div class="mt-2">
@@ -16,6 +17,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
             module={DiscordCloneWeb.CustomComponents.Server.ServerSearch}
             id={:server_search}
             data={@server_search_data}
+            is_admin={true}
+            is_moderator={true}
+
           />
         </div>
 
@@ -191,6 +195,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
       }
     ]
 
-    {:ok, socket |> assign(assigns) |> assign(server_search_data: data)}
+    {:ok,
+     socket
+     |> assign(assigns)
+    |> assign(server_search_data: data)}
   end
 end

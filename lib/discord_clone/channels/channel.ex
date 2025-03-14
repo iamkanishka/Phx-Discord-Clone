@@ -8,7 +8,7 @@ defmodule DiscordClone.Channels.Channel do
 
   schema "channels" do
     field :name, :string
-    field :type, Ecto.Enum, values: [:TEXT, :VOICE], default: :TEXT
+    field :type, Ecto.Enum, values: [:TEXT, :AUDIO, :VIDEO], default: :TEXT
 
     belongs_to :profile, DiscordClone.Profiles.Profile, on_replace: :delete
     belongs_to :server, DiscordClone.Servers.Server, on_replace: :delete

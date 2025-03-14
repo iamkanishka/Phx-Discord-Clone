@@ -1,4 +1,5 @@
 defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
+  alias DiscordClone.Servers.Servers
   use DiscordCloneWeb, :live_component
 
   @impl true
@@ -10,6 +11,8 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
         id={:server_header}
         role={@role}
         is_admin={true}
+        is_moderator={true}
+        server_name="Kansihka"
       />
       <.scroll_area class="flex-1 px-3 h-64 w-80 border rounded-lg shadow">
         <div class="mt-2">
@@ -19,7 +22,6 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
             data={@server_search_data}
             is_admin={true}
             is_moderator={true}
-
           />
         </div>
 
@@ -130,41 +132,71 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
 
   @impl true
   def update(assigns, socket) do
+    socket =
+      case Servers.find_and_redirect_to_server_sidebar_data(assigns.server_id, assigns.user_id) do
+        {:ok, server_data} ->
+          assign_channels(server_data, socket)
+
+        {:error, changeset} ->
+          {:noreply, changeset}
+          socket
+      end
+
+    {:ok,
+     socket
+     |> assign(assigns)}
+  end
+
+  defp assign_channels(server_data, socket) do
+    %{
+      text_channels: text_channels,
+      audio_channels: audio_channels,
+      video_channels: video_channels,
+      members: members,
+      role: role
+    } = server_data
+
+    channel_type_map = %{
+      :TEXT => %{name: "hero-hashtag", class: "mr-2 h-4 w-4"},
+      :AUDIO => %{name: "hero-microphone", class: "mr-2 h-4 w-4"},
+      :VIDEO => %{name: "hero-video-camera", class: "mr-2 h-4 w-4"}
+    }
+
     role_icon_map = %{
-      :guest => nil,
-      :moderator => %{name: "shield_check", class: "h-4 w-4 ml-2 text-indigo-500"},
-      :admin => %{name: "shield_alert", class: "h-4 w-4 ml-2 text-rose-500"}
+      :GUEST => nil,
+      :MODERATOR => %{name: "hero-shield-check", class: "h-4 w-4 ml-2 text-indigo-500"},
+      :ADMIN => %{name: "hero-shield-exclamation", class: "h-4 w-4 ml-2 text-rose-500"}
     }
 
     text_channels_data =
-      Enum.map(assigns.text_channels, fn channel ->
+      Enum.map(text_channels, fn channel ->
         %{
           id: channel.id,
           name: channel.name,
-          icon: role_icon_map[channel.type]
+          icon: channel_type_map[channel.type]
         }
       end)
 
     audio_channels_data =
-      Enum.map(assigns.text_channels, fn channel ->
+      Enum.map(audio_channels, fn channel ->
         %{
           id: channel.id,
           name: channel.name,
-          icon: role_icon_map[channel.type]
+          icon: channel_type_map[channel.type]
         }
       end)
 
     video_channels_data =
-      Enum.map(assigns.text_channels, fn channel ->
+      Enum.map(video_channels, fn channel ->
         %{
           id: channel.id,
           name: channel.name,
-          icon: role_icon_map[channel.type]
+          icon: channel_type_map[channel.type]
         }
       end)
 
     members_channels_data =
-      Enum.map(assigns.text_channels, fn channel ->
+      Enum.map(members, fn channel ->
         %{
           id: channel.id,
           name: channel.name,
@@ -195,9 +227,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
       }
     ]
 
-    {:ok,
-     socket
-     |> assign(assigns)
-    |> assign(server_search_data: data)}
+    socket
+    |> assign(server_search_data: data)
+    |> assign(role: role)
+
   end
 end

@@ -84,7 +84,23 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
+  def find_and_redirect_to_server_sidebar_data(server_id, user_id) do
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         server_data <- get_server_data(server_id, profile.id) do
+      {:ok, server_data}
+      # case server_data do
+      #   nil -> {:ok, :no_server_found}
+      #   # if Enum.empty?(server_data) do
+      #   #   {:ok, :no_server_found}
+      #   # else
 
+      #   # end
+      # end
+    else
+      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
 
   def get_server_data(server_id, profile_id) do
     server =

@@ -29,71 +29,66 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
         </div>
       </.scroll_area>
 
-          <!-- Dropdown menu   -->
-          <div class="pb-3 mt-auto flex items-center flex-col gap-y-4 relative">
+    <!-- Dropdown menu   -->
+      <div class="pb-3 mt-auto flex items-center flex-col gap-y-4 relative">
+        <img
+          id="avatarButton"
+          type="button"
+          data-dropdown-toggle="userDropdown"
+          data-dropdown-placement="bottom-start"
+          class="w-10 h-10 rounded-full cursor-pointer"
+          src={@user_image}
+          alt="User dropdown"
+        />
+        <div
+          id="userDropdown"
+          class="z-[1000] absolute  bottom-3 left-8  block bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600"
+        >
+          <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
+            <div>Bonnie Green</div>
 
-<img
-  id="avatarButton"
-  type="button"
-  data-dropdown-toggle="userDropdown"
-  data-dropdown-placement="bottom-start"
-  class="w-10 h-10 rounded-full cursor-pointer"
-  src={@user_image}
-  alt="User dropdown"
-/>
+            <div class="font-medium truncate">name@flowbite.com</div>
+          </div>
 
+          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+            <li>
+              <a
+                href="#"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                Dashboard
+              </a>
+            </li>
 
-<div
-  id="userDropdown"
-  class="z-[1000] absolute  bottom-3 left-8  block bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600"
->
-  <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
-    <div>Bonnie Green</div>
+            <li>
+              <a
+                href="#"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                Settings
+              </a>
+            </li>
 
-    <div class="font-medium truncate">name@flowbite.com</div>
-  </div>
+            <li>
+              <a
+                href="#"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                Earnings
+              </a>
+            </li>
+          </ul>
 
-  <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
-    <li>
-      <a
-        href="#"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-      >
-        Dashboard
-      </a>
-    </li>
-
-    <li>
-      <a
-        href="#"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-      >
-        Settings
-      </a>
-    </li>
-
-    <li>
-      <a
-        href="#"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-      >
-        Earnings
-      </a>
-    </li>
-  </ul>
-
-  <div class="py-1">
-    <a
-      href="#"
-      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-    >
-      Sign out
-    </a>
-  </div>
-</div>
-</div>
-
-
+          <div class="py-1">
+            <a
+              href="#"
+              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+            >
+              Sign out
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -103,10 +98,11 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
     # IO.inspect(Servers.find_servers(assigns.user_id))
     IO.inspect(assigns)
 
-
     socket =
       case Servers.find_servers(assigns.user_id) do
         {:ok, servers} ->
+          IO.inspect(servers)
+
           assign(socket, :servers, servers)
 
         # {:redirect, path} ->
@@ -121,7 +117,8 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
           socket
       end
 
-    {:ok, socket
-    |> assign(assigns)}
+    {:ok,
+     socket
+     |> assign(assigns)}
   end
 end

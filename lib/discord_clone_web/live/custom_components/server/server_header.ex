@@ -4,6 +4,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
   @impl true
   def render(assigns) do
     ~H"""
+    <div>
     <button
       id="dropdownDefaultButton"
       data-dropdown-toggle="dropdown"
@@ -42,6 +43,8 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         <% end %>
       </ul>
     </div>
+    </div>
+
     """
   end
 

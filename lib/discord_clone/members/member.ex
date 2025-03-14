@@ -6,7 +6,7 @@ defmodule DiscordClone.Members.Member do
   @derive {Phoenix.Param, key: :id}
   @foreign_key_type :binary_id
   schema "members" do
-    field :role, Ecto.Enum, values: [:GUEST, :USER, :ADMIN], default: :GUEST
+    field :role, Ecto.Enum, values: [:GUEST, :MODERATOR, :ADMIN], default: :GUEST
 
     belongs_to :profile, DiscordClone.Profiles.Profile, type: :binary_id, on_replace: :delete
     belongs_to :server, DiscordClone.Servers.Server, type: :binary_id, on_replace: :delete

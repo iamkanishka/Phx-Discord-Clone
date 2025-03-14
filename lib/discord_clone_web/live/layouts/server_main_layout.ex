@@ -26,7 +26,8 @@ defmodule DiscordCloneWeb.Layouts.ServerMainLayout do
               video_channels={[]}
               audio_channels={[]}
               members={[]}
-
+              user_id={@user_id}
+              server_id={@server_id}
               role={:guest}
 
             />

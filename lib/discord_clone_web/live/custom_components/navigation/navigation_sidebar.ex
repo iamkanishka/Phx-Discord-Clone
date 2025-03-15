@@ -31,18 +31,32 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
 
     <!-- Dropdown menu   -->
       <div class="pb-3 mt-auto flex items-center flex-col gap-y-4 relative">
+
+      <button
+        id="dropdownDefaultButton"
+        data-dropdown-toggle="dropdown-menu"
+        data-menu-id="naivgation_sidebar-profile-dropdown-menu"
+        class="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
+        phx-hook="DropdownToggle"
+        type="button"
+      >
+
+
+
         <img
           id="avatarButton"
-          type="button"
+
           data-dropdown-toggle="userDropdown"
           data-dropdown-placement="bottom-start"
           class="w-10 h-10 rounded-full cursor-pointer"
+          data-menu-id="naivgation_sidebar-profile-dropdown-menu"
           src={@user_image}
           alt="User dropdown"
         />
+        </button>
         <div
-          id="userDropdown"
-          class="z-[1000] absolute  bottom-3 left-8  block bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600"
+          id="naivgation_sidebar-profile-dropdown-menu"
+          class="z-[2000] absolute  bottom-5 left-12 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600 dropdown-menu"
         >
           <div class="px-4 py-3 text-sm text-gray-900 dark:text-white">
             <div>Bonnie Green</div>
@@ -95,14 +109,9 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
 
   @impl true
   def update(assigns, socket) do
-    # IO.inspect(Servers.find_servers(assigns.user_id))
-    IO.inspect(assigns)
-
     socket =
       case Servers.find_servers(assigns.user_id) do
         {:ok, servers} ->
-          IO.inspect(servers)
-
           assign(socket, :servers, servers)
 
         # {:redirect, path} ->

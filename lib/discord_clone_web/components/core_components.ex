@@ -780,4 +780,60 @@ def mode_toggle(assigns) do
   """
 end
 
+
+
+attr :id, :string, required: true
+  attr :button_text, :string, default: "Menu"
+  attr :button_class, :string, default: "px-4 py-2 text-white bg-blue-600 rounded-md"
+  attr :menu_class, :string, default: "absolute z-[2000] hidden w-auto mt-2 bg-white border border-gray-200 rounded-md shadow-lg"
+  attr :items, :list, required: true
+  attr :position, :string, default: "left"
+  attr :alignment, :string, default: "bottom"
+
+  def dropdown(assigns) do
+    # position_class = case assigns.position do
+    #   "left" -> "left-0"
+    #   "right" -> "right-0"
+    #   _ -> "left-0"
+    # end
+
+    position_class = case assigns.position do
+      "left" -> "right-10"
+      "right" -> "left-10"
+      _ -> "left-0"
+    end
+
+    alignment_class = case assigns.alignment do
+      "top" -> "bottom-full "
+      "bottom" -> "top-full "
+      _ -> "top-full "
+    end
+
+    ~H"""
+    <div class="relative inline-block text-left">
+      <!-- Dropdown Button -->
+      <button
+        id={@id <> "-toggle"}
+        phx-hook="DropdownToggle"
+        data-menu-id={@id <> "-menu"}
+        class={@button_class}
+      >
+        <%= @button_text %>
+      </button>
+
+      <!-- Dropdown Menu -->
+      <div
+        id={@id <> "-menu"}
+        class={@menu_class <> " " <> position_class <> " " <> alignment_class}
+      >
+        <%= for item <- @items do %>
+          <a href={item[:href] || "#"} class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            <%= item[:label] %>
+          </a>
+        <% end %>
+      </div>
+    </div>
+    """
+  end
+
 end

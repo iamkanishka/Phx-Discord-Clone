@@ -25,8 +25,10 @@ import topbar from "../vendor/topbar";
 let Hooks = {};
 import CmdKListener from "./CmdKListener";
 import FileInput from "./fileInput";
+import DropdownToggle from "./DropdownToggle";
 Hooks.CmdKListener = CmdKListener;
 Hooks.FileInput = FileInput;
+Hooks.DropdownToggle = DropdownToggle 
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")

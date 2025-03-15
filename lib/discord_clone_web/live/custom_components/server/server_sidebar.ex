@@ -10,9 +10,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
         module={DiscordCloneWeb.CustomComponents.Server.ServerHeader}
         id={:server_header}
         role={@role}
-        is_admin={true}
-        is_moderator={true}
-        server_name="Kansihka"
+        server={@server_data}
+
+
       />
       <.scroll_area class="flex-1 px-3 h-64 w-80 border rounded-lg shadow">
         <div class="mt-2">
@@ -148,6 +148,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
   end
 
   defp assign_channels(server_data, socket) do
+
+    IO.inspect(server_data)
+
     %{
       text_channels: text_channels,
       audio_channels: audio_channels,
@@ -229,6 +232,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
 
     socket
     |> assign(server_search_data: data)
+    |> assign(server_data: server_data)
     |> assign(role: role)
 
   end

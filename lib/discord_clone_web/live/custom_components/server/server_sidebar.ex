@@ -6,22 +6,20 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
   def render(assigns) do
     ~H"""
     <div class="flex flex-col h-full text-primary w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">
+      <%!--Server Header  --%>
       <.live_component
         module={DiscordCloneWeb.CustomComponents.Server.ServerHeader}
         id={:server_header}
         role={@role}
         server={@server_data}
-
-
-      />
-      <.scroll_area class="flex-1 px-3 h-64 w-80 border rounded-lg shadow">
+      /> <%!-- Fll Height Scroll Height  --%>
+      <.scroll_area class="flex-1 px-3 h-64 w-full border rounded-lg shadow">
         <div class="mt-2">
+          <%!-- Server Search --%>
           <.live_component
             module={DiscordCloneWeb.CustomComponents.Server.ServerSearch}
             id={:server_search}
             data={@server_search_data}
-            is_admin={true}
-            is_moderator={true}
           />
         </div>
 
@@ -31,7 +29,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
           <div class="flex-grow border-t border-gray-400"></div>
         </div>
 
-        <%= if @text_channels != [] do %>
+        <%= if length(@text_channels) != 0 do %>
           <div class="mb-2">
             <.live_component
               module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
@@ -48,14 +46,14 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
                   id={"text_channel_#{channel.id}"}
                   channel={channel}
                   role={@role}
-                  server={@server}
+                  server={@server_data}
                 />
               <% end %>
             </div>
           </div>
         <% end %>
 
-        <%= if @audio_channels != [] do %>
+        <%= if length(@audio_channels) != 0  do %>
           <div class="mb-2">
             <.live_component
               module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
@@ -72,14 +70,14 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
                   id={"audio_channel_#{channel.id}"}
                   channel={channel}
                   role={@role}
-                  server={@server}
+                  server={@server_data}
                 />
               <% end %>
             </div>
           </div>
         <% end %>
 
-        <%= if @video_channels != [] do %>
+        <%= if length(@video_channels) != 0  do %>
           <div class="mb-2">
             <.live_component
               module={DiscordCloneWeb.CustomComponents.Server.ServerSection}
@@ -96,7 +94,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
                   id={"video_channel_#{channel.id}"}
                   channel={channel}
                   role={@role}
-                  server={@server}
+                  server={@server_data}
                 />
               <% end %>
             </div>
@@ -111,7 +109,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
               section_type="members"
               role={@role}
               label="Members"
-              server={@server}
+              server={@server_data}
             />
             <div class="space-y-[2px]">
               <%= for member <- @members do %>
@@ -119,7 +117,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
                   module={DiscordCloneWeb.CustomComponents.Server.ServerMember}
                   id={"member_#{member.id}"}
                   member={member}
-                  server={@server}
+                  server={@server_data}
                 />
               <% end %>
             </div>
@@ -132,25 +130,20 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
 
   @impl true
   def update(assigns, socket) do
+    socket = assign(socket, assigns)  # ✅ Assign general data first
     socket =
-      case Servers.find_and_redirect_to_server_sidebar_data(assigns.server_id, assigns.user_id) do
-        {:ok, server_data} ->
-          assign_channels(server_data, socket)
+    case Servers.find_and_redirect_to_server_sidebar_data(assigns.server_id, assigns.user_id) do
+      {:ok, server_data} ->
+        assign_channels(socket, server_data)
 
-        {:error, changeset} ->
-          {:noreply, changeset}
-          socket
-      end
+      {:error, changeset} ->
+        assign(socket, error: changeset)
+    end
 
-    {:ok,
-     socket
-     |> assign(assigns)}
+    {:ok, socket  }
   end
 
-  defp assign_channels(server_data, socket) do
-
-    IO.inspect(server_data)
-
+  defp assign_channels(socket, server_data) do
     %{
       text_channels: text_channels,
       audio_channels: audio_channels,
@@ -199,11 +192,11 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
       end)
 
     members_channels_data =
-      Enum.map(members, fn channel ->
+      Enum.map(members, fn member ->
         %{
-          id: channel.id,
-          name: channel.name,
-          icon: role_icon_map[channel.type]
+          id: member.profile.id,  # Assuming `profile` is preloaded
+          name: member.profile.user_id,  # Adjust if needed
+          icon: role_icon_map[member.role]
         }
       end)
 
@@ -230,10 +223,15 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
       }
     ]
 
+    # ✅ Ensure function returns the socket
     socket
-    |> assign(server_search_data: data)
-    |> assign(server_data: server_data)
+    |> assign(text_channels: text_channels)
+    |> assign(audio_channels: audio_channels)
+    |> assign(video_channels: video_channels)
+    |> assign(members: members)
     |> assign(role: role)
-
+    |> assign(:server_data, server_data)
+    |> assign(:server_search_data, data)
   end
+
 end

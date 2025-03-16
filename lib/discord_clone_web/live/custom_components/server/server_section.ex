@@ -9,19 +9,19 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSection do
         {@label}
       </p>
 
-      <%= if @role != "GUEST" and @sectionType == "channels" do %>
+      <%= if @role != :GUEST and @section_type == "channels" do %>
         <%!-- <ActionTooltip label="Create Channel" side="top"> --%>
-        <.button
+        <button
           phx-click="create_channel"
           phx-target={@myself}
           class="text-zinc-500 hover:text-zinc-600 dark:text-zinc-400 dark:hover:text-zinc-300 transition"
         >
-          <.icon name="hero-plus" class="w-4 h-4" />
-        </.button>
+          <.icon name="hero-plus" class="w-5 h-5" />
+        </button>
          <%!-- </ActionTooltip> --%>
       <% end %>
 
-      <%= if @role != "ADMIN" and @sectionType == "members" do %>
+      <%= if @role != :ADMIN and @section_type == "members" do %>
         <%!-- <ActionTooltip label="Manage Members" side="top"> --%>
         <button
           phx-click="members"

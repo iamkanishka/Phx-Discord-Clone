@@ -5,7 +5,7 @@ defmodule DiscordCloneWeb.Servers.Server do
   def render(assigns) do
     ~H"""
     <div>
-    <%!-- <div class="h-full">
+      <%!-- <div class="h-full">
       <div class="hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0">
         <.live_component
           module={DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar}
@@ -18,19 +18,30 @@ defmodule DiscordCloneWeb.Servers.Server do
 
       <main class="md:pl-[72px] h-full"></main>
     </div> --%>
+      <.live_component
+        module={DiscordCloneWeb.Layouts.ServerMainLayout}
+        id={:server_side_bar}
+        user_id={@user_id}
+        user_image={@user_image}
+        server_id={@server_id}
+      >
+      </.live_component>
+    </div>
 
-    <.live_component
-          module={DiscordCloneWeb.Layouts.ServerMainLayout}
-          id={:server_side_bar}
-          user_id={@user_id}
-          user_image={@user_image}
-          server_id={@server_id}
-        >
-
-        </.live_component>
-        </div>
-
-
+    <%= if @selected_modal != nil do %>
+      <%!-- <.modal id={"#{@selected_modal.id}-modal"} show on_cancel={hide_modal("#{@selected_modal.id}-modal")}> --%>
+      <.modal
+        id={"#{@selected_modal.id}-modal"}
+        show
+        on_cancel={hide_modal("#{@selected_modal.id}-modal")}
+      >
+        <.live_component
+          module={@selected_modal.module}
+          id={"#{@selected_modal.id}"}
+          server={@server}
+        />
+      </.modal>
+    <% end %>
     """
   end
 
@@ -39,6 +50,7 @@ defmodule DiscordCloneWeb.Servers.Server do
     {:ok,
      socket
      |> assign(:server_id, params["server_id"])
+     |> assign(:selected_modal, nil)
      |> assign_user_id(session)
      |> assign_user_profile_image(session)}
   end
@@ -49,5 +61,18 @@ defmodule DiscordCloneWeb.Servers.Server do
 
   defp assign_user_profile_image(socket, session) do
     assign(socket, :user_image, session["current_user"].image)
+  end
+
+  @impl true
+  def handle_info({:open_modal, {selected_option, server}}, socket) do
+    # Send to another LiveView or component if needed
+    #  send(self(), {:notify_layout, selected_option})
+
+    IO.inspect(selected_option)
+
+    {:noreply,
+     socket
+     |> assign(:selected_modal, selected_option)
+     |> assign(:server, server)}
   end
 end

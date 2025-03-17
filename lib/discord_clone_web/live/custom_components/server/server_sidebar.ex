@@ -20,6 +20,9 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
             module={DiscordCloneWeb.CustomComponents.Server.ServerSearch}
             id={:server_search}
             data={@server_search_data}
+            server={@server_data}
+
+
           />
         </div>
 
@@ -203,22 +206,22 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerSidebar do
     data = [
       %{
         label: "Text Channels",
-        type: "channel",
+        type: :TEXT,
         data: text_channels_data
       },
       %{
         label: "Voice Channels",
-        type: "channel",
+        type: :VOICE,
         data: audio_channels_data
       },
       %{
         label: "Video Channels",
-        type: "channel",
+        type: :VIDEO,
         data: video_channels_data
       },
       %{
         label: "Members",
-        type: "member",
+        type: :MEMBERS,
         data: members_channels_data
       }
     ]

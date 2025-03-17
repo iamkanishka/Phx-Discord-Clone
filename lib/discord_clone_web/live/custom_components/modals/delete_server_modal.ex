@@ -11,18 +11,18 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.DeleteServerModal do
 
       <div class="text-center text-zinc-500">
         Are you sure you want to do this? <br />
-        <span class="text-indigo-500 font-semibold">{@server?.name}</span>
+        <span class="text-indigo-500 font-semibold">{@server.name}</span>
         will be permanently deleted.
       </div>
 
       <div class=" flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 bg-gray-100 px-6 py-4">
         <div class="flex items-center justify-between w-full">
-          <.button disabled={@isLoading} phx-click="on_close" phx-target={@myself} class="ghost">
+          <.button disabled={@is_loading} phx-click="on_close" phx-target={@myself} class="ghost">
             Cancel
           </.button>
 
           <.button
-            disabled={@isLoading}
+            disabled={@is_loading}
             class="primary"
             phc-click="on_delete_confirm"
             phx-target={@myself}
@@ -37,7 +37,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.DeleteServerModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns)}
+    {:ok, socket |> assign(assigns) |> assign(:is_loading, false)}
   end
 
   @impl true

@@ -22,7 +22,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         class="z-[1000] absolute  top-10 right-15 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px] dropdown-menu"
       >
         <ul
-          class="py-2 text-sm text-gray-700 dark:text-gray-200"
+          class="py-2 text-base text-gray-700 dark:text-gray-200"
           aria-labelledby="dropdownDefaultButton"
         >
           <%= for {dropdown_option, index} <- Enum.with_index(@dropdown_options)do %>
@@ -33,14 +33,14 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
               phx-click="open_modal"
               phx-value-module={dropdown_option[:module]}
               phx-value-id={dropdown_option[:id]}
+              class="hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full flex"
             >
-              <a
-                href="#"
-                class=" px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white "
-              >
+              <button class=" px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white ">
                 {dropdown_option[:label]}
-                <.icon name={"hero-#{dropdown_option[:icon]}"} class={"#{dropdown_option[:class]}"} />
-              </a>
+                <span class="ml-2">
+                  <.icon name={"hero-#{dropdown_option[:icon]}"} class={"#{dropdown_option[:class]}"} />
+                </span>
+              </button>
             </li>
           <% end %>
         </ul>
@@ -61,7 +61,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         module: DiscordCloneWeb.CustomComponents.Modals.InviteModal,
         is_admin: is_admin,
         is_moderator: is_moderator,
-        class: " px-3 py-2 text-xs cursor-pointer",
+        class: " px-4 py-3 text-base cursor-pointer",
         icon: "plus"
       },
       %{
@@ -93,7 +93,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
       },
       %{
         label: "Delete Server",
-        id: "delete_channel",
+        id: "delete_server",
         module: DiscordCloneWeb.CustomComponents.Modals.DeleteServerModal,
         is_admin: is_admin,
         is_moderator: is_moderator,
@@ -107,8 +107,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         is_admin: is_admin,
         is_moderator: is_moderator,
         class: "text-rose-500 px-3 py-2 text-xs cursor-pointer",
-        icon: "arrow-right
-"
+        icon: "arrow-right"
       }
     ]
 
@@ -119,9 +118,17 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
   end
 
   @impl true
-  def handle_event("open_modal", unsigned_params, socket) do
+  def handle_event("open_modal", %{"id" => option_id}, socket) do
     # send through the process to layout component
-    {:noreply, socket |> assign(:selected_modal, unsigned_params)}
+
+    selected_option =
+      Enum.find(socket.assigns.dropdown_options, fn opt -> opt.id == option_id end)
+
+    if selected_option do
+      send(self(), {:open_modal, {selected_option, socket.assigns.server.server}})
+    end
+
+    {:noreply, socket}
   end
 
   defp is_admin?(role), do: role == :ADMIN

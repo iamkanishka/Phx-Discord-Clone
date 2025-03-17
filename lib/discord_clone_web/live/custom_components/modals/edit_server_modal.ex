@@ -31,15 +31,15 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
             field={@form[:server_name]}
             type="text"
             label="Server Name"
-            className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+            class="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
             placeholder="Enter server name"
           />
         </div>
 
         <:actions>
-          <div className="bg-gray-100 px-6 py-4">
-            <.button phx-disable-with="Creating..." disabled={@isLoading}>Save</.button>
-          </div>
+
+            <.button phx-disable-with="Updating..." >Update</.button>
+
         </:actions>
       </.simple_form>
     </div>
@@ -48,7 +48,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign_form()}
+    {:ok, socket |> assign(assigns) |> assign(:is_loading, false) |> assign_form()}
   end
 
   defp assign_form(socket) do

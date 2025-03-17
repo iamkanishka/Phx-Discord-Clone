@@ -56,8 +56,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerChannel do
 
   @impl true
   def update(assigns, socket) do
-    IO.inspect(assigns)
-    {:ok, socket |> assign(assigns)}
+     {:ok, socket |> assign(assigns)}
   end
 
   @impl true

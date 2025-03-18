@@ -46,4 +46,45 @@ defmodule DiscordClone.Channels.Channels do
     end
   end
 
+
+   @doc """
+  Creates a new channel in a server if the requesting user has the necessary role (ADMIN or MODERATOR).
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the user creating the channel.
+    - `attrs`: A map containing the `name` and `type` for the new channel.
+
+  ## Returns
+    - `{:ok, new_channel}` if the creation is successful.
+    - `{:error, reason}` if the creation fails.
+  """
+  def create_channel(server_id, profile_id, %{name: name, type: type}) do
+    # Ensure user is an ADMIN or MODERATOR in the server
+    server_query =
+      from s in Server,
+        where: s.id == ^server_id,
+        join: m in assoc(s, :members),
+        where:
+          m.profile_id == ^profile_id and
+            m.role in ["ADMIN", "MODERATOR"],
+        select: s
+
+    case Repo.one(server_query) do
+      nil ->
+        {:error, "Unauthorized or server not found"}
+
+      _server ->
+        # Insert new channel
+        %Channel{}
+        |> Channel.changeset(%{
+          profile_id: profile_id,
+          server_id: server_id,
+          name: name,
+          type: type
+        })
+        |> Repo.insert()
+    end
+  end
+
 end

@@ -321,6 +321,42 @@ defmodule DiscordClone.Servers.Servers do
   end
 
 
+    @doc """
+  Removes a member from a server, but prevents the owner from being removed.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the profile to be removed.
+
+  ## Returns
+    - `{:ok, "Member removed successfully"}` if the member is removed.
+    - `{:error, "Server not found or you are the owner"}` if the server is not found or the user is the owner.
+    - `{:error, "Failed to remove member"}` if the removal fails.
+  """
+  def remove_member_from_server(server_id, profile_id) do
+    server_query =
+      from s in Server,
+        where: s.id == ^server_id and s.profile_id != ^profile_id,
+        join: m in assoc(s, :members),
+        where: m.profile_id == ^profile_id,
+        select: s
+
+    case Repo.one(server_query) do
+      nil ->
+        {:error, "Server not found or you are the owner"}
+
+      server ->
+        case Repo.delete_all(
+               from m in Member,
+                 where: m.server_id == ^server.id and m.profile_id == ^profile_id
+             ) do
+          {count, _} when count > 0 -> {:ok, "Member removed successfully"}
+          _ -> {:error, "Failed to remove member"}
+        end
+    end
+  end
+
+
   # def get_server_data(server_id, profile_id) do
   #   query =
   #     from s in Server,

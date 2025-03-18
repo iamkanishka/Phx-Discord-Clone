@@ -101,6 +101,18 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
+   @doc """
+  Retrieves all servers a user is a member of.
+
+  ## Parameters
+    - `user_id`: The ID of the user.
+
+  ## Returns
+    - `{:ok, servers}` if servers are found.
+    - `{:ok, :no_server_found}` if no servers exist for the user.
+    - `{:redirect, "/auth/sign_in"}` if authentication fails.
+  """
+
   def find_servers(user_id) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          servers <- get_servers_by_profile(profile.id) do

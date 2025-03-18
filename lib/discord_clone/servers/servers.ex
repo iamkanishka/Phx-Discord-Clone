@@ -55,6 +55,19 @@ defmodule DiscordClone.Servers.Servers do
     end)
   end
 
+
+    @doc """
+  Finds the first server the user is a member of and redirects to it.
+
+  ## Parameters
+    - `user_id`: The ID of the user.
+
+  ## Returns
+    - `{:redirect, "/servers/:server_id"}` if a server is found.
+    - `{:ok, :no_server_found}` if the user is not in any server.
+    - `{:redirect, "/auth/sign_in"}` if authentication fails.
+  """
+
   def find_and_redirect_to_server(user_id) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          server <- get_server_by_profile(profile.id) do

@@ -6,6 +6,21 @@ defmodule DiscordClone.Servers.Servers do
   alias DiscordClone.Channels.Channel
   alias DiscordClone.Members.Member
 
+
+
+   @doc """
+  Creates a new server with a default "general" channel and assigns the creator as an admin.
+
+  ## Parameters
+    - `profile_id`: The ID of the user creating the server.
+    - `image_url`: The URL of the server's image.
+    - `name`: The name of the server.
+
+  ## Returns
+    - `{:ok, server}` on successful creation.
+    - If any operation fails, the transaction is rolled back.
+  """
+
   def create_server(profile_id, image_url, name) do
     Repo.transaction(fn ->
       {:ok, server} =

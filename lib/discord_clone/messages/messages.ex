@@ -2,8 +2,7 @@ defmodule DiscordClone.Messages.Messages do
   import Ecto.Query, warn: false
   alias DiscordClone.Repo
   alias DiscordClone.Messages.Message
-  alias DiscordClone.Members.Member
-  alias DiscordClone.Profiles.Profile
+
 
   # Adjust batch size as needed
   @messages_batch 20

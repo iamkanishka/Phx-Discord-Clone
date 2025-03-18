@@ -144,6 +144,20 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
+
+    @doc """
+  Retrieves sidebar data for a specific server.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `user_id`: The ID of the user.
+
+  ## Returns
+    - `{:ok, server_data}` if the server data is found.
+    - `{:redirect, "/auth/sign_in"}` if authentication fails.
+    - `{:error, changeset}` if an error occurs.
+  """
+
   def find_and_redirect_to_server_sidebar_data(server_id, user_id) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          server_data <- get_server_data(server_id, profile.id) do

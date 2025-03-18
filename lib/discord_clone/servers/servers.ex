@@ -234,6 +234,37 @@ defmodule DiscordClone.Servers.Servers do
     end
   end
 
+
+    @doc """
+  Updates a server's name and image URL.
+
+  ## Parameters
+    - `server_id`: The ID of the server to update.
+    - `profile_id`: The ID of the profile requesting the update (must be the owner).
+    - `attrs`: A map containing `:name` and `:image_url` for updating the server.
+
+  ## Returns
+    - `{:ok, updated_server}` on success.
+    - `{:error, "Server not found or unauthorized"}` if the server is not found or the user lacks permission.
+    - `{:error, reason}` if the update fails.
+  """
+  def update_server(server_id, profile_id, %{name: name, image_url: image_url}) do
+    case Repo.get_by(Server, id: server_id, profile_id: profile_id) do
+      nil ->
+        {:error, "Server not found or unauthorized"}
+
+      server ->
+        server
+        |> Server.changeset(%{name: name, image_url: image_url})
+        |> Repo.update()
+        |> case do
+          {:ok, updated_server} -> {:ok, updated_server}
+          {:error, changeset} -> {:error, "Failed to update server: #{inspect(changeset.errors)}"}
+        end
+    end
+  end
+
+
   # def get_server_data(server_id, profile_id) do
   #   query =
   #     from s in Server,

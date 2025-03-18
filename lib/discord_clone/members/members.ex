@@ -49,4 +49,56 @@ defmodule DiscordClone.Members.Members do
     end
   end
 
+
+
+   @doc """
+  Updates a member's role in a server if the requesting user is the owner.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the server owner making the request.
+    - `member_id`: The ID of the member whose role is being updated.
+    - `role`: The new role to assign.
+
+  ## Returns
+    - `{:ok, updated_server_members}` if the role is successfully updated.
+    - `{:error, reason}` if the operation fails.
+  """
+  def update_member_role(server_id, profile_id, member_id, role) do
+    # Ensure the requester is the server owner
+    server_query =
+      from s in Server,
+        where: s.id == ^server_id and s.profile_id == ^profile_id,
+        select: s
+
+    case Repo.one(server_query) do
+      nil ->
+        {:error, "Unauthorized or server not found"}
+
+      _server ->
+        # Update the specified member's role, ensuring they are not the owner
+        update_query =
+          from m in Member,
+            where:
+              m.id == ^member_id and m.profile_id != ^profile_id and m.server_id == ^server_id
+
+        case Repo.update_all(update_query, set: [role: role]) do
+          {count, _} when count > 0 ->
+            # Fetch the updated members list after role update
+            updated_members =
+              Repo.all(
+                from m in Member,
+                  where: m.server_id == ^server_id,
+                  order_by: [asc: m.role],
+                  preload: [:profile]
+              )
+
+            {:ok, updated_members}
+
+          _ ->
+            {:error, "Member not found or cannot be updated"}
+        end
+    end
+  end
+
 end

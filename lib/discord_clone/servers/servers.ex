@@ -176,6 +176,24 @@ defmodule DiscordClone.Servers.Servers do
     end
   end
 
+    @doc """
+  Fetches detailed server data including channels, members, and user role.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the user.
+
+  ## Returns
+    - A map containing:
+      - `server`: The full server struct.
+      - `text_channels`: A list of text channels.
+      - `audio_channels`: A list of audio channels.
+      - `video_channels`: A list of video channels.
+      - `members`: A list of server members excluding the user.
+      - `role`: The role of the user in the server.
+    - `{:error, :not_found}` if the server does not exist.
+  """
+
   def get_server_data(server_id, profile_id) do
     server =
       Repo.get(Server, server_id)

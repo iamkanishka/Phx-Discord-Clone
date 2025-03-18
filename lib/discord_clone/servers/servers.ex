@@ -295,6 +295,32 @@ defmodule DiscordClone.Servers.Servers do
 
 
 
+    @doc """
+  Deletes a server, but only if the requesting profile is the owner.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the profile requesting the deletion (must be the owner).
+
+  ## Returns
+    - `{:ok, "Server deleted successfully"}` on success.
+    - `{:error, "Server not found or unauthorized"}` if the server is not found or the user lacks permission.
+    - `{:error, reason}` if the deletion fails.
+  """
+  def delete_server(server_id, profile_id) do
+    case Repo.get_by(Server, id: server_id, profile_id: profile_id) do
+      nil ->
+        {:error, "Server not found or unauthorized"}
+
+      server ->
+        case Repo.delete(server) do
+          {:ok, _} -> {:ok, "Server deleted successfully"}
+          {:error, reason} -> {:error, "Failed to delete server: #{inspect(reason)}"}
+        end
+    end
+  end
+
+
   # def get_server_data(server_id, profile_id) do
   #   query =
   #     from s in Server,

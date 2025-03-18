@@ -265,6 +265,36 @@ defmodule DiscordClone.Servers.Servers do
   end
 
 
+    @doc """
+  Generates a new invite code for a server.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the profile requesting the update (must be the owner).
+
+  ## Returns
+    - `{:ok, updated_server}` on success.
+    - `{:error, "Server not found or unauthorized"}` if the server is not found or the user lacks permission.
+    - `{:error, reason}` if the update fails.
+  """
+  def update_server_invite_code(server_id, profile_id) do
+    case Repo.get_by(Server, id: server_id, profile_id: profile_id) do
+      nil ->
+        {:error, "Server not found or unauthorized"}
+
+      server ->
+        server
+        |> Server.changeset(%{invite_code: Ecto.UUID.generate()})
+        |> Repo.update()
+        |> case do
+          {:ok, updated_server} -> {:ok, updated_server}
+          {:error, changeset} -> {:error, "Failed to update server invite code: #{inspect(changeset.errors)}"}
+        end
+    end
+  end
+
+
+
   # def get_server_data(server_id, profile_id) do
   #   query =
   #     from s in Server,

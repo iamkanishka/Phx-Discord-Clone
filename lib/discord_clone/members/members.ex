@@ -1,3 +1,52 @@
 defmodule DiscordClone.Members.Members do
   import Ecto.Query, warn: false
+  @doc """
+  Removes a member from a server if the requesting user is the owner.
+
+  ## Parameters
+    - `server_id`: The ID of the server.
+    - `profile_id`: The ID of the server owner making the request.
+    - `member_id`: The ID of the member to be removed.
+
+  ## Returns
+    - `{:ok, updated_server_members}` if the member is successfully removed.
+    - `{:error, reason}` if the operation fails.
+  """
+  def remove_member(server_id, profile_id, member_id) do
+    # Ensure the requester is the server owner
+    server_query =
+      from s in Server,
+        where: s.id == ^server_id and s.profile_id == ^profile_id,
+        select: s
+
+    case Repo.one(server_query) do
+      nil ->
+        {:error, "Unauthorized or server not found"}
+
+      _server ->
+        # Delete the specified member, ensuring they are not the owner
+        delete_query =
+          from m in Member,
+            where:
+              m.id == ^member_id and m.profile_id != ^profile_id and m.server_id == ^server_id
+
+        {count, _} = Repo.delete_all(delete_query)
+
+        if count > 0 do
+          # Fetch the updated members list after deletion
+          updated_members =
+            Repo.all(
+              from m in Member,
+                where: m.server_id == ^server_id,
+                order_by: [asc: m.role],
+                preload: [:profile]
+            )
+
+          {:ok, updated_members}
+        else
+          {:error, "Member not found or cannot be removed"}
+        end
+    end
+  end
+
 end

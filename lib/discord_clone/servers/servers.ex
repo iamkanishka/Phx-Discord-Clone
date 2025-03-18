@@ -81,6 +81,17 @@ defmodule DiscordClone.Servers.Servers do
     end
   end
 
+
+    @doc """
+  Fetches the first server the user is a member of.
+
+  ## Parameters
+    - `profile_id`: The ID of the profile.
+
+  ## Returns
+    - The first `Server` found or `nil` if none exist.
+  """
+
   defp get_server_by_profile(profile_id) do
     Repo.one(
       from s in Server,

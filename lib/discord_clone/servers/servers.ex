@@ -127,6 +127,15 @@ defmodule DiscordClone.Servers.Servers do
     end
   end
 
+    @doc """
+  Fetches all servers a user is a member of.
+
+  ## Parameters
+    - `profile_id`: The ID of the profile.
+
+  ## Returns
+    - A list of `Server` structs.
+  """
   defp get_servers_by_profile(profile_id) do
     Repo.all(
       from s in Server,

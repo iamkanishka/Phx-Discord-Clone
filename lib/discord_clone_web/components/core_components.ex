@@ -226,13 +226,17 @@ defmodule DiscordCloneWeb.CoreComponents do
 
   slot :inner_block, required: true
 
+  # class={[
+  #   "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
+  #   "text-sm font-semibold leading-6 text-white active:text-white/80",
+  #   @class
+  # ]}
+
   def button(assigns) do
     ~H"""
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
       ]}
       {@rest}

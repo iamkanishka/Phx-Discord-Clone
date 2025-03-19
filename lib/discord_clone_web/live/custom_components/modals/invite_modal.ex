@@ -63,4 +63,16 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   end
 
 
+  defp generate_invite_code(socket, server_id, profile_id) do
+    case Servers.update_server_invite_code(server_id, profile_id) do
+      {:ok, updated_server} ->
+        socket |> assign_invite_link(updated_server.invite_code)
+
+      {:error, message} ->
+        IO.puts("Error updating invite code: #{message}")
+        socket
+    end
+  end
+
+
 end

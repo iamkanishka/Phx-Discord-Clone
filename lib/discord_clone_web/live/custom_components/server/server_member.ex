@@ -26,4 +26,23 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerMember do
   end
 
 
+
+  @impl true
+  def update(assigns, socket) do
+
+    role_icon_map = %{
+      :GUEST => nil,
+      :MODERATOR => %{name: "shield-check", class: "h-4 w-4 ml-2 text-indigo-500"},
+      :ADMIN => %{name: "shield-alert", class: "h-4 w-4 ml-2 text-rose-500"}
+    }
+
+    icon = Map.get(role_icon_map, assigns.member.role, nil)
+     {:ok, socket |> assign(assigns) |> assign(icon: icon) |> assign(:member_id, "")}
+  end
+
+  @impl true
+  def handle_event("on_member_click", _unsigned_params, socket) do
+     {:noreply, socket |>   push_navigate( to: "/servers/#{socket.assigns.server.server.id}/conversation/#{socket.assigns.member.id}", replace: true)}
+  end
+
 end

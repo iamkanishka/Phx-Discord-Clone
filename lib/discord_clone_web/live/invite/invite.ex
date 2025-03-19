@@ -31,6 +31,26 @@ defmodule DiscordCloneWeb.Invite.Invite do
   end
 
 
+
+  def join_server(socket, invite_code, user_id) do
+
+    IO.inspect(invite_code)
+    IO.inspect( user_id)
+    socket = socket |> assign(:invite_joining_status, true)
+
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         _ <- join_by_invite(socket, invite_code, profile.id) do
+     socket |> assign(:invite_joining_status, false)
+    else
+      # {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      # {:error, changeset} -> {:error, changeset}
+      {:error, error} ->
+        IO.inspect(error)
+         socket |> assign(:invite_joining_status, false)
+    end
+  end
+
+
   def join_by_invite(socket, invite_code, profile_id) do
     # Assuming profile_id is stored in session
     # profile_id = get_session(conn, :profile_id)

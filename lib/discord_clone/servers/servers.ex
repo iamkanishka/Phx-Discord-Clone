@@ -202,7 +202,7 @@ defmodule DiscordClone.Servers.Servers do
         members:
           from(m in Member,
             order_by: [asc: m.role],
-            preload: [:profile]
+            preload: [profile: [:user]] # Preload the user inside profile
           )
       ])
 

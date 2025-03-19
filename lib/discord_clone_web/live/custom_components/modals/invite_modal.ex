@@ -93,6 +93,11 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
 
 
 
+  defp assign_invite_link(socket, invite_code) do
+    socket
+    |> assign(:invite_url, "#{DiscordCloneWeb.Endpoint.url()}/invite/#{invite_code}")
+  end
+
 
 
 end

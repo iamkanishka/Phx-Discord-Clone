@@ -29,4 +29,29 @@ defmodule DiscordCloneWeb.Invite.Invite do
   def mount(params, session, socket) do
     {:ok, socket}
   end
+
+
+  def join_by_invite(socket, invite_code, profile_id) do
+    # Assuming profile_id is stored in session
+    # profile_id = get_session(conn, :profile_id)
+    case Invites.join_server_by_invite(invite_code, profile_id) do
+      {:ok, server_id} ->
+        {:noreply,
+         socket
+         |> push_navigate(to: "/servers/#{server_id}", replace: true)}
+
+      {:error, :server_not_found} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Invalid invite code.")
+         |> push_navigate(to: "//initial-setup/#{profile_id}", replace: true)}
+
+      {:error, _} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Invalid invite code.")
+         |> push_navigate(to: "/auth/sign-in", replace: true)}
+    end
+  end
+
 end

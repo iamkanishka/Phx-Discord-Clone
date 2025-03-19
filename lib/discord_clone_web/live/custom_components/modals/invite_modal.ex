@@ -16,8 +16,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
         </.label>
 
         <div class="flex items-center mt-2  gap-x-2">
-          <div  class=" flex-1 bg-zinc-300/50 border-0 focus-visible:ring-0 text-black text-sm focus-visible:ring-offset-0 p-3 rounded-lg"
-          >
+          <div class=" flex-1 bg-zinc-300/50 border-0 focus-visible:ring-0 text-black text-sm focus-visible:ring-offset-0 p-3 rounded-lg">
             {@invite_url}
           </div>
 
@@ -62,6 +61,13 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
      |> assign(assigns)}
   end
 
+  @impl true
+  def handle_event("generate-invite-link", unsigned_params, socket) do
+    {:noreply,
+     socket
+     |> assign(:invite_link_generation_status, true)
+     |> generate_invite_code(socket.assigns.server.id, socket.assigns.server.profile_id)}
+  end
 
   @impl true
   def handle_event("copy-invite-link", _unsigned_params, socket) do
@@ -79,7 +85,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
     {:noreply, assign(socket, :copied, false)}
   end
 
-
   defp generate_invite_code(socket, server_id, profile_id) do
     case Servers.update_server_invite_code(server_id, profile_id) do
       {:ok, updated_server} ->
@@ -91,13 +96,8 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
     end
   end
 
-
-
   defp assign_invite_link(socket, invite_code) do
     socket
     |> assign(:invite_url, "#{DiscordCloneWeb.Endpoint.url()}/invite/#{invite_code}")
   end
-
-
-
 end

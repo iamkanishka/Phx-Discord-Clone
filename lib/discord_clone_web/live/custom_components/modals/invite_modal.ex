@@ -63,6 +63,23 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   end
 
 
+  @impl true
+  def handle_event("copy-invite-link", _unsigned_params, socket) do
+    # Set `copied` to `false` initially
+    socket = assign(socket, :copied, true)
+
+    # Schedule a message to update `copied` to `true` after 5 seconds
+    Process.send_after(self(), :set_copied_true, 5000)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:set_copied_true, socket) do
+    {:noreply, assign(socket, :copied, false)}
+  end
+
+
   defp generate_invite_code(socket, server_id, profile_id) do
     case Servers.update_server_invite_code(server_id, profile_id) do
       {:ok, updated_server} ->
@@ -73,6 +90,9 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
         socket
     end
   end
+
+
+
 
 
 end

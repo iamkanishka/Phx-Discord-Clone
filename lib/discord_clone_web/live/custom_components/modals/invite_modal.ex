@@ -1,4 +1,5 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
+  alias DiscordClone.Servers.Servers
   use DiscordCloneWeb, :live_component
 
   @impl true
@@ -15,14 +16,19 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
         </.label>
 
         <div class="flex items-center mt-2  gap-x-2">
-          <div
-            cla
-            class=" flex-1 bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 p-3 rounded-lg"
+          <div  class=" flex-1 bg-zinc-300/50 border-0 focus-visible:ring-0 text-black text-sm focus-visible:ring-offset-0 p-3 rounded-lg"
           >
             {@invite_url}
           </div>
 
-          <.button disabled={@is_loading} phx.click="copy" phx-target={@myself} size="icon">
+          <.button
+            disabled={@invite_link_generation_status}
+            phx-click="copy-invite-link"
+            phx-hook="ClipboardCopy"
+            data-clipboard={@invite_url}
+            phx-target={@myself}
+            size="icon"
+          >
             <%= if @copied  do %>
               <.icon name="hero-check" class="w-4 h-4" />
             <% else %>
@@ -32,12 +38,12 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
         </div>
 
         <.button
-          phx-click="generate"
+          phx-click="generate-invite-link"
           phx-target={@myself}
-          disabled={@is_loading}
+          phx-disable-with="Generating..."
           class="text-md text-white mt-4 link btn-sm"
         >
-          Generate a new link <.icon name="hero-arrow-path" class="w-4 h-4 ml-2" />
+          Generate a new link
         </.button>
       </div>
     </div>
@@ -50,18 +56,11 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
     {:ok,
      socket
      |> assign(:is_loading, false)
-     |> assign(:invite_url, ~c"hhtps://www.google.com")
+     |> assign_invite_link(assigns.server.invite_code)
      |> assign(:copied, false)
+     |> assign(:invite_link_generation_status, false)
      |> assign(assigns)}
   end
 
-  @impl true
-  def handle_event("generate", unsigned_params, socket) do
-    {:noreply, socket}
-  end
 
-  @impl true
-  def handle_event("copy", unsigned_params, socket) do
-    {:noreply, socket}
-  end
 end

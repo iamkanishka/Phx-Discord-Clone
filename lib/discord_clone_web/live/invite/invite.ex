@@ -1,10 +1,13 @@
 defmodule DiscordCloneWeb.Invite.Invite do
+  alias DiscordClone.Profiles.Profiles
+  alias DiscordClone.Invites.Invites
+
   use DiscordCloneWeb, :live_view
 
   @impl true
   def render(assigns) do
     ~H"""
-     <.modal id="invite-modal" show on_cancel={JS.patch(~p"/")}>
+    <.modal id="invite-modal" show on_cancel={JS.patch(~p"/")}>
       <div class="flex justify-center items-center w-full h-48">
         <div class="relative">
           <!-- Image -->
@@ -27,29 +30,30 @@ defmodule DiscordCloneWeb.Invite.Invite do
 
   @impl true
   def mount(params, session, socket) do
-    {:ok, socket}
+    IO.inspect(params)
+
+    {:ok,
+     socket
+     |> assign(:invite_joining_status, false)
+     |> join_server(params["invite_id"], session["current_user"].id)}
   end
 
-
-
   def join_server(socket, invite_code, user_id) do
-
     IO.inspect(invite_code)
-    IO.inspect( user_id)
+    IO.inspect(user_id)
     socket = socket |> assign(:invite_joining_status, true)
 
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          _ <- join_by_invite(socket, invite_code, profile.id) do
-     socket |> assign(:invite_joining_status, false)
+      socket |> assign(:invite_joining_status, false)
     else
       # {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
       # {:error, changeset} -> {:error, changeset}
       {:error, error} ->
         IO.inspect(error)
-         socket |> assign(:invite_joining_status, false)
+        socket |> assign(:invite_joining_status, false)
     end
   end
-
 
   def join_by_invite(socket, invite_code, profile_id) do
     # Assuming profile_id is stored in session
@@ -73,5 +77,4 @@ defmodule DiscordCloneWeb.Invite.Invite do
          |> push_navigate(to: "/auth/sign-in", replace: true)}
     end
   end
-
 end

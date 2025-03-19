@@ -11,12 +11,12 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
         </.header>
 
         <div class="text-center text-zinc-500">
-          {@server?.members?.length} Members
+          {length(@server.members)} Members
         </div>
       </div>
 
       <.scroll_area class="mt-8 max-h-[420px] pr-6">
-        <%= for {member, index} <- Enum.with_index(@server?.members)do %>
+        <%= for {member, index} <- Enum.with_index(@server.members)do %>
           <div class="flex items-center gap-x-2 mb-6">
             <img src={member.profile.image_url} class="w-8 h-8 rounded-full" />
             <div class="flex flex-col gap-y-1">
@@ -90,14 +90,16 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket|> assign(assigns) |>  assign(:loading_id, "")}
   end
 
+  @impl true
   def handle_event("change_role", %{"id" => id, "role" => role}, socket) do
     # Handle role change logic here
     {:noreply, socket}
   end
 
+  @impl true
   def handle_event("kick_member", %{"id" => id}, socket) do
     # Handle kick logic here
     {:noreply, socket}

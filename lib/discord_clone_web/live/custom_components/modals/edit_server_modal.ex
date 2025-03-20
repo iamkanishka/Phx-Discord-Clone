@@ -33,9 +33,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         class="space-y-8"
       >
         <div class="space-y-8 px-6">
-          <div class="flex items-center justify-center text-center">
-            <.input field={@form[:server_image]} type="file" label="Server Image" />
-          </div>
+
 
           <.input
             field={@form[:server_name]}
@@ -46,11 +44,14 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
           />
         </div>
 
-        <:actions>
-
-            <.button phx-disable-with="Updating..." >Update</.button>
-
-        </:actions>
+        <div class="flex flex-row justify-center items-center">
+          <.button
+            class="phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+            phx-disable-with="Updating..."
+          >
+            Update
+          </.button>
+        </div>
       </.simple_form>
     </div>
     """

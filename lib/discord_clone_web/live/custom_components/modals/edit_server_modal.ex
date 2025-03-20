@@ -142,4 +142,43 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
      |> assign(:is_loading, false)}
   end
 
+
+  defp upload_file(socket) do
+    try do
+      Storage.create_file(
+        get_bucket_id(),
+        nil,
+        socket.assigns.value,
+        nil
+      )
+    catch
+      error -> IO.inspect(error)
+    end
+  end
+
+  defp create_profile_image_url(file_id) do
+    "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{file_id}/view?project=#{get_project_id()}&mode=admin"
+  end
+
+  defp get_bucket_id() do
+    case Application.get_env(:appwrite, :bucket_id) do
+      nil ->
+        raise MissingBucketIdError
+
+      bucket_id ->
+        bucket_id
+    end
+  end
+
+  defp get_project_id() do
+    case Application.get_env(:appwrite, :project_id) do
+      nil ->
+        raise Appwrite.MissingProjectIdError
+
+      project_id ->
+        project_id
+    end
+  end
+
+
 end

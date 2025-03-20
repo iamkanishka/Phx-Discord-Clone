@@ -39,6 +39,7 @@ defmodule DiscordCloneWeb.Servers.Server do
           module={@selected_modal.module}
           id={"#{@selected_modal.id}"}
           server={@server}
+          value={if @selected_modal.id == "edit_server", do: @file_content, else: %{}}
         />
       </.modal>
     <% end %>
@@ -52,6 +53,7 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign(:server_id, params["server_id"])
      |> assign(:selected_modal, nil)
      |> assign_user_id(session)
+     |> init_file_content()
      |> assign_user_profile_image(session)}
   end
 
@@ -67,12 +69,45 @@ defmodule DiscordCloneWeb.Servers.Server do
   def handle_info({:open_modal, {selected_option, server}}, socket) do
     # Send to another LiveView or component if needed
     #  send(self(), {:notify_layout, selected_option})
-
-    IO.inspect(selected_option)
-
     {:noreply,
      socket
      |> assign(:selected_modal, selected_option)
      |> assign(:server, server)}
   end
+
+  defp init_file_content(socket) do
+    assign(socket, :file_content, %{
+      "name" => "",
+      "size" => "",
+      "type" => "",
+      "data" => "",
+      "extras" => "",
+      "lastModified" => ""
+    })
+  end
+
+
+  @impl true
+  def handle_event(
+        "file_selected",
+        %{
+          "name" => name,
+          "size" => size,
+          "type" => type,
+          "content" => base64_content,
+          "extras" => extras
+        },
+        socket
+      ) do
+    {:noreply,
+     assign(socket, :file_content, %{
+       "name" => name,
+       "size" => size,
+       "type" => type,
+       "data" => base64_content,
+       "extras" => extras,
+       "lastModified" => DateTime.utc_now()
+     })}
+  end
+
 end

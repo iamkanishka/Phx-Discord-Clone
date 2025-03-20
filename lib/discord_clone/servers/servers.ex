@@ -56,6 +56,30 @@ defmodule DiscordClone.Servers.Servers do
   end
 
 
+
+# Creates a new server for the given user and redirects to it if successful.
+# If the user is not authenticated, redirects to the sign-in page.
+# If the server creation fails, returns an error or indicates no server was found.
+def create_and_redirect_to_server(user_id, image_url, name) do
+  # Attempt to get the initial profile for the given user
+  with {:ok, profile} <- Profiles.initial_profile(user_id),
+       # Attempt to create a new server associated with the profile
+       server <- create_server(profile.id, image_url, name) do
+    case server do
+      # If the server creation fails and returns nil, indicate no server was found
+      nil -> {:ok, :no_server_found}
+      # If a server is successfully created, redirect to the server's page
+      %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+    end
+  else
+    # Handle authentication failure by redirecting to the sign-in page
+    {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+    # Handle any other errors (e.g., validation issues) by returning the changeset
+    {:error, changeset} -> {:error, changeset}
+  end
+end
+
+
     @doc """
   Finds the first server the user is a member of and redirects to it.
 

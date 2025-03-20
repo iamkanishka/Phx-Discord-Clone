@@ -93,6 +93,12 @@ defmodule DiscordCloneWeb.CustomComponents.Shared.FileUpload do
   @impl true
   def update(assigns, socket) do
    file_type = if String.contains?(assigns.value["extras"], "image"), do: "img", else: "pdf"
+
+   file_data =
+    if String.contains?(assigns.value["extras"], "data"),
+      do: "#{assigns.value["extras"]},#{assigns.value["data"]}"  ,
+      else: assigns.value["data"]
+
    {:ok,
      socket
      |> assign(assigns)

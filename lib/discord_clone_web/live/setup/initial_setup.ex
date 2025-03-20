@@ -1,7 +1,6 @@
 defmodule DiscordCloneWeb.Setup.InitialSetup do
-alias DiscordClone.Servers.Servers
+  alias DiscordClone.Servers.Servers
   use DiscordCloneWeb, :live_view
-
 
   @impl true
   def render(assigns) do
@@ -39,7 +38,6 @@ alias DiscordClone.Servers.Servers
      |> assign_user_id(session)
      |> init_fie_content}
   end
-
 
   @impl true
   def handle_event(

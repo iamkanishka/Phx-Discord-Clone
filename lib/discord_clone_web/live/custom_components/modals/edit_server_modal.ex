@@ -14,6 +14,16 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         </:subtitle>
       </.header>
 
+
+      <div class="py-8 ">
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
+          id={:profile_image_upload}
+          value={@value}
+          is_loading={@is_loading}
+        />
+      </div>
+
       <.simple_form
         for={@form}
         id="product-form"

@@ -26,7 +26,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
             phx-hook="ClipboardCopy"
             data-clipboard={@invite_url}
             phx-target={@myself}
-            size="icon"
+            class=" btn-sm text-white bg-gray-800 hover:bg-gray-900  font-medium rounded-lg text-md px-2 py-2   dark:bg-gray-800 dark:hover:bg-gray-700 "
           >
             <%= if @copied  do %>
               <.icon name="hero-check" class="w-4 h-4" />
@@ -40,7 +40,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
           phx-click="generate-invite-link"
           phx-target={@myself}
           phx-disable-with="Generating..."
-          class="text-md text-white mt-4 link btn-sm"
+          class=" mt-4 link btn-sm text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
         >
           Generate a new link
         </.button>
@@ -70,20 +70,21 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InviteModal do
   end
 
   @impl true
-  def handle_event("copy-invite-link", _unsigned_params, socket) do
-    # Set `copied` to `false` initially
+  def handle_event("copy-invite-link", _params, socket) do
     socket = assign(socket, :copied, true)
 
-    # Schedule a message to update `copied` to `true` after 5 seconds
-    Process.send_after(self(), :set_copied_true, 5000)
+    # Schedule an update after 5 seconds
+    # Process.send_after(self(), :reset_copied, 5000)
 
     {:noreply, socket}
   end
 
   @impl true
-  def handle_info(:set_copied_true, socket) do
-    {:noreply, assign(socket, :copied, false)}
+  def handle_info(:reset_copied, socket) do
+    send_update(__MODULE__, id: socket.assigns.id, copied: false)
+    {:noreply, socket}
   end
+
 
   defp generate_invite_code(socket, server_id, profile_id) do
     case Servers.update_server_invite_code(server_id, profile_id) do

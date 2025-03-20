@@ -31,7 +31,7 @@ defmodule DiscordCloneWeb.Router do
 
     get "/", PageController, :home
     live "/invite/:invite_id", Invite.Invite, :show
-    live "/initial-setup/:user_id", Setup.InitialSetup, :show
+    live "/initial-setup", Setup.InitialSetup, :show
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Servers.Server, :server_channel
     live "/servers/:server_id/conversation/:member_id",Servers.Server, :server_channel_conversation

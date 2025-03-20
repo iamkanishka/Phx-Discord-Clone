@@ -68,11 +68,27 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
        "lastModified" => ""
      })
      |> assign(:is_loading, false)
-     |> assign_form()}
+     |> assign_form()
+     |> assign_image_data()}
   end
 
   defp assign_form(socket) do
     form = Phoenix.HTML.FormData.to_form(%{}, as: :form)
     assign(socket, %{form: form})
   end
+
+  def assign_image_data(socket) do
+    if socket.assigns.value["data"] != "" do
+      assign(socket, :value, socket.assigns.value)
+    else
+      assign(socket, :value, %{"data" => socket.assigns.server.image_url, "extras" => "image"})
+    end
+  end
+
+  @impl true
+  def handle_event("validate", unsigned_params, socket) do
+    IO.inspect(unsigned_params)
+    {:noreply, socket}
+  end
+
 end

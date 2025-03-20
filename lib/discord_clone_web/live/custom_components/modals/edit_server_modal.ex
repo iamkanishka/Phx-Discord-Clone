@@ -14,7 +14,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         </:subtitle>
       </.header>
 
-
       <div class="py-8 ">
         <.live_component
           module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
@@ -33,8 +32,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         class="space-y-8"
       >
         <div class="space-y-8 px-6">
-
-
           <.input
             field={@form[:server_name]}
             type="text"
@@ -59,7 +56,19 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket |> assign(assigns) |> assign(:is_loading, false) |> assign_form()}
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:value, %{
+       "name" => "",
+       "size" => "",
+       "type" => "",
+       "data" => "",
+       "extras" => "",
+       "lastModified" => ""
+     })
+     |> assign(:is_loading, false)
+     |> assign_form()}
   end
 
   defp assign_form(socket) do

@@ -6,7 +6,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
     ~H"""
     <div>
       <button
-        id="dropdownDefaultButton"
+        id="serverheaderdropdownButton"
         data-dropdown-toggle="dropdown-menu"
         data-menu-id="server_header-dropdown-menu"
         class="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
@@ -23,7 +23,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
       >
         <ul
           class="py-2 text-base text-gray-700 dark:text-gray-200"
-          aria-labelledby="dropdownDefaultButton"
+          aria-labelledby="serverheaderdropdownButton"
         >
           <%= for {dropdown_option, index} <- Enum.with_index(@dropdown_options)do %>
             <li

@@ -91,4 +91,55 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
     {:noreply, socket}
   end
 
+
+  @impl true
+  def handle_event("save", %{"form" => params}, socket) do
+    socket = assign(socket, :is_loading, true)
+
+    socket =
+      if String.contains?(socket.assigns.value["extras"], "data") do
+        with {:ok, uploaded_file} <- upload_file(socket),
+             profile_image_url <- create_profile_image_url(uploaded_file["$id"]),
+             {:redirect, path} <-
+               Servers.update_and_redirect_to_server(
+                 socket.assigns.server.id,
+                 socket.assigns.server.profile_id,
+                 %{name: params["server_name"], image_url: profile_image_url}
+               ) do
+          socket
+          |> push_navigate(to: path, replace: true)
+        else
+          {:ok, :no_server_found} ->
+            IO.puts("No server found, show server creation UI")
+            socket
+
+          {:error, changeset} ->
+            IO.inspect(changeset, label: "Error creating profile")
+            socket
+        end
+      else
+        with {:redirect, path} <-
+               Servers.update_and_redirect_to_server(
+                 socket.assigns.server.id,
+                 socket.assigns.server.profile_id,
+                 %{name: params["server_name"], image_url: socket.assigns.value["data"]}
+               ) do
+          socket
+          |> push_navigate(to: path, replace: true)
+        else
+          {:ok, :no_server_found} ->
+            IO.puts("No server found, show server creation UI")
+            socket
+
+          {:error, changeset} ->
+            IO.inspect(changeset, label: "Error creating profile")
+            socket
+        end
+      end
+
+    {:noreply,
+     socket
+     |> assign(:is_loading, false)}
+  end
+
 end

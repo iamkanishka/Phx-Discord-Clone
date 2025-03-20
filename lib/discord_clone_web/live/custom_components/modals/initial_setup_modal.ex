@@ -20,7 +20,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
 
       <.live_component
         module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
-        id={:profile_image_upload}
+        id={:server_image_upload}
         value={@value}
         is_loading={@is_loading}
       />
@@ -79,11 +79,11 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
 
     socket =
       with {:ok, uploaded_file} <- upload_file(socket),
-           profile_image_url <- create_profile_image_url(uploaded_file["$id"]),
+           server_image_url <- create_server_image_url(uploaded_file["$id"]),
            {:redirect, path} <-
              Servers.create_and_redirect_to_server(
                socket.assigns.user_id,
-               profile_image_url,
+               server_image_url,
                params["server_name"]
              ) do
         socket
@@ -116,7 +116,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
     end
   end
 
-  defp create_profile_image_url(file_id) do
+  defp create_server_image_url(file_id) do
     "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{file_id}/view?project=#{get_project_id()}&mode=admin"
   end
 

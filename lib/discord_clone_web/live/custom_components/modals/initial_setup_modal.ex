@@ -1,7 +1,7 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
-  alias DiscordClone.Servers.Servers
-  alias DiscordClone.Profiles.Profiles
   use DiscordCloneWeb, :live_component
+  alias DiscordClone.Servers.Servers
+
   alias Appwrite.Services.Storage
 
   @impl true
@@ -77,21 +77,26 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
   def handle_event("save", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
 
-    case upload_file(socket) do
-      {:ok, uploaded_file} ->
-        profile_image_url =
-          "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{uploaded_file["$id"]}/view?project=#{get_project_id()}&mode=admin"
+    socket =
+      with {:ok, uploaded_file} <- upload_file(socket),
+           profile_image_url <- create_profile_image_url(uploaded_file["$id"]),
+           {:redirect, path} <-
+             Servers.create_and_redirect_to_server(
+               socket.assigns.user_id,
+               profile_image_url,
+               params["server_name"]
+             ) do
+        socket
+        |> push_navigate(to: path, replace: true)
+      else
+        {:ok, :no_server_found} ->
+          IO.puts("No server found, show server creation UI")
+          socket
 
-      case Profiles.initial_profile(socket.assigns.user_id) do
-          {:ok, created_profile} ->
-            Servers.create_server(created_profile.id, profile_image_url, params["server_name"])
-
-          {:error, %Ecto.Changeset{} = changeset} ->
-            # Handle the error properly, e.g., log or send back an error message
-            IO.inspect(changeset, label: "Profile creation failed")
-            {:error, changeset}
-        end
-    end
+        {:error, changeset} ->
+          IO.inspect(changeset, label: "Error creating profile")
+          socket
+      end
 
     {:noreply,
      socket
@@ -109,6 +114,10 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal do
     catch
       error -> IO.inspect(error)
     end
+  end
+
+  defp create_profile_image_url(file_id) do
+    "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{file_id}/view?project=#{get_project_id()}&mode=admin"
   end
 
   defp get_bucket_id() do

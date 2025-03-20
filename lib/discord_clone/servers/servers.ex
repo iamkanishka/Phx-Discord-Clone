@@ -80,6 +80,27 @@ def create_and_redirect_to_server(user_id, image_url, name) do
 end
 
 
+# Updates the server with the given ID and redirects to it if successful.
+# If the server is not found or unauthorized, returns an error.
+# If the update fails, returns an error with the reason.
+def update_and_redirect_to_server(server_id, profile_id, %{name: name, image_url: image_url}) do
+  with {:ok, updated_server} <- update_server(server_id, profile_id, %{name: name, image_url: image_url}) do
+    case updated_server do
+      # If the server creation fails and returns nil, indicate no server was found
+      nil -> {:ok, :no_server_found}
+      # If a server is successfully created, redirect to the server's page
+      %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+    end
+  else
+        # Handle authentication failure by redirecting to the sign-in page
+        {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+        # Handle any other errors (e.g., validation issues) by returning the changeset
+        {:error, changeset} -> {:error, changeset}
+  end
+end
+
+
+
     @doc """
   Finds the first server the user is a member of and redirects to it.
 

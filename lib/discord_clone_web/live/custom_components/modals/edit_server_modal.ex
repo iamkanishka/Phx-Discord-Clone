@@ -1,5 +1,7 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
+  alias DiscordClone.Servers.Servers
   use DiscordCloneWeb, :live_component
+  alias Appwrite.Services.Storage
 
   @impl true
   def render(assigns) do
@@ -17,7 +19,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
       <div class="py-8 ">
         <.live_component
           module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
-          id={:profile_image_upload}
+          id={:server_image_upload}
           value={@value}
           is_loading={@is_loading}
         />
@@ -28,7 +30,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         id="product-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save"
+        phx-submit="update_server"
         class="space-y-8"
       >
         <div class="space-y-8 px-6">
@@ -58,7 +60,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
   def update(assigns, socket) do
     {:ok,
      socket
-     |> assign(assigns)
      |> assign(:value, %{
        "name" => "",
        "size" => "",
@@ -67,13 +68,16 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
        "extras" => "",
        "lastModified" => ""
      })
+     |> assign(assigns)
      |> assign(:is_loading, false)
      |> assign_form()
      |> assign_image_data()}
   end
 
   defp assign_form(socket) do
-    form = Phoenix.HTML.FormData.to_form(%{}, as: :form)
+    # form_data = %{server_name: "Default Server Name"}
+    form_data = %{"server_name" => socket.assigns.server.name}
+    form = Phoenix.HTML.FormData.to_form(form_data, as: :form)
     assign(socket, %{form: form})
   end
 
@@ -91,20 +95,19 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
     {:noreply, socket}
   end
 
-
   @impl true
-  def handle_event("save", %{"form" => params}, socket) do
+  def handle_event("update_server", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
 
     socket =
       if String.contains?(socket.assigns.value["extras"], "data") do
         with {:ok, uploaded_file} <- upload_file(socket),
-             profile_image_url <- create_profile_image_url(uploaded_file["$id"]),
+             server_image_url <- create_server_image_url(uploaded_file["$id"]),
              {:redirect, path} <-
                Servers.update_and_redirect_to_server(
                  socket.assigns.server.id,
                  socket.assigns.server.profile_id,
-                 %{name: params["server_name"], image_url: profile_image_url}
+                 %{name: params["server_name"], image_url: server_image_url}
                ) do
           socket
           |> push_navigate(to: path, replace: true)
@@ -142,7 +145,6 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
      |> assign(:is_loading, false)}
   end
 
-
   defp upload_file(socket) do
     try do
       Storage.create_file(
@@ -156,7 +158,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
     end
   end
 
-  defp create_profile_image_url(file_id) do
+  defp create_server_image_url(file_id) do
     "https://cloud.appwrite.io/v1/storage/buckets/#{get_bucket_id()}/files/#{file_id}/view?project=#{get_project_id()}&mode=admin"
   end
 
@@ -179,6 +181,4 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.EditServerModal do
         project_id
     end
   end
-
-
 end

@@ -15,29 +15,36 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
         </div>
       </div>
 
-      <.scroll_area class="mt-8 max-h-[420px] pr-6">
+      <.scroll_area class="mt-8 max-h-[420px]  ">
         <%= for {member, index} <- Enum.with_index(@server.members)do %>
           <div class="flex items-center gap-x-2 mb-6">
-            <img src={member.profile.image_url} class="w-8 h-8 rounded-full" />
+            <img src={member.profile.user.image} class="w-8 h-8 rounded-full" />
             <div class="flex flex-col gap-y-1">
               <div class="text-xs font-semibold flex items-center gap-x-1">
-                {member.profile.name} <%!-- <%= role_icon(member.role) %> --%>
+                {member.profile.user.name} <%!-- <%= role_icon(member.role) %> --%>
               </div>
 
               <p class="text-xs text-zinc-500">
-                {member.profile.email}
+                {member.profile.user.email}
               </p>
             </div>
 
             <%= if @server.profile_id != member.profile_id and @loading_id != member.id do %>
-              <div class="ml-auto relative">
-                <button phx-click={"toggle-dropdown-#{member.id}"} class="text-zinc-500">
-                  <.icon name="hero-more-vertical" class="h-4 w-4" />
+              <div class="relative">
+                <button
+                  id="memberdropdownButton"
+                  data-dropdown-toggle="dropdown-menu"
+                  data-menu-id={"dropdown-#{member.id}"}
+                  class="text-zinc-500"
+                  phx-hook="DropdownToggle"
+                  type="button"
+                >
+                  <.icon name="hero-ellipsis-vertical" class="h-4 w-4" />
                 </button>
 
                 <div
                   id={"dropdown-#{member.id}"}
-                  class="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md hidden"
+                  class="z-[5000] absolute  top-5 right-15 hidden  bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px] dropdown-menu"
                 >
                   <div class="py-1">
                     <button
@@ -47,7 +54,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                     >
                       <.icon name="hero-shield" class="h-4 w-4 mr-2" /> Guest
-                      <%= if member.role == "GUEST" do %>
+                      <%= if member.role == :GUEST do %>
                         <.icon name="hero-check" class="h-4 w-4 ml-auto" />
                       <% end %>
                     </button>
@@ -59,7 +66,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
                     >
                       <.icon name="hero-shield-check" class="h-4 w-4 mr-2" /> Moderator
-                      <%= if member.role == "MODERATOR" do %>
+                      <%= if member.role == :MODERATOR do %>
                         <.icon name="hero-check" class="h-4 w-4 ml-auto" />
                       <% end %>
                     </button>
@@ -90,7 +97,7 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MembersModal do
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket|> assign(assigns) |>  assign(:loading_id, "")}
+    {:ok, socket |> assign(assigns) |> assign(:loading_id, "")}
   end
 
   @impl true

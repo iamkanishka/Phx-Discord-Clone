@@ -47,7 +47,7 @@ defmodule DiscordCloneWeb.Invite.Invite do
          _ <- join_by_invite(socket, invite_code, profile.id) do
       socket |> assign(:invite_joining_status, false)
     else
-      # {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      # {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
       # {:error, changeset} -> {:error, changeset}
       {:error, error} ->
         IO.inspect(error)

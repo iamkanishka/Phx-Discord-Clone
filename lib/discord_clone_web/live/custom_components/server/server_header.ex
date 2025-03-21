@@ -107,7 +107,7 @@ defmodule DiscordCloneWeb.CustomComponents.Server.ServerHeader do
         is_admin: is_admin,
         is_moderator: is_moderator,
         class: "text-rose-500 px-3 py-2 text-xs cursor-pointer",
-        icon: "arrow-right"
+        icon: "log-out"
       }
     ]
 

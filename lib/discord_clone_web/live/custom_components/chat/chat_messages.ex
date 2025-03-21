@@ -1,11 +1,6 @@
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
   use DiscordCloneWeb, :live_component
 
-
-
-
-
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -31,15 +26,12 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
     """
   end
 
-
   @impl true
   def update(assigns, socket) do
     {:ok, assign(socket, assigns)}
   end
 
-
   defp format_datetime(datetime) do
     Timex.format!(datetime, "%Y-%m-%d %H:%M:%S", :strftime)
   end
-
 end

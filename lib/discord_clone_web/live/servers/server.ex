@@ -39,7 +39,8 @@ defmodule DiscordCloneWeb.Servers.Server do
           module={@selected_modal.module}
           id={"#{@selected_modal.id}"}
           server={@server}
-          value={if @selected_modal.id == "edit_server", do: @file_content, else: %{}}
+          value={if @selected_modal.id == "edit_server" or  @selected_modal.id == "create_server", do: @file_content, else: %{}}
+          user_id={@user_id}
         />
       </.modal>
     <% end %>

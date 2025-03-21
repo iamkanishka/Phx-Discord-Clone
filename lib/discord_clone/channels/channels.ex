@@ -2,6 +2,7 @@ defmodule DiscordClone.Channels.Channels do
   import Ecto.Query, warn: false
 
   import Ecto.Query, warn: false
+  alias DiscordClone.Profiles.Profiles
   alias DiscordClone.Repo
   alias DiscordClone.Servers.Server
 
@@ -46,8 +47,7 @@ defmodule DiscordClone.Channels.Channels do
     end
   end
 
-
-   @doc """
+  @doc """
   Creates a new channel in a server if the requesting user has the necessary role (ADMIN or MODERATOR).
 
   ## Parameters
@@ -67,7 +67,7 @@ defmodule DiscordClone.Channels.Channels do
         join: m in assoc(s, :members),
         where:
           m.profile_id == ^profile_id and
-            m.role in ["ADMIN", "MODERATOR"],
+            m.role in [:ADMIN, :MODERATOR],
         select: s
 
     case Repo.one(server_query) do
@@ -86,5 +86,4 @@ defmodule DiscordClone.Channels.Channels do
         |> Repo.insert()
     end
   end
-
 end

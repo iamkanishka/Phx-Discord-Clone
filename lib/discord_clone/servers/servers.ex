@@ -97,6 +97,84 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
+
+
+
+
+  @doc """
+  Removes a member from a server, ensuring that:
+  - The server exists with the given `server_id`.
+  - The server does not belong to the given `profile_id`.
+  - The member exists in the server.
+  """
+  def leave_server(server_id, profile_id) do
+    IO.inspect(server_id, profile_id)
+    Repo.transaction(fn ->
+      # Ensure the server exists and does not belong to the given profile
+      case Repo.get_by(Server, id: server_id) do
+        nil -> {:error, :server_not_found}
+        server ->
+          server = Repo.preload(server, :members)
+
+          if server.profile_id == profile_id do
+            {:error, :cannot_remove_owner}
+          else
+            # Check if the member exists in the server
+            case Enum.find(server.members, &(&1.profile_id == profile_id)) do
+              nil -> {:error, :member_not_found}
+              _member ->
+                # Remove the member from the server
+                from(m in Member,
+                  where: m.server_id == ^server_id and m.profile_id == ^profile_id
+                )
+                |> Repo.delete_all()
+                {:ok, :member_removed}
+            end
+          end
+      end
+    end)
+  end
+
+
+
+
+
+
+  @doc """
+  Removes a member from a server, ensuring that:
+  - The server exists with the given `server_id`.
+  - The server does not belong to the given `profile_id`.
+  - The member exists in the server.
+  """
+  def leave_server(server_id, profile_id) do
+    Repo.transaction(fn ->
+      # Ensure the server exists and does not belong to the given profile
+      server =
+        Repo.get_by!(Server, id: server_id)
+        |> Repo.preload(:members)
+
+      if server.profile_id == profile_id do
+        {:error, :cannot_remove_owner}
+      else
+        # Check if the member exists in the server
+        case Enum.find(server.members, &(&1.profile_id == profile_id)) do
+          nil -> {:error, :member_not_found}
+          _member ->
+            # Remove the member from the server
+            from(m in Member,
+              where: m.server_id == ^server_id and m.profile_id == ^profile_id
+            )
+            |> Repo.delete_all()
+        end
+      end
+    end)
+  end
+
+
+
+
+
+
   # Updates the server with the given ID and redirects to it if successful.
   # If the server is not found or unauthorized, returns an error.
   # If the update fails, returns an error with the reason.

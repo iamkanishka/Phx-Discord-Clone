@@ -7,7 +7,7 @@ defmodule DiscordCloneWeb.Setup.InitialSetup do
     ~H"""
     <.modal id="initial-modal" show on_cancel={JS.patch(~p"/")}>
       <.live_component
-        module={DiscordCloneWeb.CustomComponents.Modals.InitialSetupModal}
+        module={DiscordCloneWeb.CustomComponents.Modals.CreateServerModal}
         id={:initial_setup_modal}
         value={@file_content}
         user_id={@user_id}

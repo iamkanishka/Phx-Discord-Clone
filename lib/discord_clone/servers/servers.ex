@@ -6,9 +6,7 @@ defmodule DiscordClone.Servers.Servers do
   alias DiscordClone.Channels.Channel
   alias DiscordClone.Members.Member
 
-
-
-   @doc """
+  @doc """
   Creates a new server with a default "general" channel and assigns the creator as an admin.
 
   ## Parameters
@@ -55,53 +53,71 @@ defmodule DiscordClone.Servers.Servers do
     end)
   end
 
-
-
-# Creates a new server for the given user and redirects to it if successful.
-# If the user is not authenticated, redirects to the sign-in page.
-# If the server creation fails, returns an error or indicates no server was found.
-def create_and_redirect_to_server(user_id, image_url, name) do
-  # Attempt to get the initial profile for the given user
-  with {:ok, profile} <- Profiles.initial_profile(user_id),
-       # Attempt to create a new server associated with the profile
-       server <- create_server(profile.id, image_url, name) do
-    case server do
-      # If the server creation fails and returns nil, indicate no server was found
-      nil -> {:ok, :no_server_found}
-      # If a server is successfully created, redirect to the server's page
-      %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+  # Creates a new server for the given user and redirects to it if successful.
+  # If the user is not authenticated, redirects to the sign-in page.
+  # If the server creation fails, returns an error or indicates no server was found.
+  def create_and_redirect_to_server(user_id, image_url, name) do
+    # Attempt to get the initial profile for the given user
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         # Attempt to create a new server associated with the profile
+         server <- create_server(profile.id, image_url, name) do
+      case server do
+        # If the server creation fails and returns nil, indicate no server was found
+        nil -> {:ok, :no_server_found}
+        # If a server is successfully created, redirect to the server's page
+        %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+      end
+    else
+      # Handle authentication failure by redirecting to the sign-in page
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
+      # Handle any other errors (e.g., validation issues) by returning the changeset
+      {:error, changeset} -> {:error, changeset}
     end
-  else
-    # Handle authentication failure by redirecting to the sign-in page
-    {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
-    # Handle any other errors (e.g., validation issues) by returning the changeset
-    {:error, changeset} -> {:error, changeset}
   end
-end
 
-
-# Updates the server with the given ID and redirects to it if successful.
-# If the server is not found or unauthorized, returns an error.
-# If the update fails, returns an error with the reason.
-def update_and_redirect_to_server(server_id, profile_id, %{name: name, image_url: image_url}) do
-  with {:ok, updated_server} <- update_server(server_id, profile_id, %{name: name, image_url: image_url}) do
-    case updated_server do
-      # If the server creation fails and returns nil, indicate no server was found
-      nil -> {:ok, :no_server_found}
-      # If a server is successfully created, redirect to the server's page
-      %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+  def delete_server_and_redirect(server_id, profile_id) do
+    with {:ok, _deleted_server} <- delete_server(server_id, profile_id),
+         next_server <- get_next_server(profile_id) do
+      case next_server do
+        nil -> {:redirect, "/auth/logout"}
+        %Server{id: new_server_id} -> {:redirect, "/servers/#{new_server_id}"}
+      end
+    else
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
+      {:error, changeset} -> {:error, changeset}
     end
-  else
-        # Handle authentication failure by redirecting to the sign-in page
-        {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
-        # Handle any other errors (e.g., validation issues) by returning the changeset
-        {:error, changeset} -> {:error, changeset}
   end
-end
 
+  defp get_next_server(profile_id) do
+    Repo.one(
+      from s in Server,
+        where: s.profile_id == ^profile_id,
+        limit: 1,
+        order_by: [desc: s.inserted_at]
+    )
+  end
 
+  # Updates the server with the given ID and redirects to it if successful.
+  # If the server is not found or unauthorized, returns an error.
+  # If the update fails, returns an error with the reason.
+  def update_and_redirect_to_server(server_id, profile_id, %{name: name, image_url: image_url}) do
+    with {:ok, updated_server} <-
+           update_server(server_id, profile_id, %{name: name, image_url: image_url}) do
+      case updated_server do
+        # If the server creation fails and returns nil, indicate no server was found
+        nil -> {:ok, :no_server_found}
+        # If a server is successfully created, redirect to the server's page
+        %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+      end
+    else
+      # Handle authentication failure by redirecting to the sign-in page
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
+      # Handle any other errors (e.g., validation issues) by returning the changeset
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
 
-    @doc """
+  @doc """
   Finds the first server the user is a member of and redirects to it.
 
   ## Parameters
@@ -121,13 +137,12 @@ end
         %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
       end
     else
-      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
-
-    @doc """
+  @doc """
   Fetches the first server the user is a member of.
 
   ## Parameters
@@ -146,7 +161,7 @@ end
     )
   end
 
-   @doc """
+  @doc """
   Retrieves all servers a user is a member of.
 
   ## Parameters
@@ -167,12 +182,12 @@ end
         {:ok, servers}
       end
     else
-      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
-    @doc """
+  @doc """
   Fetches all servers a user is a member of.
 
   ## Parameters
@@ -189,8 +204,7 @@ end
     )
   end
 
-
-    @doc """
+  @doc """
   Retrieves sidebar data for a specific server.
 
   ## Parameters
@@ -216,12 +230,12 @@ end
       #   # end
       # end
     else
-      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      {:error, :unauthenticated} -> {:redirect, "/auth/logout"}
       {:error, changeset} -> {:error, changeset}
     end
   end
 
-    @doc """
+  @doc """
   Fetches detailed server data including channels, members, and user role.
 
   ## Parameters
@@ -242,14 +256,15 @@ end
   def get_server_data(server_id, profile_id) do
     server =
       Repo.get(Server, server_id)
-      |> Repo.preload([
+      |> Repo.preload(
         channels: from(c in Channel, order_by: [asc: c.inserted_at]),
         members:
           from(m in Member,
             order_by: [asc: m.role],
-            preload: [profile: [:user]] # Preload the user inside profile
+            # Preload the user inside profile
+            preload: [profile: [:user]]
           )
-      ])
+      )
 
     if server do
       text_channels = Enum.filter(server.channels, &(&1.type == :TEXT))
@@ -279,8 +294,7 @@ end
     end
   end
 
-
-    @doc """
+  @doc """
   Updates a server's name and image URL.
 
   ## Parameters
@@ -309,8 +323,7 @@ end
     end
   end
 
-
-    @doc """
+  @doc """
   Generates a new invite code for a server.
 
   ## Parameters
@@ -332,15 +345,16 @@ end
         |> Server.changeset(%{invite_code: Ecto.UUID.generate()})
         |> Repo.update()
         |> case do
-          {:ok, updated_server} -> {:ok, updated_server}
-          {:error, changeset} -> {:error, "Failed to update server invite code: #{inspect(changeset.errors)}"}
+          {:ok, updated_server} ->
+            {:ok, updated_server}
+
+          {:error, changeset} ->
+            {:error, "Failed to update server invite code: #{inspect(changeset.errors)}"}
         end
     end
   end
 
-
-
-    @doc """
+  @doc """
   Deletes a server, but only if the requesting profile is the owner.
 
   ## Parameters
@@ -365,8 +379,7 @@ end
     end
   end
 
-
-    @doc """
+  @doc """
   Removes a member from a server, but prevents the owner from being removed.
 
   ## Parameters
@@ -400,7 +413,6 @@ end
         end
     end
   end
-
 
   # def get_server_data(server_id, profile_id) do
   #   query =

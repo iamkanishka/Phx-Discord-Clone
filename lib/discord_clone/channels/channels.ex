@@ -8,6 +8,30 @@ defmodule DiscordClone.Channels.Channels do
 
   alias DiscordClone.Channels.Channel
 
+
+    # Creates a new channel for the given user and redirects to it if successful.
+  # If the user is not authenticated, redirects to the sign-in page.
+  # If the server creation fails, returns an error or indicates no server was found.
+  def create_channel_and_redirect_to_server(server_id, user_id, name, type) do
+    # Attempt to get the initial profile for the given user
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         # Attempt to create a new Channel  associated with the profile
+         channel <- create_channel(server_id, profile.id, %{name: name, type: type}) do
+      case channel do
+        # If the Channel creation fails and returns nil, indicate no server was found
+        nil -> {:ok, :no_server_found}
+        # If a server is successfully created, redirect to the server's page
+        %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+      end
+    else
+      # Handle authentication failure by redirecting to the sign-in page
+      {:error, :unauthenticated} -> {:redirect, "/auth/sign_in"}
+      # Handle any other errors (e.g., validation issues) by returning the changeset
+      {:error, changeset} -> {:error, changeset}
+    end
+  end
+
+
   @doc """
   Updates a channel in a server if the requesting user has the necessary role (ADMIN or MODERATOR).
 

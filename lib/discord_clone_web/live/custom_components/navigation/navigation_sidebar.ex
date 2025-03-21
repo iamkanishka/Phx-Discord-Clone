@@ -31,29 +31,25 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
 
     <!-- Dropdown menu   -->
       <div class="pb-3 mt-auto flex items-center flex-col gap-y-4 relative">
-
-      <button
-        id="dropdownDefaultButton"
-        data-dropdown-toggle="dropdown-menu"
-        data-menu-id="naivgation_sidebar-profile-dropdown-menu"
-        class="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
-        phx-hook="DropdownToggle"
-        type="button"
-      >
-
-
-
-        <img
-          id="avatarButton"
-
-          data-dropdown-toggle="userDropdown"
-          data-dropdown-placement="bottom-start"
-          class="w-10 h-10 rounded-full cursor-pointer"
+        <button
+          id="dropdownDefaultButton"
+          data-dropdown-toggle="dropdown-menu"
           data-menu-id="naivgation_sidebar-profile-dropdown-menu"
-          src={@user_image}
-          alt="User dropdown"
-        />
+          class="w-full text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2 hover:bg-zinc-700/10 dark:hover:bg-zinc-700/50 transition"
+          phx-hook="DropdownToggle"
+          type="button"
+        >
+          <img
+            id="avatarButton"
+            data-dropdown-toggle="userDropdown"
+            data-dropdown-placement="bottom-start"
+            class="w-10 h-10 rounded-full cursor-pointer"
+            data-menu-id="naivgation_sidebar-profile-dropdown-menu"
+            src={@user_image}
+            alt="User dropdown"
+          />
         </button>
+
         <div
           id="naivgation_sidebar-profile-dropdown-menu"
           class="z-[2000] absolute  bottom-5 left-12 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700 dark:divide-gray-600 dropdown-menu"
@@ -64,7 +60,7 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
             <div class="font-medium truncate">name@flowbite.com</div>
           </div>
 
-          <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
+          <%!-- <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="avatarButton">
             <li>
               <a
                 href="#"
@@ -91,15 +87,13 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
                 Earnings
               </a>
             </li>
-          </ul>
-
+          </ul> --%>
           <div class="py-1">
-            <a
-              href="#"
-              class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-            >
-              Sign out
-            </a>
+            <.button phx-click="logout" phx-target={@myself}>
+              <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">
+                Sign out
+              </a>
+            </.button>
           </div>
         </div>
       </div>
@@ -129,5 +123,10 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationSidebar do
     {:ok,
      socket
      |> assign(assigns)}
+  end
+
+  @impl true
+  def handle_event("logout", _params, socket) do
+    {:noreply, redirect(socket, to: "/auth/logout")}
   end
 end

@@ -25,7 +25,7 @@ defmodule DiscordClone.Channels.Channel do
     |> cast(attrs, [:name, :type, :profile_id, :server_id])
     |> validate_required([:name, :type, :profile_id, :server_id])
     |> validate_length(:name, min: 1, max: 255)
-    |> validate_inclusion(:type, [:TEXT, :VOICE])
+    |> validate_inclusion(:type, [:TEXT, :AUDIO, :VIDEO])
     |> foreign_key_constraint(:profile_id)
     |> foreign_key_constraint(:server_id)
   end

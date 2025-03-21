@@ -6,7 +6,7 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationItem do
     ~H"""
     <div>
       <%!-- <.tooltip side="bottom" align="center" label={@name}> --%>
-      <button phx-click="server_click" class="group relative flex items-center">
+      <button phx-click="server_click" phx-target={@myself} class="group relative flex items-center">
         <!-- Left indicator bar -->
         <div class={[
           "absolute left-0 bg-primary rounded-r-full transition-all w-[4px]",
@@ -33,9 +33,13 @@ defmodule DiscordCloneWeb.CustomComponents.Navigation.NavigationItem do
      |> assign(assigns)}
   end
 
+  @impl true
   def handle_event("server_click", _params, socket) do
     # Handle your click event here
-    IO.puts("Server clicked: #{socket.assigns.id}")
-    {:noreply, socket}
+    IO.puts("Server clicked: #{socket.assigns.server_id}")
+
+    {:noreply,
+     socket
+     |> push_navigate(to: "/servers/#{socket.assigns.server_id}", replace: true)}
   end
 end

@@ -24,6 +24,7 @@ defmodule DiscordCloneWeb.Router do
 
     get "/google", AuthController, :request
     get "/google/callback", AuthController, :callback
+    get "/logout", AuthController, :logout
   end
 
   scope "/", DiscordCloneWeb do

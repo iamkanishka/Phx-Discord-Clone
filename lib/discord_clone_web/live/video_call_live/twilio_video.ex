@@ -3,17 +3,7 @@ defmodule DiscordCloneWeb.VideoCallLive.TwilioVideo do
   alias DiscordCloneWeb.VideoCallLive.TwilioAccessToken
   alias ExTwilio.JWT.AccessToken.VideoGrant
 
-  # @twilio_account_sid "ACf9fc89dbcf0c2d1adb2b11a5a165ce01"
-  # @twilio_auth_token "c4e4b2a6c8577ed43bf5022a69463e38"
-  # @twilio_video_api_url "https://video.twilio.com/v1/Rooms"
 
-  @twilio_account_sid "AC4560fd3b4a0e9c096f0d0763bd743e91"
-  @twilio_api_key "SK300529edb7c2d2e3000af9ceb2c0a748"
-  @twilio_api_secret "1dd9ba041a5ecdadd7c6dec05307a04f"
-  @twilio_url "https://video.twilio.com/v1/Rooms"
-
-  # SK300529edb7c2d2e3000af9ceb2c0a748
-  # Oo3LXHp0PhW7eiERA8XrTBzh8Yt7l1Rw
 
   def create_video_room(unique_name \\ "Kanishka Naik") do
     with {:ok, room_data} <- create_room(unique_name),

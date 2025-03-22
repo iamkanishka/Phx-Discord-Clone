@@ -27,11 +27,14 @@ import CmdKListener from "./CmdKListener";
 import FileInput from "./fileInput";
 import DropdownToggle from "./DropdownToggle";
 import ClipboardCopy from "./ClipboardCopy";
+import videoCall from "./videoCall"
 
 Hooks.ClipboardCopy = ClipboardCopy;
 Hooks.CmdKListener = CmdKListener;
 Hooks.FileInput = FileInput;
 Hooks.DropdownToggle = DropdownToggle;
+Hooks.videoCall = videoCall;
+
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")

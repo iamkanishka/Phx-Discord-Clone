@@ -1,6 +1,6 @@
 defmodule DiscordCloneWeb.Router do
-  alias DiscordCloneWeb.Conversations
-  alias DiscordCloneWeb.Channels
+
+
   use DiscordCloneWeb, :router
 
   pipeline :browser do
@@ -36,6 +36,7 @@ defmodule DiscordCloneWeb.Router do
     live "/servers/:server_id", Servers.Server, :show
     live "/servers/:server_id/channels/:channel_id", Servers.Server, :server_channel
     live "/servers/:server_id/conversation/:member_id",Servers.Server, :server_channel_conversation
+    live "/create_room", VideoCallLive.VideoCall, :create_room
     # live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show
     # live "/servers/:server_id/conversation/:conversation_id", Conversations.Conversation, :show
 

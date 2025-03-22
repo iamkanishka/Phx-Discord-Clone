@@ -1,10 +1,5 @@
 defmodule DiscordCloneWeb.VideoCallLive.TwilioVideoCheck do
 
-  @twilio_account_sid "AC4560fd3b4a0e9c096f0d0763bd743e91"
-  @twilio_api_key "SJyIIEROfDkpNsJbg1Q4QaBKUZxjd7hV"
-  @twilio_api_secret "db20bd8614fd3b1dc247db8b5819f7ef"
-  # @twilio_url "https://video.twilio.com/v1/Rooms"
-  @twilio_url "https://video.twilio.com/token"
 
 
   def create_room(unique_name \\ "DailyStandup") do

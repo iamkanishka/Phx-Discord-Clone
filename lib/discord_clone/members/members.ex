@@ -1,5 +1,22 @@
 defmodule DiscordClone.Members.Members do
   import Ecto.Query, warn: false
+
+  alias DiscordClone.Profiles.Profiles
+  alias DiscordClone.Repo
+  alias DiscordClone.Members.Member
+
+  def get_member_by_server_and_user(server_id, user_id) do
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         {:ok, member} <- get_member_by_server_and_profile(server_id, profile.id) do
+      {:ok, member}
+    else
+      {:error, error} ->
+        {:error, error}
+    end
+  end
+
+
+
   @doc """
   Removes a member from a server if the requesting user is the owner.
 
@@ -49,9 +66,7 @@ defmodule DiscordClone.Members.Members do
     end
   end
 
-
-
-   @doc """
+  @doc """
   Updates a member's role in a server if the requesting user is the owner.
 
   ## Parameters
@@ -100,5 +115,4 @@ defmodule DiscordClone.Members.Members do
         end
     end
   end
-
 end

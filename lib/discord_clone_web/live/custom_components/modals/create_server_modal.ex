@@ -43,11 +43,14 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.CreateServerModal do
           />
         </div>
 
-        <:actions>
-          <div class=" w-full text-center">
-            <.button phx-disable-with="Creating...">Create</.button>
-          </div>
-        </:actions>
+        <div class="flex flex-row justify-center items-center">
+          <.button
+            class="phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+            phx-disable-with="Creating..."
+          >
+            Create
+          </.button>
+        </div>
       </.simple_form>
     </div>
     """

@@ -1,4 +1,6 @@
 defmodule DiscordCloneWeb.Servers.Server do
+  alias DiscordClone.Members.Members
+  alias DiscordClone.Channels.Channels
   use DiscordCloneWeb, :live_view
 
   @impl true
@@ -25,33 +27,36 @@ defmodule DiscordCloneWeb.Servers.Server do
         user_image={@user_image}
         server_id={@server_id}
       >
-
-
-
-         <%!-- <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
-      <ChatHeader name={@channel.name} server_id={@channel.server_id} type="channel" />
-
-      <%= case @channel.type do %>
-        <% "text" -> %>
-          <.live_component module={ChatMessages}
-            id={"chat_#{@channel.id}"}
-            member={@member}
+        <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
+          <.live_component
+            module={DiscordCloneWeb.CustomComponents.Chat.ChatHeader}
+            id={"chat_header_#{@channel.id}"}
             name={@channel.name}
-            chat_id={@channel.id}
+            serverId={@channel.server_id}
+            is_video={false}
+            user_image={@user_image}
             type="channel"
-            api_url="/api/messages"
-            socket_url="/api/socket/messages"
-            socket_query={%{channel_id: @channel.id, server_id: @channel.server_id}}
-            param_key="channelId"
-            param_value={@channel.id}
           />
-          <.live_component module={ChatInput}
-            name={@channel.name}
-            type="channel"
-            api_url="/api/socket/messages"
-            query={%{channel_id: @channel.id, server_id: @channel.server_id}}
-          />
-
+          <%= case @channel.type do %>
+            <% :VIDEO -> %>
+              <.live_component
+                module={DiscordCloneWeb.CustomComponents.Chat.ChatMessages}
+                id={"chat_#{@channel.id}"}
+                member={@member}
+                name={@channel.name}
+                chat_id={@channel.id}
+                type="channel"
+                socket_query={%{channel_id: @channel.id, server_id: @channel.server_id}}
+              />
+              <.live_component
+                module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
+                id={"chat_input-#{@channel.id}"}
+                name={@channel.name}
+                type="channel"
+                api_url="/api/socket/messages"
+                query={%{channel_id: @channel.id, server_id: @channel.server_id}}
+              />
+              <%!--
         <% "audio" -> %>
           <.live_component module={MediaRoom}
             chat_id={@channel.id}
@@ -65,10 +70,9 @@ defmodule DiscordCloneWeb.Servers.Server do
             video={true}
             audio={true}
           />
-      <% end %>
-      </div> --%>
-
-
+            --%>
+          <% end %>
+        </div>
       </.live_component>
     </div>
 
@@ -83,7 +87,11 @@ defmodule DiscordCloneWeb.Servers.Server do
           module={@selected_modal.module}
           id={"#{@selected_modal.id}"}
           server={@server}
-          value={if @selected_modal.id == "edit_server" or  @selected_modal.id == "create_server", do: @file_content, else: %{}}
+          value={
+            if @selected_modal.id == "edit_server" or @selected_modal.id == "create_server" or   @selected_modal.id == "chat_input_fileuplaod" ,
+              do: @file_content,
+              else: %{}
+          }
           user_id={@user_id}
         />
       </.modal>
@@ -131,7 +139,6 @@ defmodule DiscordCloneWeb.Servers.Server do
     })
   end
 
-
   @impl true
   def handle_event(
         "file_selected",
@@ -155,4 +162,23 @@ defmodule DiscordCloneWeb.Servers.Server do
      })}
   end
 
+  @impl true
+  def handle_params(params, _uri, socket) do
+    {:noreply, socket |> assign_channel_and_mebers(params)}
+  end
+
+  defp assign_channel_and_mebers(socket, params) do
+    with {:ok, member} <-
+           Members.get_member_by_server_and_user(params["server_id"], socket.assigns.user_id),
+         {:ok, channel} <-
+           Channels.get_channel_by_id(params["channel_id"]) do
+      socket
+      |> assign(:channel, channel)
+      |> assign(:member, member)
+    else
+      {:error, error} ->
+        # This now correctly handles errors
+        {:error, error}
+    end
+  end
 end

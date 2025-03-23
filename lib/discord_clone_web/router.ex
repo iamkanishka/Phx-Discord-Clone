@@ -34,7 +34,7 @@ defmodule DiscordCloneWeb.Router do
     live "/invite/:invite_id", Invite.Invite, :show
     live "/initial-setup", Setup.InitialSetup, :show
     live "/servers/:server_id", Servers.Server, :show
-    live "/servers/:server_id/channels/:channel_id", Servers.Server, :server_channel
+    live "/servers/:server_id/channel/:channel_id", Servers.Server, :server_channel
     live "/servers/:server_id/conversation/:member_id",Servers.Server, :server_channel_conversation
     live "/create_room", VideoCallLive.VideoCall, :create_room
     # live "/servers/:server_id/channels/:channel_id", Channels.Channel, :show

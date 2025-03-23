@@ -4,11 +4,47 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="flex flex-col-reverse mt-auto">
+    <div>
+      <div class="flex flex-col  justify-center items-center">
+        <.icon name="hero-arrow-path" class="h-7 w-7 text-zinc-500 animate-spin my-4" />
+        <p class="text-xs text-zinc-500 dark:text-zinc-400">
+          Loading messages...
+        </p>
+         <.icon name="hero-server-crash" class="h-7 w-7 text-zinc-500 my-4" />
+        <p clas="text-xs text-zinc-500 dark:text-zinc-400">
+          Something went wrong!
+        </p>
+
+        <.live_component
+          module={DiscordCloneWeb.CustomComponents.Chat.ChatWelcomeMessage}
+          id={:chat_welcome_message}
+          type="channel"
+          name={@name}
+        />
+      </div>
+
+      <%!-- <div clas="flex flex-col justify-center items-center ">
+        <.icon name="hero-server-crash" class="h-7 w-7 text-zinc-500 my-4" />
+        <p clas="text-xs text-zinc-500 dark:text-zinc-400">
+          Something went wrong!
+        </p>
+      </div>
+
+
+      <.live_component
+        module={DiscordCloneWeb.CustomComponents.Chat.ChatWelcomeMessage}
+        id={:chat_welcome_message}
+        type="channel"
+        name={@name}
+      /> --%>
+    </div>
+
+    <%!-- <div class="flex flex-col-reverse mt-auto">
+
       <%= for {group, index} <- Enum.with_index(@data.pages || []) do %>
         <%= for message <- group.items do %>
           <.live_component
-            module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
+            module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
             id={message.id}
             current_member={@member}
             member={message.member}
@@ -22,7 +58,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
           />
         <% end %>
       <% end %>
-    </div>
+    </div> --%>
     """
   end
 

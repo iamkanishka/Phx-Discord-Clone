@@ -55,4 +55,21 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
     form = Phoenix.HTML.FormData.to_form(%{}, as: :form)
     assign(socket, %{form: form})
   end
+
+  @impl true
+  def handle_event("message_file", unsigned_params, socket) do
+    search_obj = %{
+      label: "Chat_Input_FileUplaod",
+      id: "chat_input_fileuplaod",
+      module: DiscordCloneWeb.CustomComponents.Modals.MessageFileModal
+    }
+
+    send(self(), {:open_modal, {search_obj, %{}}})
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("validate", unsigned_params, socket) do
+    {:noreply, socket}
+  end
 end

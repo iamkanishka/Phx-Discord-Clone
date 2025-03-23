@@ -14,32 +14,26 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MessageFileModal do
         </:subtitle>
       </.header>
 
-      <.simple_form
-        for={@form}
-        id="product-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-        class="space-y-8"
-      >
-        <div class="space-y-8 px-6">
-          <div class="flex items-center justify-center text-center">
-            <.input field={@form[:server_image]} type="file" label="Server Image" />
-          </div>
-        </div>
-
-        <:actions>
-          <.button class="bg-gray-100 px-6 py-4" phx-disable-with="Sending..." disabled={@isLoading}>
-            Send
-          </.button>
-        </:actions>
-      </.simple_form>
+      <.live_component
+        module={DiscordCloneWeb.CustomComponents.Shared.FileUpload}
+        id={:chat_file_upload}
+        value={@value}
+        is_loading={@is_loading}
+      />
+      <div class="flex flex-row justify-center items-center">
+        <.button
+          class="phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+          phx-disable-with="Uploading..."
+        >
+          Upload
+        </.button>
+      </div>
     </div>
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, socket}
+    {:ok, socket |> assign(:is_loading, false) |> assign(assigns)}
   end
 end

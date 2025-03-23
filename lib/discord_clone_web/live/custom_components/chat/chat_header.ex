@@ -6,13 +6,13 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
     ~H"""
     <div class="text-md font-semibold px-3 flex items-center h-12 border-neutral-200 dark:border-neutral-800 border-b-2">
       <%= if @type === "channel" do %>
-        <.icon name="hero-hash" class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
+        <.icon name="hero-hashtag" class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
       <% end %>
 
-      <%= if @type === "conversation" do %>
+      <%= if @type == "conversation" do %>
         <img
           class="h-8 w-8 md:h-8 md:w-8 mr-2 rounded-full"
-          src="/docs/images/people/profile-picture-5.jpg"
+          src={@user_image}
           alt="Rounded avatar"
         />
       <% end %>
@@ -22,13 +22,13 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatHeader do
       </p>
 
       <div class="ml-auto flex items-center">
-        <%= if @type === "conversation" do %>
+         <%= if @type === "conversation" do %>
           <button phx-click="video_click" phx-target={@myself} class="hover:opacity-75 transition mr-4">
 
         <.icon name={"hero-#{@video_icon}"} class="w-5 h-5 text-zinc-500 dark:text-zinc-400 mr-2" />
 
-          </button>
-        <% end %>
+         </button>
+         <% end %>
 
       </div>
     </div>

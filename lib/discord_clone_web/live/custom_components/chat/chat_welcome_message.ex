@@ -2,12 +2,13 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatWelcomeMessage do
   use DiscordCloneWeb, :live_component
 
   @impl true
+  @spec render(any()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     ~H"""
     <div class="space-y-2 px-4 mb-4">
       <%= if @type === "channel" do %>
         <div class="h-[75px] w-[75px] rounded-full bg-zinc-500 dark:bg-zinc-700 flex items-center justify-center">
-          <.icon name="hero-hash" class="h-12 w-12 text-white" />
+          <.icon name="hero-hashtag" class="h-12 w-12 text-white" />
         </div>
       <% end %>
 

@@ -15,7 +15,18 @@ defmodule DiscordClone.Members.Members do
     end
   end
 
-
+  @doc """
+  Finds the first member in a server based on the given server ID and profile ID.
+  """
+  def get_member_by_server_and_profile(server_id, profile_id) do
+    case Repo.one(
+           from m in Member,
+             where: m.server_id == ^server_id and m.profile_id == ^profile_id
+         ) do
+      nil -> {:error, "Member not found"}
+      member -> {:ok, member}
+    end
+  end
 
   @doc """
   Removes a member from a server if the requesting user is the owner.

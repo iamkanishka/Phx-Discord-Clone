@@ -93,4 +93,15 @@ defmodule DiscordClone.Conversations.Conversations do
     )
   end
 
+
+   @doc """
+  Creates a new conversation between two members.
+  Returns `{:ok, conversation}` if successful, or `{:error, changeset}` if creation fails.
+  """
+  defp create_conversation(member_one_id, member_two_id) do
+    %Conversation{}
+    |> Conversation.changeset(%{member_one_id: member_one_id, member_two_id: member_two_id})
+    |> Repo.insert()
+  end
+
 end

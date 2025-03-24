@@ -95,5 +95,26 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     end
 
 
+      # Determines which member the profile belongs to in the conversation
+  defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid), do: {:ok, conv.member_one}
+  defp get_member(%Conversation{member_two: %{profile_id: pid}} = conv, pid), do: {:ok, conv.member_two}
+  defp get_member(_, _), do: {:error, "Member not found"}
+
+
+
+    # Fetch message with or without deleted ones (for restore functionality)
+    defp get_message(message_id, conversation_id, method) do
+      query =
+        from m in DirectMessage,
+          where: m.id == ^message_id and m.conversation_id == ^conversation_id,
+          preload: [:member]
+
+      case Repo.one(query) do
+        nil -> {:error, "Message not found"}
+        %DirectMessage{deleted: true} = msg when method != :restore -> {:error, "Message has been deleted"}
+        message -> {:ok, message}
+      end
+    end
+
 
 end

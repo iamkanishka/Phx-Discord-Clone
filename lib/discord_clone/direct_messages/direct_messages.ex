@@ -117,4 +117,19 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     end
 
 
+      # Checks if the user has permission to modify the message
+  defp check_permissions(%Member{id: member_id, role: role}, %DirectMessage{member_id: message_owner_id}, method) do
+    is_owner = member_id == message_owner_id
+    is_admin_or_moderator = role in [:ADMIN, :MODERATOR]
+    can_modify = is_owner or is_admin_or_moderator
+
+    case {method, can_modify, is_owner} do
+      {:patch, true, true} -> {:ok, :allowed}   # Only owners can edit
+      {:delete, true, _} -> {:ok, :allowed}    # Admins, moderators, and owners can delete
+      {:restore, true, _} -> {:ok, :allowed}   # Admins and moderators can restore
+      _ -> {:error, "Unauthorized"}
+    end
+  end
+
+
 end

@@ -3,7 +3,8 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
   alias DiscordClone.Repo
   alias DiscordClone.DirectMessages.DirectMessage
 
-  @messages_batch 20 # Define the batch size
+  # Define the batch size
+  @messages_batch 20
 
   @doc """
   Fetches a batch of direct messages for a given conversation.
@@ -34,7 +35,8 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     query =
       if cursor do
         from dm in base_query,
-          where: dm.id < ^cursor # Assumes ID ordering matches `inserted_at`
+          # Assumes ID ordering matches `inserted_at`
+          where: dm.id < ^cursor
       else
         base_query
       end
@@ -52,8 +54,7 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     {messages, next_cursor}
   end
 
-
-    @doc """
+  @doc """
   Modifies a message (delete, restore, or update) in a conversation.
 
   ## Params:
@@ -79,66 +80,98 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     end
   end
 
+  # Fetch conversation ensuring the profile is a participant
+  defp get_conversation(conversation_id, profile_id) do
+    query =
+      from c in Conversation,
+        where:
+          c.id == ^conversation_id and
+            (c.member_one_id == ^profile_id or c.member_two_id == ^profile_id),
+        preload: [:member_one, :member_two]
 
-    # Fetch conversation ensuring the profile is a participant
-    defp get_conversation(conversation_id, profile_id) do
-      query =
-        from c in Conversation,
-          where: c.id == ^conversation_id and
-                 (c.member_one_id == ^profile_id or c.member_two_id == ^profile_id),
-          preload: [:member_one, :member_two]
-
-      case Repo.one(query) do
-        nil -> {:error, "Conversation not found"}
-        conversation -> {:ok, conversation}
-      end
+    case Repo.one(query) do
+      nil -> {:error, "Conversation not found"}
+      conversation -> {:ok, conversation}
     end
+  end
 
+  # Determines which member the profile belongs to in the conversation
+  defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid),
+    do: {:ok, conv.member_one}
 
-      # Determines which member the profile belongs to in the conversation
-  defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid), do: {:ok, conv.member_one}
-  defp get_member(%Conversation{member_two: %{profile_id: pid}} = conv, pid), do: {:ok, conv.member_two}
+  defp get_member(%Conversation{member_two: %{profile_id: pid}} = conv, pid),
+    do: {:ok, conv.member_two}
+
   defp get_member(_, _), do: {:error, "Member not found"}
 
+  # Fetch message with or without deleted ones (for restore functionality)
+  defp get_message(message_id, conversation_id, method) do
+    query =
+      from m in DirectMessage,
+        where: m.id == ^message_id and m.conversation_id == ^conversation_id,
+        preload: [:member]
 
+    case Repo.one(query) do
+      nil ->
+        {:error, "Message not found"}
 
-    # Fetch message with or without deleted ones (for restore functionality)
-    defp get_message(message_id, conversation_id, method) do
-      query =
-        from m in DirectMessage,
-          where: m.id == ^message_id and m.conversation_id == ^conversation_id,
-          preload: [:member]
+      %DirectMessage{deleted: true} = msg when method != :restore ->
+        {:error, "Message has been deleted"}
 
-      case Repo.one(query) do
-        nil -> {:error, "Message not found"}
-        %DirectMessage{deleted: true} = msg when method != :restore -> {:error, "Message has been deleted"}
-        message -> {:ok, message}
-      end
+      message ->
+        {:ok, message}
     end
+  end
 
-
-      # Checks if the user has permission to modify the message
-  defp check_permissions(%Member{id: member_id, role: role}, %DirectMessage{member_id: message_owner_id}, method) do
+  # Checks if the user has permission to modify the message
+  defp check_permissions(
+         %Member{id: member_id, role: role},
+         %DirectMessage{member_id: message_owner_id},
+         method
+       ) do
     is_owner = member_id == message_owner_id
     is_admin_or_moderator = role in [:ADMIN, :MODERATOR]
     can_modify = is_owner or is_admin_or_moderator
 
     case {method, can_modify, is_owner} do
-      {:patch, true, true} -> {:ok, :allowed}   # Only owners can edit
-      {:delete, true, _} -> {:ok, :allowed}    # Admins, moderators, and owners can delete
-      {:restore, true, _} -> {:ok, :allowed}   # Admins and moderators can restore
+      # Only owners can edit
+      {:patch, true, true} -> {:ok, :allowed}
+      # Admins, moderators, and owners can delete
+      {:delete, true, _} -> {:ok, :allowed}
+      # Admins and moderators can restore
+      {:restore, true, _} -> {:ok, :allowed}
       _ -> {:error, "Unauthorized"}
     end
   end
 
-    # Handles message updates, deletions, and restorations
-    defp process_message(:delete, message, _new_content) do
-      log_change(message, "deleted")
+  # Handles message updates, deletions, and restorations
+  defp process_message(:delete, message, _new_content) do
+    log_change(message, "deleted")
 
-      message
-      |> Ecto.Changeset.change(%{file_url: nil, content: "This message has been deleted.", deleted: true})
-      |> Repo.update()
-    end
+    message
+    |> Ecto.Changeset.change(%{
+      file_url: nil,
+      content: "This message has been deleted.",
+      deleted: true
+    })
+    |> Repo.update()
+  end
 
+  defp process_message(:patch, message, new_content) when is_binary(new_content) do
+    log_change(message, "edited")
 
+    message
+    |> Ecto.Changeset.change(%{content: new_content})
+    |> Repo.update()
+  end
+
+  defp process_message(:restore, message, _new_content) do
+    log_change(message, "restored")
+
+    message
+    |> Ecto.Changeset.change(%{deleted: false})
+    |> Repo.update()
+  end
+
+  defp process_message(_, _, _), do: {:error, "Invalid request"}
 end

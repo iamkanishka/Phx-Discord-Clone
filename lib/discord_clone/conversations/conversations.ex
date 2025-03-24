@@ -79,4 +79,18 @@ defmodule DiscordClone.Conversations.Conversations do
       conversation -> {:ok, conversation}
     end
   end
+
+
+   @doc """
+  Finds a conversation between two members in a specific order.
+  Returns `nil` if no conversation is found.
+  """
+  defp find_conversation(member_one_id, member_two_id) do
+    Repo.one(
+      from c in Conversation,
+        where: c.member_one_id == ^member_one_id and c.member_two_id == ^member_two_id,
+        preload: [:member_one, :member_two]
+    )
+  end
+
 end

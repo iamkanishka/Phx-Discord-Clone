@@ -51,4 +51,32 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
 
     {messages, next_cursor}
   end
+
+
+    @doc """
+  Modifies a message (delete, restore, or update) in a conversation.
+
+  ## Params:
+    - `profile_id` (Binary ID): The profile ID of the requesting user.
+    - `conversation_id` (Binary ID): The ID of the conversation.
+    - `message_id` (Binary ID): The ID of the direct message.
+    - `method` (`:delete` | `:patch` | `:restore`): The action to perform.
+    - `new_content` (String | nil): The updated content (only for `:patch`).
+
+  ## Returns:
+    - `{:ok, updated_message}` on success.
+    - `{:error, reason}` on failure.
+  """
+  def modify_message(profile_id, conversation_id, message_id, method, new_content \\ nil) do
+    with {:ok, conversation} <- get_conversation(conversation_id, profile_id),
+         {:ok, member} <- get_member(conversation, profile_id),
+         {:ok, message} <- get_message(message_id, conversation_id, method),
+         {:ok, _} <- check_permissions(member, message, method),
+         {:ok, updated_message} <- process_message(method, message, new_content) do
+      {:ok, updated_message}
+    else
+      {:error, _} = error -> error
+    end
+  end
+
 end

@@ -107,4 +107,19 @@ end
     end
   end
 
+    @doc """
+  Finds a message in the specified channel.
+  """
+  defp find_message(message_id, channel_id) do
+    case Repo.one(
+           from m in Message,
+             where: m.id == ^message_id and m.channel_id == ^channel_id,
+             preload: [:member]
+         ) do
+      nil -> {:error, "Message not found"}
+      message when message.deleted -> {:error, "Message already deleted"}
+      message -> {:ok, message}
+    end
+  end
+
 end

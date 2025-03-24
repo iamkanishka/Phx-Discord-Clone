@@ -46,5 +46,11 @@ defmodule DiscordClone.Conversations.Conversations do
     end
 
 
+     # Determines which member the profile belongs to in the conversation.
+  defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid) do
+    {:ok, conv.member_one}
+  end
+
+
 
 end

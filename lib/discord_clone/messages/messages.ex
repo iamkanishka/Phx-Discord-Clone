@@ -2,7 +2,8 @@ defmodule DiscordClone.Messages.Messages do
   import Ecto.Query, warn: false
   alias DiscordClone.Repo
   alias DiscordClone.Messages.Message
-
+  alias DiscordClone.Servers.{Server, Member}
+  alias DiscordClone.Channels.Channel
 
   # Adjust batch size as needed
   @messages_batch 20
@@ -46,26 +47,25 @@ defmodule DiscordClone.Messages.Messages do
     %{messages: messages, next_cursor: next_cursor}
   end
 
-
   @doc """
-Handles message modification (delete or update) based on the request type.
+  Handles message modification (delete or update) based on the request type.
 
-- Checks authorization (message owner, admin, or moderator).
-- Supports DELETE (soft delete) and PATCH (content update).
-- Ensures the server, channel, and message exist before performing any action.
-"""
-def modify_message(profile_id, message_id, server_id, channel_id, action, new_content \\ nil) do
-  with {:ok, server} <- find_server(profile_id, server_id),
-       {:ok, channel} <- find_channel(channel_id, server_id),
-       {:ok, member} <- find_member(server, profile_id),
-       {:ok, message} <- find_message(message_id, channel_id),
-       :ok <- authorize_action(member, message, action) do
-    case action do
-      :delete -> delete_message(message)
-      :update -> update_message(message, new_content)
+  - Checks authorization (message owner, admin, or moderator).
+  - Supports DELETE (soft delete) and PATCH (content update).
+  - Ensures the server, channel, and message exist before performing any action.
+  """
+  def modify_message(profile_id, message_id, server_id, channel_id, action, new_content \\ nil) do
+    with {:ok, server} <- find_server(profile_id, server_id),
+         {:ok, channel} <- find_channel(channel_id, server_id),
+         {:ok, member} <- find_member(server, profile_id),
+         {:ok, message} <- find_message(message_id, channel_id),
+         :ok <- authorize_action(member, message, action) do
+      case action do
+        :delete -> delete_message(message)
+        :update -> update_message(message, new_content)
+      end
     end
   end
-end
 
   @doc """
   Finds a server where the user is a member.
@@ -83,7 +83,6 @@ end
     end
   end
 
-
   @doc """
   Finds a channel within the specified server.
   """
@@ -97,7 +96,7 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Finds a member in the server.
   """
   defp find_member(server, profile_id) do
@@ -107,7 +106,7 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Finds a message in the specified channel.
   """
   defp find_message(message_id, channel_id) do
@@ -122,7 +121,7 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Checks if the member has permission to modify the message.
   """
   defp authorize_action(member, message, action) do
@@ -138,17 +137,20 @@ end
     end
   end
 
-
-    @doc """
+  @doc """
   Soft deletes a message by setting `deleted` to true and updating content.
   """
   defp delete_message(message) do
     message
-    |> Message.changeset(%{file_url: nil, content: "This message has been deleted.", deleted: true})
+    |> Message.changeset(%{
+      file_url: nil,
+      content: "This message has been deleted.",
+      deleted: true
+    })
     |> Repo.update()
   end
 
-    @doc """
+  @doc """
   Updates the content of a message.
   """
   defp update_message(message, new_content) do
@@ -157,10 +159,7 @@ end
     |> Repo.update()
   end
 
-
-
-
-    @doc """
+  @doc """
   Creates a new message in a given channel.
 
   - Ensures the profile exists and is a member of the server.
@@ -177,7 +176,7 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Finds a server where the user is a member.
   """
   defp find_server(profile_id, server_id) do
@@ -193,7 +192,7 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Finds a channel within the specified server.
   """
   defp find_channel(channel_id, server_id) do
@@ -206,8 +205,7 @@ end
     end
   end
 
-
-    @doc """
+  @doc """
   Finds a member in the server.
   """
   defp find_member(server, profile_id) do
@@ -217,30 +215,32 @@ end
     end
   end
 
-    @doc """
+  @doc """
   Validates that the content is present.
   """
   defp validate_content(nil), do: {:error, "Content missing"}
   defp validate_content(""), do: {:error, "Content missing"}
   defp validate_content(_), do: :ok
 
-
-
-   @doc """
+  @doc """
   Inserts a new message into the database.
   """
   defp insert_message(channel_id, member_id, content, file_url) do
     %Message{}
-    |> Message.changeset(%{channel_id: channel_id, member_id: member_id, content: content, file_url: file_url})
+    |> Message.changeset(%{
+      channel_id: channel_id,
+      member_id: member_id,
+      content: content,
+      file_url: file_url
+    })
     |> Repo.insert()
     |> case do
       {:ok, message} ->
-        {:ok, Repo.preload(message, member: [:profile])}  # Preloading profile for frontend needs
+        # Preloading profile for frontend needs
+        {:ok, Repo.preload(message, member: [:profile])}
 
       {:error, changeset} ->
         {:error, "Failed to create message: #{inspect(changeset.errors)}"}
     end
   end
-
-
 end

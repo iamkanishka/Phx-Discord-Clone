@@ -159,4 +159,23 @@ end
 
 
 
+
+    @doc """
+  Creates a new message in a given channel.
+
+  - Ensures the profile exists and is a member of the server.
+  - Validates the presence of required parameters.
+  - Associates the message with the correct member and channel.
+  - Returns the newly created message with preloaded member profile.
+  """
+  def create_message(profile_id, server_id, channel_id, content, file_url \\ nil) do
+    with {:ok, server} <- find_server(profile_id, server_id),
+         {:ok, channel} <- find_channel(channel_id, server_id),
+         {:ok, member} <- find_member(server, profile_id),
+         :ok <- validate_content(content) do
+      insert_message(channel_id, member.id, content, file_url)
+    end
+  end
+
+
 end

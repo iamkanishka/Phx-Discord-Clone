@@ -83,4 +83,18 @@ end
     end
   end
 
+
+  @doc """
+  Finds a channel within the specified server.
+  """
+  defp find_channel(channel_id, server_id) do
+    case Repo.one(
+           from c in Channel,
+             where: c.id == ^channel_id and c.server_id == ^server_id
+         ) do
+      nil -> {:error, "Channel not found"}
+      channel -> {:ok, channel}
+    end
+  end
+
 end

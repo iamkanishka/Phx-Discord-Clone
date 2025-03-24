@@ -139,4 +139,14 @@ end
   end
 
 
+    @doc """
+  Soft deletes a message by setting `deleted` to true and updating content.
+  """
+  defp delete_message(message) do
+    message
+    |> Message.changeset(%{file_url: nil, content: "This message has been deleted.", deleted: true})
+    |> Repo.update()
+  end
+
+
 end

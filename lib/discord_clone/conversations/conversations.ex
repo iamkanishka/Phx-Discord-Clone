@@ -27,30 +27,30 @@ defmodule DiscordClone.Conversations.Conversations do
     end
   end
 
+  # Fetches the conversation if the profile belongs to it.
+  defp get_conversation(conversation_id, profile_id) do
+    query =
+      from c in Conversation,
+        where:
+          c.id == ^conversation_id and
+            (c.member_one_id in ^[profile_id] or c.member_two_id in ^[profile_id]),
+        preload: [
+          member_one: [:profile],
+          member_two: [:profile]
+        ]
 
-    # Fetches the conversation if the profile belongs to it.
-    defp get_conversation(conversation_id, profile_id) do
-      query =
-        from c in Conversation,
-          where: c.id == ^conversation_id and
-                 (c.member_one_id in ^[profile_id] or c.member_two_id in ^[profile_id]),
-          preload: [
-            member_one: [:profile],
-            member_two: [:profile]
-          ]
-
-      case Repo.one(query) do
-        nil -> {:error, "Conversation not found"}
-        conversation -> {:ok, conversation}
-      end
+    case Repo.one(query) do
+      nil -> {:error, "Conversation not found"}
+      conversation -> {:ok, conversation}
     end
+  end
 
-
-     # Determines which member the profile belongs to in the conversation.
+  # Determines which member the profile belongs to in the conversation.
   defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid) do
     {:ok, conv.member_one}
   end
 
-
-
+  defp get_member(%Conversation{member_two: %{profile_id: pid}} = conv, pid) do
+    {:ok, conv.member_two}
+  end
 end

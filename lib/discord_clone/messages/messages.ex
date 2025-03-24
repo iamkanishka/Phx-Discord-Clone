@@ -148,5 +148,15 @@ end
     |> Repo.update()
   end
 
+    @doc """
+  Updates the content of a message.
+  """
+  defp update_message(message, new_content) do
+    message
+    |> Message.changeset(%{content: new_content})
+    |> Repo.update()
+  end
+
+
 
 end

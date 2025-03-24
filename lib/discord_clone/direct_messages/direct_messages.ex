@@ -174,4 +174,26 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
   end
 
   defp process_message(_, _, _), do: {:error, "Invalid request"}
+
+    # Logs message modifications for auditing purposes
+    defp log_change(%DirectMessage{id: message_id, content: content, member_id: member_id}, action) do
+      Repo.insert(%MessageLog{
+        message_id: message_id,
+        member_id: member_id,
+        action: action,
+        old_content: content
+      })
+    end
+
+    # Usage Example
+    # case DiscordClone.DirectMessages.modify_message(user_profile_id, convo_id, msg_id, :delete) do
+    #   {:ok, message} -> IO.inspect(message, label: "Message Deleted")
+    #   {:error, reason} -> IO.puts("Error: #{reason}")
+    # end
+
+    # case DiscordClone.DirectMessages.modify_message(user_profile_id, convo_id, msg_id, :patch, "Edited text") do
+    #   {:ok, message} -> IO.inspect(message, label: "Message Updated")
+    #   {:error, reason} -> IO.puts("Error: #{reason}")
+    # end
+
 end

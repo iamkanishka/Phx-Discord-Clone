@@ -97,4 +97,14 @@ end
     end
   end
 
+    @doc """
+  Finds a member in the server.
+  """
+  defp find_member(server, profile_id) do
+    case Enum.find(server.members, &(&1.profile_id == profile_id)) do
+      nil -> {:error, "Member not found"}
+      member -> {:ok, member}
+    end
+  end
+
 end

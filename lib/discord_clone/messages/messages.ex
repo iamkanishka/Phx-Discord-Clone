@@ -226,5 +226,21 @@ end
 
 
 
+   @doc """
+  Inserts a new message into the database.
+  """
+  defp insert_message(channel_id, member_id, content, file_url) do
+    %Message{}
+    |> Message.changeset(%{channel_id: channel_id, member_id: member_id, content: content, file_url: file_url})
+    |> Repo.insert()
+    |> case do
+      {:ok, message} ->
+        {:ok, Repo.preload(message, member: [:profile])}  # Preloading profile for frontend needs
+
+      {:error, changeset} ->
+        {:error, "Failed to create message: #{inspect(changeset.errors)}"}
+    end
+  end
+
 
 end

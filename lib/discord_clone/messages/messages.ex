@@ -45,4 +45,26 @@ defmodule DiscordClone.Messages.Messages do
 
     %{messages: messages, next_cursor: next_cursor}
   end
+
+
+  @doc """
+Handles message modification (delete or update) based on the request type.
+
+- Checks authorization (message owner, admin, or moderator).
+- Supports DELETE (soft delete) and PATCH (content update).
+- Ensures the server, channel, and message exist before performing any action.
+"""
+def modify_message(profile_id, message_id, server_id, channel_id, action, new_content \\ nil) do
+  with {:ok, server} <- find_server(profile_id, server_id),
+       {:ok, channel} <- find_channel(channel_id, server_id),
+       {:ok, member} <- find_member(server, profile_id),
+       {:ok, message} <- find_message(message_id, channel_id),
+       :ok <- authorize_action(member, message, action) do
+    case action do
+      :delete -> delete_message(message)
+      :update -> update_message(message, new_content)
+    end
+  end
+end
+
 end

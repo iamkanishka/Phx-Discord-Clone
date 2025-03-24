@@ -217,5 +217,14 @@ end
     end
   end
 
+    @doc """
+  Validates that the content is present.
+  """
+  defp validate_content(nil), do: {:error, "Content missing"}
+  defp validate_content(""), do: {:error, "Content missing"}
+  defp validate_content(_), do: :ok
+
+
+
 
 end

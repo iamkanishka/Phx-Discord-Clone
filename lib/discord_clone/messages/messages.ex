@@ -177,5 +177,21 @@ end
     end
   end
 
+    @doc """
+  Finds a server where the user is a member.
+  """
+  defp find_server(profile_id, server_id) do
+    case Repo.one(
+           from s in Server,
+             where: s.id == ^server_id,
+             join: m in assoc(s, :members),
+             where: m.profile_id == ^profile_id,
+             preload: [:members]
+         ) do
+      nil -> {:error, "Server not found"}
+      server -> {:ok, server}
+    end
+  end
+
 
 end

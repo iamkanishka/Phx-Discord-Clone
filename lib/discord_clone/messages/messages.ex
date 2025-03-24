@@ -122,4 +122,21 @@ end
     end
   end
 
+    @doc """
+  Checks if the member has permission to modify the message.
+  """
+  defp authorize_action(member, message, action) do
+    is_owner = message.member_id == member.id
+    is_admin = member.role == :admin
+    is_moderator = member.role == :moderator
+    can_modify = is_owner or is_admin or is_moderator
+
+    if can_modify do
+      :ok
+    else
+      {:error, "Unauthorized"}
+    end
+  end
+
+
 end

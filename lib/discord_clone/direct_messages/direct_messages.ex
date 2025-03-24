@@ -131,5 +131,14 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     end
   end
 
+    # Handles message updates, deletions, and restorations
+    defp process_message(:delete, message, _new_content) do
+      log_change(message, "deleted")
+
+      message
+      |> Ecto.Changeset.change(%{file_url: nil, content: "This message has been deleted.", deleted: true})
+      |> Repo.update()
+    end
+
 
 end

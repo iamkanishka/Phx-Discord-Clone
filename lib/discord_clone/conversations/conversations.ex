@@ -56,4 +56,17 @@ defmodule DiscordClone.Conversations.Conversations do
 
   defp get_member(_, _), do: {:error, "Member not found"}
 
+    # Creates the message in the database.
+    defp create_message(conversation_id, member_id, content, file_url) do
+      %DirectMessage{}
+      |> DirectMessage.changeset(%{
+        content: content,
+        file_url: file_url,
+        conversation_id: conversation_id,
+        member_id: member_id
+      })
+      |> Repo.insert()
+    end
+
+
 end

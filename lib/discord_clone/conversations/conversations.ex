@@ -53,4 +53,7 @@ defmodule DiscordClone.Conversations.Conversations do
   defp get_member(%Conversation{member_two: %{profile_id: pid}} = conv, pid) do
     {:ok, conv.member_two}
   end
+
+  defp get_member(_, _), do: {:error, "Member not found"}
+
 end

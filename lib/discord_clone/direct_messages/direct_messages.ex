@@ -79,4 +79,21 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
     end
   end
 
+
+    # Fetch conversation ensuring the profile is a participant
+    defp get_conversation(conversation_id, profile_id) do
+      query =
+        from c in Conversation,
+          where: c.id == ^conversation_id and
+                 (c.member_one_id == ^profile_id or c.member_two_id == ^profile_id),
+          preload: [:member_one, :member_two]
+
+      case Repo.one(query) do
+        nil -> {:error, "Conversation not found"}
+        conversation -> {:ok, conversation}
+      end
+    end
+
+
+
 end

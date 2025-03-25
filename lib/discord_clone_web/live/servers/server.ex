@@ -38,33 +38,36 @@ defmodule DiscordCloneWeb.Servers.Server do
             type="channel"
           />
           <%= case @channel.type do %>
-            <% :VIDEO -> %>
+            <% :TEXT -> %>
               <.live_component
                 module={DiscordCloneWeb.CustomComponents.Chat.ChatMessages}
                 id={"chat_#{@channel.id}"}
                 member={@member}
                 name={@channel.name}
-                chat_id={@channel.id}
+                user_id={@user_id}
+                channel_id={@channel.id}
+                server_id={@channel.server_id}
                 type="channel"
-                socket_query={%{channel_id: @channel.id, server_id: @channel.server_id}}
               />
               <.live_component
                 module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
                 id={"chat_input-#{@channel.id}"}
                 name={@channel.name}
                 type="channel"
-                api_url="/api/socket/messages"
-                query={%{channel_id: @channel.id, server_id: @channel.server_id}}
+                user_id={@user_id}
+                channel_id={@channel.id}
+                server_id={@channel.server_id}
+                file={@file}
               />
               <%!--
-        <% "audio" -> %>
+        <% ":AUDIO" -> %>
           <.live_component module={MediaRoom}
             chat_id={@channel.id}
             video={false}
             audio={true}
           />
 
-        <% "video" -> %>
+        <% ":VIDEO" -> %>
           <.live_component module={MediaRoom}
             chat_id={@channel.id}
             video={true}
@@ -88,11 +91,13 @@ defmodule DiscordCloneWeb.Servers.Server do
           id={"#{@selected_modal.id}"}
           server={@server}
           value={
-            if @selected_modal.id == "edit_server" or @selected_modal.id == "create_server" or   @selected_modal.id == "chat_input_fileuplaod" ,
-              do: @file_content,
-              else: %{}
+            if @selected_modal.id == "edit_server" or @selected_modal.id == "create_server" or
+                 @selected_modal.id == "chat_input_fileuplaod",
+               do: @file_content,
+               else: %{}
           }
           user_id={@user_id}
+          channel_id={@channel.id}
         />
       </.modal>
     <% end %>
@@ -105,6 +110,7 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:server_id, params["server_id"])
      |> assign(:selected_modal, nil)
+     |> assign(:file, nil)
      |> assign_user_id(session)
      |> init_file_content()
      |> assign_user_profile_image(session)}
@@ -126,6 +132,15 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:selected_modal, selected_option)
      |> assign(:server, server)}
+  end
+
+  @impl true
+  def handle_info({:message_file_url, file}, socket) do
+    # Send to another LiveView or component if needed
+    #  send(self(), {:notify_layout, selected_option})
+    {:noreply,
+     socket
+     |> assign(:file, file)}
   end
 
   defp init_file_content(socket) do

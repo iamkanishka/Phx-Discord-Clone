@@ -8,21 +8,17 @@ defmodule DiscordClone.Channels.Channels do
 
   alias DiscordClone.Channels.Channel
 
-
-
-
-    @doc """
+  @doc """
   Fetches a channel by its ID.
   """
-def get_channel_by_id(channel_id) do
-  case Repo.get(Channel, channel_id) do
-    nil -> {:error, "Channel not found"}
-    channel -> {:ok, channel}
+  def get_channel_by_id(channel_id) do
+    case Repo.get(Channel, channel_id) do
+      nil -> {:error, "Channel not found"}
+      channel -> {:ok, channel}
+    end
   end
-end
 
-
-    # Creates a new channel for the given user and redirects to it if successful.
+  # Creates a new channel for the given user and redirects to it if successful.
   # If the user is not authenticated, redirects to the sign-in page.
   # If the server creation fails, returns an error or indicates no server was found.
   def create_channel_and_redirect_to_server(server_id, user_id, name, type) do
@@ -43,7 +39,6 @@ end
       {:error, changeset} -> {:error, changeset}
     end
   end
-
 
   @doc """
   Updates a channel in a server if the requesting user has the necessary role (ADMIN or MODERATOR).

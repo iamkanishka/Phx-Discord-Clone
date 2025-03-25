@@ -63,7 +63,8 @@ defmodule DiscordClone.MixProject do
       {:ueberauth_google, "~> 0.10"},
       {:appwrite, "~> 0.1.9"},
       {:jose, "~> 1.11"},
-      {:joken, "~> 2.6"}
+      {:joken, "~> 2.6"},
+      {:timex, "~> 3.7"}
 
     ]
   end

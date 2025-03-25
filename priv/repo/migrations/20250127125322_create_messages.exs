@@ -8,6 +8,7 @@ defmodule DiscordClone.Repo.Migrations.CreateMessages do
       add :id, :binary_id, primary_key: true
       add :content, :text, null: false
       add :file_url, :text
+      add :file_type, :text
       add :deleted, :boolean, default: false, null: false
 
       timestamps()

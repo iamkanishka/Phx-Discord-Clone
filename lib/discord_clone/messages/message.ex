@@ -8,6 +8,7 @@ defmodule DiscordClone.Messages.Message do
   schema "messages" do
     field :content, :string
     field :file_url, :string
+    field :file_type, :string
     field :deleted, :boolean, default: false
 
     belongs_to :member, DiscordClone.Members.Member, type: :binary_id, on_replace: :delete

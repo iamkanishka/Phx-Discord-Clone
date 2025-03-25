@@ -22,10 +22,11 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MessageFileModal do
       />
       <div class="flex flex-row justify-center items-center">
         <.button
+          phx-click="select"
+          phx-target={@myself}
           class="phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
-          phx-disable-with="Uploading..."
         >
-          Upload
+          Select
         </.button>
       </div>
     </div>
@@ -35,5 +36,13 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MessageFileModal do
   @impl true
   def update(assigns, socket) do
     {:ok, socket |> assign(:is_loading, false) |> assign(assigns)}
+  end
+
+  @impl true
+  def handle_event("select", _un_pram, socket) do
+    IO.inspect("selecty")
+    hide_modal("chat_input_fileuplaod-modal")
+
+    {:noreply, socket}
   end
 end

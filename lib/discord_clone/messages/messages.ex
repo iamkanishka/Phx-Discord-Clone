@@ -1,8 +1,9 @@
 defmodule DiscordClone.Messages.Messages do
   import Ecto.Query, warn: false
+  alias DiscordClone.Profiles.Profiles
   alias DiscordClone.Repo
   alias DiscordClone.Messages.Message
-  alias DiscordClone.Servers.{Server, Member}
+
   alias DiscordClone.Channels.Channel
 
   # Adjust batch size as needed
@@ -67,44 +68,21 @@ defmodule DiscordClone.Messages.Messages do
     end
   end
 
-  @doc """
-  Finds a server where the user is a member.
-  """
-  defp find_server(profile_id, server_id) do
-    case Repo.one(
-           from s in Server,
-             where: s.id == ^server_id,
-             join: m in assoc(s, :members),
-             where: m.profile_id == ^profile_id,
-             preload: [:members]
-         ) do
-      nil -> {:error, "Server not found"}
-      server -> {:ok, server}
-    end
-  end
-
-  @doc """
-  Finds a channel within the specified server.
-  """
-  defp find_channel(channel_id, server_id) do
-    case Repo.one(
-           from c in Channel,
-             where: c.id == ^channel_id and c.server_id == ^server_id
-         ) do
-      nil -> {:error, "Channel not found"}
-      channel -> {:ok, channel}
-    end
-  end
-
-  @doc """
-  Finds a member in the server.
-  """
-  defp find_member(server, profile_id) do
-    case Enum.find(server.members, &(&1.profile_id == profile_id)) do
-      nil -> {:error, "Member not found"}
-      member -> {:ok, member}
-    end
-  end
+  # @doc """
+  # Finds a server where the user is a member.
+  # """
+  # defp find_server(profile_id, server_id) do
+  #   case Repo.one(
+  #          from s in Server,
+  #            where: s.id == ^server_id,
+  #            join: m in assoc(s, :members),
+  #            where: m.profile_id == ^profile_id,
+  #            preload: [:members]
+  #        ) do
+  #     nil -> {:error, "Server not found"}
+  #     server -> {:ok, server}
+  #   end
+  # end
 
   @doc """
   Finds a message in the specified channel.

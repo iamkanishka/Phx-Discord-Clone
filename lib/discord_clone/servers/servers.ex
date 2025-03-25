@@ -19,39 +19,41 @@ defmodule DiscordClone.Servers.Servers do
     - If any operation fails, the transaction is rolled back.
   """
 
-  def create_server(profile_id, image_url, name) do
-    Repo.transaction(fn ->
-      {:ok, server} =
-        %Server{}
-        |> Server.changeset(%{
-          profile_id: profile_id,
-          name: name,
-          image_url: image_url,
-          invite_code: Ecto.UUID.generate()
-        })
-        |> Repo.insert()
+def create_server(profile_id, image_url, name) do
+  Repo.transaction(fn ->
+    {:ok, server} =
+      %Server{}
+      |> Server.changeset(%{
+        profile_id: profile_id,
+        name: name,
+        image_url: image_url,
+        invite_code: Ecto.UUID.generate()
+      })
+      |> Repo.insert()
 
-      {:ok, _channel} =
-        %Channel{}
-        |> Channel.changeset(%{
-          name: "general",
-          server_id: server.id,
-          profile_id: profile_id
-        })
-        |> Repo.insert()
+    {:ok, channel} =
+      %Channel{}
+      |> Channel.changeset(%{
+        name: "general",
+        server_id: server.id,
+        profile_id: profile_id
+      })
+      |> Repo.insert()
 
-      {:ok, _member} =
-        %Member{}
-        |> Member.changeset(%{
-          server_id: server.id,
-          profile_id: profile_id,
-          role: "ADMIN"
-        })
-        |> Repo.insert()
+    {:ok, _member} =
+      %Member{}
+      |> Member.changeset(%{
+        server_id: server.id,
+        profile_id: profile_id,
+        role: "ADMIN"
+      })
+      |> Repo.insert()
 
-      server
-    end)
-  end
+    # Instead of returning {server, channel}, wrap it properly
+    {:ok, server, channel}
+  end)
+end
+
 
   # Creates a new server for the given user and redirects to it if successful.
   # If the user is not authenticated, redirects to the sign-in page.
@@ -60,12 +62,16 @@ defmodule DiscordClone.Servers.Servers do
     # Attempt to get the initial profile for the given user
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          # Attempt to create a new server associated with the profile
-         server <- create_server(profile.id, image_url, name) do
-      case server do
+         {:ok, {:ok, server, channel}} <- create_server(profile.id, image_url, name) do
+      case {server, channel} do
         # If the server creation fails and returns nil, indicate no server was found
-        nil -> {:ok, :no_server_found}
-        # If a server is successfully created, redirect to the server's page
-        %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+        {nil, _} ->
+          {:ok, :no_server_found}
+
+          # If a server is successfully created, redirect to the server's page with channel id
+
+        {%Server{id: server_id}, %Channel{id: channel_id}} ->
+          {:redirect, "/servers/#{server_id}/channel/#{channel_id}"}
       end
     else
       # Handle authentication failure by redirecting to the sign-in page
@@ -97,10 +103,6 @@ defmodule DiscordClone.Servers.Servers do
     )
   end
 
-
-
-
-
   @doc """
   Removes a member from a server, ensuring that:
   - The server exists with the given `server_id`.
@@ -109,10 +111,13 @@ defmodule DiscordClone.Servers.Servers do
   """
   def leave_server(server_id, profile_id) do
     IO.inspect(server_id, profile_id)
+
     Repo.transaction(fn ->
       # Ensure the server exists and does not belong to the given profile
       case Repo.get_by(Server, id: server_id) do
-        nil -> {:error, :server_not_found}
+        nil ->
+          {:error, :server_not_found}
+
         server ->
           server = Repo.preload(server, :members)
 
@@ -121,24 +126,22 @@ defmodule DiscordClone.Servers.Servers do
           else
             # Check if the member exists in the server
             case Enum.find(server.members, &(&1.profile_id == profile_id)) do
-              nil -> {:error, :member_not_found}
+              nil ->
+                {:error, :member_not_found}
+
               _member ->
                 # Remove the member from the server
                 from(m in Member,
                   where: m.server_id == ^server_id and m.profile_id == ^profile_id
                 )
                 |> Repo.delete_all()
+
                 {:ok, :member_removed}
             end
           end
       end
     end)
   end
-
-
-
-
-
 
   @doc """
   Removes a member from a server, ensuring that:
@@ -158,7 +161,9 @@ defmodule DiscordClone.Servers.Servers do
       else
         # Check if the member exists in the server
         case Enum.find(server.members, &(&1.profile_id == profile_id)) do
-          nil -> {:error, :member_not_found}
+          nil ->
+            {:error, :member_not_found}
+
           _member ->
             # Remove the member from the server
             from(m in Member,
@@ -169,11 +174,6 @@ defmodule DiscordClone.Servers.Servers do
       end
     end)
   end
-
-
-
-
-
 
   # Updates the server with the given ID and redirects to it if successful.
   # If the server is not found or unauthorized, returns an error.

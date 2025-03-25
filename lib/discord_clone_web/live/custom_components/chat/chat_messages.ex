@@ -1,4 +1,5 @@
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
+  alias DiscordClone.Messages.Messages
   use DiscordCloneWeb, :live_component
 
   @impl true
@@ -36,35 +37,40 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
         id={:chat_welcome_message}
         type="channel"
         name={@name}
-      /> --%>
-    </div>
+      />
+      <div class="flex flex-col-reverse mt-auto">
+        <%= for {message, index} <- Enum.with_index(@messages || []) do %>
 
-    <%!-- <div class="flex flex-col-reverse mt-auto">
+            <.live_component
+              module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
+              id={message.id}
+              current_member={@member}
+              member={message.member}
+              content={message.content}
+              file_url={message.file_url}
+              deleted={message.deleted}
+              timestamp={format_datetime(message.inserted_at)}
+              is_updated={message.updated_at != message.inserted_at}
+            />
 
-      <%= for {group, index} <- Enum.with_index(@data.pages || []) do %>
-        <%= for message <- group.items do %>
-          <.live_component
-            module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
-            id={message.id}
-            current_member={@member}
-            member={message.member}
-            content={message.content}
-            file_url={message.file_url}
-            deleted={message.deleted}
-            timestamp={format_datetime(message.created_at)}
-            is_updated={message.updated_at != message.created_at}
-            socket_url={@socket_url}
-            socket_query={@socket_query}
-          />
         <% end %>
-      <% end %>
-    </div> --%>
+      </div>
+      --%>
+    </div>
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    {:ok, assign(socket, assigns)}
+
+    %{messages: messages, next_cursor: next_cursor} = Messages.get_messages(assigns.channel_id)
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:messages, messages)
+     |> assign(:next_cursor, next_cursor)
+    }
   end
 
   defp format_datetime(datetime) do

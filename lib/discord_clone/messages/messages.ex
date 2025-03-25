@@ -145,12 +145,13 @@ defmodule DiscordClone.Messages.Messages do
   - Associates the message with the correct member and channel.
   - Returns the newly created message with preloaded member profile.
   """
-  def create_message(profile_id, server_id, channel_id, content, file_url \\ nil) do
-    with {:ok, server} <- find_server(profile_id, server_id),
+  def create_message(user_id, server_id, channel_id, content, file \\ nil) do
+    with {:ok, profile} <- Profiles.initial_profile(user_id),
+         {:ok, server} <- find_server(profile.id, server_id),
          {:ok, channel} <- find_channel(channel_id, server_id),
-         {:ok, member} <- find_member(server, profile_id),
+         {:ok, member} <- find_member(server, profile.id),
          :ok <- validate_content(content) do
-      insert_message(channel_id, member.id, content, file_url)
+      insert_message(channel_id, member.id, content, file)
     end
   end
 
@@ -203,13 +204,14 @@ defmodule DiscordClone.Messages.Messages do
   @doc """
   Inserts a new message into the database.
   """
-  defp insert_message(channel_id, member_id, content, file_url) do
+  defp insert_message(channel_id, member_id, content, file) do
     %Message{}
     |> Message.changeset(%{
       channel_id: channel_id,
       member_id: member_id,
       content: content,
-      file_url: file_url
+      file_url: file.file_URL,
+      file_type: file.type
     })
     |> Repo.insert()
     |> case do

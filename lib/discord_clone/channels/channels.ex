@@ -25,12 +25,16 @@ defmodule DiscordClone.Channels.Channels do
     # Attempt to get the initial profile for the given user
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          # Attempt to create a new Channel  associated with the profile
-         channel <- create_channel(server_id, profile.id, %{name: name, type: type}) do
+         {:ok, channel} <- create_channel(server_id, profile.id, %{name: name, type: type}) do
       case channel do
         # If the Channel creation fails and returns nil, indicate no server was found
-        nil -> {:ok, :no_server_found}
-        # If a server is successfully created, redirect to the server's page
-        %Server{id: server_id} -> {:redirect, "/servers/#{server_id}"}
+        {nil, _} ->
+          {:ok, :no_server_found}
+
+        # If a Channel is successfully created, redirect to the server's page with channel id
+
+        {%Server{id: server_id}, %Channel{id: channel_id}} ->
+          {:redirect, "/servers/#{server_id}/channel/#{channel_id}"}
       end
     else
       # Handle authentication failure by redirecting to the sign-in page

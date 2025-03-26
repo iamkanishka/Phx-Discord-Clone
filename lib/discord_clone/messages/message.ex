@@ -21,7 +21,7 @@ defmodule DiscordClone.Messages.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:content, :file_url, :deleted, :member_id, :channel_id])
+    |> cast(attrs, [:content, :file_url, :file_type,  :deleted, :member_id, :channel_id])
     |> validate_required([:content, :member_id, :channel_id])
     |> validate_length(:content, min: 1)
     |> validate_length(:file_url, max: 2048)

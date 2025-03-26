@@ -1,6 +1,7 @@
 defmodule DiscordCloneWeb.Servers.Server do
   alias DiscordClone.Members.Members
   alias DiscordClone.Channels.Channels
+
   use DiscordCloneWeb, :live_view
 
   @impl true
@@ -19,7 +20,7 @@ defmodule DiscordCloneWeb.Servers.Server do
       </div>
 
       <main class="md:pl-[72px] h-full"></main>
-    </div> --%>
+     </div> --%>
       <.live_component
         module={DiscordCloneWeb.Layouts.ServerMainLayout}
         id={:server_side_bar}
@@ -57,7 +58,9 @@ defmodule DiscordCloneWeb.Servers.Server do
                 user_id={@user_id}
                 channel_id={@channel.id}
                 server_id={@channel.server_id}
-                file={@file}
+
+                 value={@file_content}
+
               />
               <%!--
         <% ":AUDIO" -> %>
@@ -79,13 +82,9 @@ defmodule DiscordCloneWeb.Servers.Server do
       </.live_component>
     </div>
 
-    <%= if @selected_modal != nil do %>
+    <%= if @show_modal and @selected_modal != nil  do %>
       <%!-- <.modal id={"#{@selected_modal.id}-modal"} show on_cancel={hide_modal("#{@selected_modal.id}-modal")}> --%>
-      <.modal
-        id={"#{@selected_modal.id}-modal"}
-        show
-        on_cancel={hide_modal("#{@selected_modal.id}-modal")}
-      >
+      <.modal id={"#{@selected_modal.id}"} show on_cancel={hide_modal(@selected_modal.id)}>
         <.live_component
           module={@selected_modal.module}
           id={"#{@selected_modal.id}"}
@@ -110,7 +109,8 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:server_id, params["server_id"])
      |> assign(:selected_modal, nil)
-     |> assign(:file, nil)
+     |> assign(:show_modal, true)
+
      |> assign_user_id(session)
      |> init_file_content()
      |> assign_user_profile_image(session)}
@@ -134,14 +134,7 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign(:server, server)}
   end
 
-  @impl true
-  def handle_info({:message_file_url, file}, socket) do
-    # Send to another LiveView or component if needed
-    #  send(self(), {:notify_layout, selected_option})
-    {:noreply,
-     socket
-     |> assign(:file, file)}
-  end
+
 
   defp init_file_content(socket) do
     assign(socket, :file_content, %{

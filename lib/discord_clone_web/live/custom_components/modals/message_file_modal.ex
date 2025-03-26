@@ -1,5 +1,6 @@
 defmodule DiscordCloneWeb.CustomComponents.Modals.MessageFileModal do
   use DiscordCloneWeb, :live_component
+  alias Phoenix.LiveView.JS
 
   @impl true
   def render(assigns) do
@@ -39,10 +40,9 @@ defmodule DiscordCloneWeb.CustomComponents.Modals.MessageFileModal do
   end
 
   @impl true
+  @spec handle_event(<<_::48>>, any(), any()) :: {:noreply, any()}
   def handle_event("select", _un_pram, socket) do
-    IO.inspect("selecty")
-    hide_modal("chat_input_fileuplaod-modal")
-
+    socket = push_event(socket, "hide_modal", %{id: "chat_input_fileuplaod"})
     {:noreply, socket}
   end
 end

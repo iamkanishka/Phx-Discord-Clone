@@ -38,6 +38,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
         type="channel"
         name={@name}
       />
+      --%>
       <div class="flex flex-col-reverse mt-auto">
         <%= for {message, index} <- Enum.with_index(@messages || []) do %>
 
@@ -55,7 +56,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
 
         <% end %>
       </div>
-      --%>
+
     </div>
     """
   end

@@ -35,12 +35,12 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
 
           <%= if @is_image do %>
             <a
-              href={@fileUrl}
+              href={@file_url}
               target="_blank"
               rel="noopener noreferrer"
               class="relative aspect-square rounded-md mt-2 overflow-hidden border flex items-center bg-secondary h-48 w-48"
             >
-              <img src={@fileUrl} alt={@content} fill="cover" class="object-cover" />
+              <img src={@file_url} alt={@content} fill="cover" class="object-cover" />
             </a>
           <% end %>
 
@@ -48,7 +48,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             <div class="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
               <.icon name="hero-document" class="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
               <a
-                href={@fileUrl}
+                href={@file_url}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline"
@@ -58,7 +58,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             </div>
           <% end %>
 
-          <%= if !@fileUrl && !@isEditing do %>
+          <%= if !@file_url && !@isEditing do %>
             <p class={"text-sm text-zinc-600 dark:text-zinc-300" <>
               if @deleted, do: "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1", else: "" }>
               {@content}
@@ -70,7 +70,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             </p>
           <% end %>
 
-          <%= if !@fileUrl && @isEditing do %>
+          <%= if !@file_url && @isEditing do %>
             <.simple_form
               for={@form}
               id="product-form"
@@ -118,17 +118,47 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
     """
   end
 
+  @impl true
   def update(assigns, socket) do
-    role_icon_map = %{
+    IO.inspect(assigns)
+     role_icon_map = %{
       :GUEST => nil,
       :MODERATOR => %{name: "shield-check", class: "h-4 w-4 ml-2 text-indigo-500"},
       :ADMIN => %{name: "shield-alert", class: "h-4 w-4 ml-2 text-rose-500"}
     }
 
-    icon = Map.get(role_icon_map, assigns.member.role, nil)
+    current_member = assigns.current_member
+    member = assigns.member
+    deleted = assigns.deleted
+    file_url = assigns.file_url
+    file_type = assigns.file_type || ""
 
-    {:ok, socket |> assign(assigns) |> assign(icon: icon)}
+    is_admin = current_member.role == :ADMIN
+    is_moderator = current_member.role == :MODERATOR
+    is_owner = current_member.id == member.id
+    can_delete_message = !deleted && (is_admin || is_moderator || is_owner)
+    can_edit_message = !deleted && is_owner && is_nil(file_url)
+    is_pdf = (String.contains?(file_type, "pdf") or  String.contains?(file_type, "PDF")) && !is_nil(file_url)
+    is_image = ((String.contains?(file_type, "Image") or String.contains?(file_type, "image"))) && !is_nil(file_url)
+
+
+    icon = Map.get(role_icon_map, member.role, nil)
+
+    socket =
+      socket
+      |> assign(assigns)
+      |> assign(
+        icon: icon,
+        can_delete_message: can_delete_message,
+        can_edit_message: can_edit_message,
+        is_pdf: is_pdf,
+        is_image: is_image,
+        file_url: file_url
+      )
+
+    {:ok, socket}
   end
+
 
   @impl true
   def handle_event("on_member_click", unsigned_params, socket) do

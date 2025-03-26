@@ -1,5 +1,6 @@
 defmodule DiscordClone.Messages.Messages do
   import Ecto.Query, warn: false
+  alias DiscordClone.Servers.Server
   alias DiscordClone.Profiles.Profiles
   alias DiscordClone.Repo
   alias DiscordClone.Messages.Message
@@ -21,9 +22,9 @@ defmodule DiscordClone.Messages.Messages do
         where: m.channel_id == ^channel_id,
         join: mem in assoc(m, :member),
         join: p in assoc(mem, :profile),
-        preload: [member: {mem, profile: p}],
+        join: u in assoc(p, :user),  # Join user through profile
+        preload: [member: {mem, profile: {p, user: u}}],  # Preload user inside profile
         order_by: [desc: m.inserted_at]
-
     # Apply cursor-based pagination if a cursor is provided
     query =
       if cursor do
@@ -211,7 +212,7 @@ defmodule DiscordClone.Messages.Messages do
       member_id: member_id,
       content: content,
       file_url: file.file_URL,
-      file_type: file.type
+      file_type: file.file_type
     })
     |> Repo.insert()
     |> case do

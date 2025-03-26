@@ -34,6 +34,8 @@ Hooks.CmdKListener = CmdKListener;
 Hooks.FileInput = FileInput;
 Hooks.DropdownToggle = DropdownToggle;
 Hooks.videoCall = videoCall;
+Hooks.removeEliement = removeEliement;
+
 
 
 let csrfToken = document

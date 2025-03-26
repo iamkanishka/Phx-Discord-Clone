@@ -1,6 +1,8 @@
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
+  alias Appwrite.Services.Storage
   alias DiscordClone.Messages.Messages
   use DiscordCloneWeb, :live_component
+
 
   @impl true
   def render(assigns) do
@@ -88,6 +90,8 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
   def handle_event("save", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
 
+    IO.inspect(socket.assigns.value)
+
     socket =
       if socket.assigns.value["data"] != "" do
         with {:ok, uploaded_file} <- upload_file(socket),
@@ -98,7 +102,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
                  socket.assigns.server_id,
                  socket.assigns.channel_id,
                  params["input_text"],
-                 %{file_URL: server_image_url, file_type: socket.assigns.value["file"]["type"]}
+                 %{file_URL: server_image_url, file_type: socket.assigns.value["type"]}
                ) do
           socket
         else

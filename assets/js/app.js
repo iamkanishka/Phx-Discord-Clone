@@ -28,13 +28,14 @@ import FileInput from "./fileInput";
 import DropdownToggle from "./DropdownToggle";
 import ClipboardCopy from "./ClipboardCopy";
 import videoCall from "./videoCall"
+// import removeEliement from "./removeEliement"
 
 Hooks.ClipboardCopy = ClipboardCopy;
 Hooks.CmdKListener = CmdKListener;
 Hooks.FileInput = FileInput;
 Hooks.DropdownToggle = DropdownToggle;
 Hooks.videoCall = videoCall;
-Hooks.removeEliement = removeEliement;
+//  Hooks.removeEliement = removeEliement;
 
 
 

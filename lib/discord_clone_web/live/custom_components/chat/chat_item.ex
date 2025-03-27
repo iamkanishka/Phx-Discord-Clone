@@ -121,7 +121,8 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
   @impl true
   def update(assigns, socket) do
     IO.inspect(assigns)
-     role_icon_map = %{
+
+    role_icon_map = %{
       :GUEST => nil,
       :MODERATOR => %{name: "shield-check", class: "h-4 w-4 ml-2 text-indigo-500"},
       :ADMIN => %{name: "shield-alert", class: "h-4 w-4 ml-2 text-rose-500"}
@@ -131,16 +132,24 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
     member = assigns.member
     deleted = assigns.deleted
     file_url = assigns.file_url
-    file_type = assigns.file_type || ""
+    # file_type = assigns.file_type || ""
+
 
     is_admin = current_member.role == :ADMIN
     is_moderator = current_member.role == :MODERATOR
     is_owner = current_member.id == member.id
     can_delete_message = !deleted && (is_admin || is_moderator || is_owner)
     can_edit_message = !deleted && is_owner && is_nil(file_url)
-    is_pdf = (String.contains?(file_type, "pdf") or  String.contains?(file_type, "PDF")) && !is_nil(file_url)
-    is_image = ((String.contains?(file_type, "Image") or String.contains?(file_type, "image"))) && !is_nil(file_url)
 
+    # is_pdf =
+    #   (String.contains?(file_type, "pdf") or String.contains?(file_type, "PDF")) &&
+    #     !is_nil(file_url)
+
+    # is_image =
+    #   (String.contains?(file_type, "Image") or String.contains?(file_type, "image")) &&
+    #     !is_nil(file_url)
+    is_pdf = false
+    is_image = true
 
     icon = Map.get(role_icon_map, member.role, nil)
 
@@ -158,7 +167,6 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
 
     {:ok, socket}
   end
-
 
   @impl true
   def handle_event("on_member_click", unsigned_params, socket) do

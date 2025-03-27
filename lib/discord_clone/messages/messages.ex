@@ -22,9 +22,12 @@ defmodule DiscordClone.Messages.Messages do
         where: m.channel_id == ^channel_id,
         join: mem in assoc(m, :member),
         join: p in assoc(mem, :profile),
-        join: u in assoc(p, :user),  # Join user through profile
-        preload: [member: {mem, profile: {p, user: u}}],  # Preload user inside profile
+        # Join user through profile
+        join: u in assoc(p, :user),
+        # Preload user inside profile
+        preload: [member: {mem, profile: {p, user: u}}],
         order_by: [desc: m.inserted_at]
+
     # Apply cursor-based pagination if a cursor is provided
     query =
       if cursor do

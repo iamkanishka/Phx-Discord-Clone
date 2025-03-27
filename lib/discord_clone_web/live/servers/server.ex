@@ -58,9 +58,7 @@ defmodule DiscordCloneWeb.Servers.Server do
                 user_id={@user_id}
                 channel_id={@channel.id}
                 server_id={@channel.server_id}
-
-                 value={@file_content}
-
+                value={@file_content}
               />
               <%!--
         <% ":AUDIO" -> %>
@@ -82,12 +80,12 @@ defmodule DiscordCloneWeb.Servers.Server do
       </.live_component>
     </div>
 
-    <%= if @show_modal and @selected_modal != nil  do %>
-      <%!-- <.modal id={"#{@selected_modal.id}-modal"} show on_cancel={hide_modal("#{@selected_modal.id}-modal")}> --%>
-      <.modal id={"#{@selected_modal.id}"} show on_cancel={hide_modal(@selected_modal.id)}>
+    <%= if @selected_modal != nil  do %>
+      s
+      <.modal id={"#{@selected_modal.id}"} show>
         <.live_component
           module={@selected_modal.module}
-          id={"#{@selected_modal.id}"}
+          id={"#{@selected_modal.id}-modal"}
           server={@server}
           value={
             if @selected_modal.id == "edit_server" or @selected_modal.id == "create_server" or
@@ -109,8 +107,6 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:server_id, params["server_id"])
      |> assign(:selected_modal, nil)
-     |> assign(:show_modal, true)
-
      |> assign_user_id(session)
      |> init_file_content()
      |> assign_user_profile_image(session)}
@@ -133,8 +129,6 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign(:selected_modal, selected_option)
      |> assign(:server, server)}
   end
-
-
 
   defp init_file_content(socket) do
     assign(socket, :file_content, %{

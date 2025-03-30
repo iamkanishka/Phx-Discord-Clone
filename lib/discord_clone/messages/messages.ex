@@ -22,11 +22,13 @@ defmodule DiscordClone.Messages.Messages do
         where: m.channel_id == ^channel_id,
         join: mem in assoc(m, :member),
         join: p in assoc(mem, :profile),
-        # Join user through profile
-        join: u in assoc(p, :user),
-        # Preload user inside profile
+       # Join user through profile
+       join: u in assoc(p, :user),
+       # Preload user inside profile
         preload: [member: {mem, profile: {p, user: u}}],
-        order_by: [desc: m.inserted_at]
+        order_by: [desc: m.inserted_at],
+        # Ensure full message struct is selected
+        select: m
 
     # Apply cursor-based pagination if a cursor is provided
     query =
@@ -226,5 +228,12 @@ defmodule DiscordClone.Messages.Messages do
       {:error, changeset} ->
         {:error, "Failed to create message: #{inspect(changeset.errors)}"}
     end
+  end
+
+  def get_all_messgaes() do
+    query = from(u in Message)
+
+    # Send the query to the repository
+    Repo.all(query)
   end
 end

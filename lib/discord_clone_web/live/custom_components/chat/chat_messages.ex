@@ -40,38 +40,34 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
       />
       --%>
       <div class="flex flex-col-reverse mt-auto">
-        <%= for {message, index} <- Enum.with_index(@messages || []) do %>
-
-            <.live_component
-              module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
-              id={message.id}
-              current_member={@member}
-              member={message.member}
-              content={message.content}
-              file_url={message.file_url}
-              deleted={message.deleted}
-              timestamp={format_datetime(message.inserted_at)}
-              is_updated={message.updated_at != message.inserted_at}
-            />
-
+        <%= for {message, _index} <- Enum.with_index(@messages || []) do %>
+          <.live_component
+            module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
+            id={message.id}
+            current_member={@member}
+            member={message.member}
+            content={message.content}
+            file_url={message.file_url}
+            file_type={message.file_type}
+            deleted={message.deleted}
+            timestamp={format_datetime(message.inserted_at)}
+            is_updated={message.updated_at != message.inserted_at}
+          />
         <% end %>
       </div>
-
     </div>
     """
   end
 
   @impl true
   def update(assigns, socket) do
-
     %{messages: messages, next_cursor: next_cursor} = Messages.get_messages(assigns.channel_id)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(:messages, messages)
-     |> assign(:next_cursor, next_cursor)
-    }
+     |> assign(:next_cursor, next_cursor)}
   end
 
   defp format_datetime(datetime) do

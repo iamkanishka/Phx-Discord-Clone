@@ -3,7 +3,6 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
   alias DiscordClone.Messages.Messages
   use DiscordCloneWeb, :live_component
 
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -118,7 +117,8 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
                  socket.assigns.user_id,
                  socket.assigns.server_id,
                  socket.assigns.channel_id,
-                 params["input_text"]
+                 params["input_text"],
+                 %{file_URL: nil, file_type: nil}
                ) do
           socket
         else

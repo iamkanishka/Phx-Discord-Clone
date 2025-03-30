@@ -58,11 +58,11 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             </div>
           <% end %>
 
-          <%= if !@file_url && !@isEditing do %>
+          <%= if !@file_url && !@is_editing do %>
             <p class={"text-sm text-zinc-600 dark:text-zinc-300" <>
               if @deleted, do: "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1", else: "" }>
               {@content}
-              <%= if @isUpdated && @deleted do %>
+              <%= if @is_updated && @deleted do %>
                 <span class="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
                   (edited)
                 </span>
@@ -70,7 +70,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
             </p>
           <% end %>
 
-          <%= if !@file_url && @isEditing do %>
+          <%= if !@file_url && @is_editing do %>
             <.simple_form
               for={@form}
               id="product-form"
@@ -103,7 +103,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
           <%= if @can_edit_message do %>
             <%!-- <ActionTooltip label="Edit"> --%>
             <.icon
-              name="hero-edit"
+              name="hero-pencil"
               class="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition"
             /> <%!-- </ActionTooltip> --%>
           <% end %>
@@ -120,8 +120,6 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
 
   @impl true
   def update(assigns, socket) do
-    IO.inspect(assigns)
-
     role_icon_map = %{
       :GUEST => nil,
       :MODERATOR => %{name: "shield-check", class: "h-4 w-4 ml-2 text-indigo-500"},
@@ -132,7 +130,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
     member = assigns.member
     deleted = assigns.deleted
     file_url = assigns.file_url
-    # file_type = assigns.file_type || ""
+     file_type = assigns.file_type || ""
 
 
     is_admin = current_member.role == :ADMIN
@@ -141,15 +139,14 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
     can_delete_message = !deleted && (is_admin || is_moderator || is_owner)
     can_edit_message = !deleted && is_owner && is_nil(file_url)
 
-    # is_pdf =
-    #   (String.contains?(file_type, "pdf") or String.contains?(file_type, "PDF")) &&
-    #     !is_nil(file_url)
+    is_pdf =
+      (String.contains?(file_type, "pdf") or String.contains?(file_type, "PDF")) &&
+        !is_nil(file_url)
 
-    # is_image =
-    #   (String.contains?(file_type, "Image") or String.contains?(file_type, "image")) &&
-    #     !is_nil(file_url)
-    is_pdf = false
-    is_image = true
+    is_image =
+      (String.contains?(file_type, "Image") or String.contains?(file_type, "image")) &&
+        !is_nil(file_url)
+
 
     icon = Map.get(role_icon_map, member.role, nil)
 
@@ -162,7 +159,10 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
         can_edit_message: can_edit_message,
         is_pdf: is_pdf,
         is_image: is_image,
-        file_url: file_url
+        file_url: file_url,
+        is_editing: false,
+        is_updated: false
+
       )
 
     {:ok, socket}

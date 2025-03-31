@@ -4,6 +4,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
   @impl true
   def render(assigns) do
     ~H"""
+    <div class="flex flex-row-reverse">
     <div class="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
       <div class="group flex gap-x-2 items-start w-full">
         <div phx-click="on_member_click" class="cursor-pointer hover:drop-shadow-md transition">
@@ -115,6 +116,8 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatItem do
         </div>
       <% end %>
     </div>
+    </div>
+
     """
   end
 

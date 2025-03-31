@@ -5,7 +5,8 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
+    <%!-- <button id="new-messages-btn" class="new-messages-btn hidden">New Messages</button>  --%>
+    <div class="mb-24">
       <div class="flex flex-col  justify-center items-center">
         <.icon name="hero-arrow-path" class="h-7 w-7 text-zinc-500 animate-spin my-4" />
         <p class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -39,11 +40,16 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
         name={@name}
       />
       --%>
-      <div class="flex flex-col-reverse mt-auto">
-        <%= for {message, _index} <- Enum.with_index(@messages || []) do %>
+      <div
+        id="messages-container"
+        class="flex flex-col-reverse mt-auto"
+        phx-update="stream"
+        phx-hook="InfiniteScroll"
+      >
+        <%= for {id, message} <- @streams.messages do %>
           <.live_component
             module={DiscordCloneWeb.CustomComponents.Chat.ChatItem}
-            id={message.id}
+            id={id}
             current_member={@member}
             member={message.member}
             content={message.content}
@@ -55,19 +61,23 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
           />
         <% end %>
       </div>
+
+      <.button class="fixed bottom-20 right-5 bg-blue-500 text-white px-4 py-2 border-none rounded-full cursor-pointer shadow-md text-sm hidden transition-opacity duration-300 hover:bg-blue-700">
+        New Messages
+      </.button>
     </div>
     """
   end
 
   @impl true
   def update(assigns, socket) do
-    %{messages: messages, next_cursor: next_cursor} = Messages.get_messages(assigns.channel_id)
-
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:messages, messages)
-     |> assign(:next_cursor, next_cursor)}
+     |> assign(:messages, assigns.messages)
+     |> assign(:next_cursor, assigns.next_cursor)
+     |> stream(:messages, assigns.messages, reset: true)
+     |> assign(:next_cursor, assigns.next_cursor)}
   end
 
   defp format_datetime(datetime) do

@@ -1,4 +1,5 @@
 defmodule DiscordCloneWeb.Servers.Server do
+  alias DiscordClone.Messages.Messages
   alias DiscordClone.Members.Members
   alias DiscordClone.Channels.Channels
 
@@ -28,7 +29,7 @@ defmodule DiscordCloneWeb.Servers.Server do
         user_image={@user_image}
         server_id={@server_id}
       >
-        <div class="bg-white dark:bg-[#313338] flex flex-col h-full">
+        <div class="bg-white dark:bg-[#313338] flex flex-col h-full me-6">
           <.live_component
             module={DiscordCloneWeb.CustomComponents.Chat.ChatHeader}
             id={"chat_header_#{@channel.id}"}
@@ -49,6 +50,8 @@ defmodule DiscordCloneWeb.Servers.Server do
                 channel_id={@channel.id}
                 server_id={@channel.server_id}
                 type="channel"
+                messages={@messages}
+                next_cursor={@next_cursor}
               />
               <.live_component
                 module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
@@ -81,7 +84,7 @@ defmodule DiscordCloneWeb.Servers.Server do
     </div>
 
     <%= if @selected_modal != nil  do %>
-      s
+
       <.modal id={"#{@selected_modal.id}"} show>
         <.live_component
           module={@selected_modal.module}
@@ -109,7 +112,9 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign(:selected_modal, nil)
      |> assign_user_id(session)
      |> init_file_content()
-     |> assign_user_profile_image(session)}
+     |> assign_user_profile_image(session)
+     |> assign(:messages, [])
+     |> assign(:next_cursor, "")}
   end
 
   defp assign_user_id(socket, session) do
@@ -128,6 +133,11 @@ defmodule DiscordCloneWeb.Servers.Server do
      socket
      |> assign(:selected_modal, selected_option)
      |> assign(:server, server)}
+  end
+
+  @impl true
+  def handle_info({:new_message, message}, socket) do
+    {:noreply, assign(socket, messages: [socket.assigns.messages | message])}
   end
 
   defp init_file_content(socket) do
@@ -166,21 +176,34 @@ defmodule DiscordCloneWeb.Servers.Server do
 
   @impl true
   def handle_params(params, _uri, socket) do
-    {:noreply, socket |> assign_channel_and_mebers(params)}
+    {:noreply, socket |> assign_channel_and_members(params)}
   end
 
-  defp assign_channel_and_mebers(socket, params) do
+  defp assign_channel_and_members(socket, params) do
     with {:ok, member} <-
            Members.get_member_by_server_and_user(params["server_id"], socket.assigns.user_id),
          {:ok, channel} <-
            Channels.get_channel_by_id(params["channel_id"]) do
+      if connected?(socket),
+        do: Phoenix.PubSub.subscribe(DiscordClone.PubSub, "channel:#{params["channel_id"]}")
+
       socket
       |> assign(:channel, channel)
       |> assign(:member, member)
+      |> load_messages()
     else
       {:error, error} ->
         # This now correctly handles errors
         {:error, error}
     end
+  end
+
+  defp load_messages(socket) do
+    %{messages: messages, next_cursor: next_cursor} =
+      Messages.get_messages(socket.assigns.channel.id)
+
+    socket
+    |> assign(:next_cursor, next_cursor)
+    |> assign(:messages, messages)
   end
 end

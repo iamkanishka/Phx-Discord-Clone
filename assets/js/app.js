@@ -28,6 +28,7 @@ import FileInput from "./fileInput";
 import DropdownToggle from "./DropdownToggle";
 import ClipboardCopy from "./ClipboardCopy";
 import videoCall from "./videoCall"
+import InfiniteScroll from "./InfiniteScroll";
 // import removeEliement from "./removeEliement"
 
 Hooks.ClipboardCopy = ClipboardCopy;
@@ -36,6 +37,7 @@ Hooks.FileInput = FileInput;
 Hooks.DropdownToggle = DropdownToggle;
 Hooks.videoCall = videoCall;
 //  Hooks.removeEliement = removeEliement;
+Hooks.InfiniteScroll = InfiniteScroll;
 
 
 

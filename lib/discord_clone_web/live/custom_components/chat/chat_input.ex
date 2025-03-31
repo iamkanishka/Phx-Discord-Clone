@@ -6,50 +6,49 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
   @impl true
   def render(assigns) do
     ~H"""
-    <div>
-      <.simple_form
-        for={@form}
-        id="product-form"
-        phx-target={@myself}
-        phx-change="validate"
-        phx-submit="save"
-        class="space-y-8"
-      >
-        <div class="relative p-4 pb-6">
-          <.button
-            type="button"
-            phx-click="message_file"
-            phx-target={@myself}
-            class="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full p-1 flex justify-center items-center "
-          >
-            <.icon name="hero-plus" class="text-white dark:text-[#313338]" />
-          </.button>
+    <div class="fixed bottom-0  z-[100] w-full">
+      <div>
+        <.simple_form
+          for={@form}
+          id="product-form"
+          phx-target={@myself}
+          phx-change="validate"
+          phx-submit="save"
+          class="space-y-8"
+        >
+        <div class="relative p-4 pb-6 flex items-center w-full gap-2">
+  <!-- Attachment Button -->
+  <.button
+    type="button"
+    phx-click="message_file"
+    phx-target={@myself}
+    class="h-10 w-10 bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full flex justify-center items-center"
+  >
+    <.icon name="hero-plus" class="text-white dark:text-[#313338] w-5 h-5" />
+  </.button>
 
-          <.input
-            readonly={@is_loading}
-            field={@form[:input_text]}
-            type="text"
-            class="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-            placeholder={"Message #{if @type == "conversation", do:  @name, else: "#" <> @name}"}
-          />
-          <%!-- <div class="absolute top-7 right-8">
-                    <EmojiPicker
-                      onChange={(emoji: string) => field.onChange(`${field.value} ${emoji}`)}
-                    />
-                  </div> --%>
-        </div>
+  <!-- Input Field (Stretch to Full Width) -->
+  <.input
+    readonly={@is_loading}
+    field={@form[:input_text]}
+    type="text"
+    class="flex-grow px-4 py-3 bg-zinc-200/90 dark:bg-zinc-700/75 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 w-full rounded-lg"
+    placeholder={"Message #{if @type == "conversation", do:  @name, else: "#" <> @name}"}
+  />
 
-        <div>
-          <div class="flex flex-row justify-center items-center">
-            <.button
-              class="phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
-              phx-disable-with="Creating..."
-            >
-              Create
-            </.button>
-          </div>
-        </div>
-      </.simple_form>
+  <!-- Send Button -->
+  <.button
+    type="button"
+    phx-click="save"
+    phx-target={@myself}
+    class="h-10 w-10 bg-blue-500 hover:bg-blue-600 transition rounded-full flex justify-center items-center"
+  >
+    <.icon name="hero-paper-airplane" class="text-white w-5 h-5" />
+  </.button>
+</div>
+
+        </.simple_form>
+      </div>
     </div>
     """
   end

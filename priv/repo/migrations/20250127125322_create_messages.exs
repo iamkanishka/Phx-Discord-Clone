@@ -6,7 +6,7 @@ defmodule DiscordClone.Repo.Migrations.CreateMessages do
   def change do
     create table(:messages, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :content, :text, null: false
+      add :content, :text
       add :file_url, :text
       add :file_type, :text
       add :deleted, :boolean, default: false, null: false

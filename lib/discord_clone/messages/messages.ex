@@ -7,6 +7,8 @@ defmodule DiscordClone.Messages.Messages do
 
   alias DiscordClone.Channels.Channel
 
+  import Ecto.Changeset
+
   # Adjust batch size as needed
   @messages_batch 20
 
@@ -22,9 +24,9 @@ defmodule DiscordClone.Messages.Messages do
         where: m.channel_id == ^channel_id,
         join: mem in assoc(m, :member),
         join: p in assoc(mem, :profile),
-       # Join user through profile
-       join: u in assoc(p, :user),
-       # Preload user inside profile
+        # Join user through profile
+        join: u in assoc(p, :user),
+        # Preload user inside profile
         preload: [member: {mem, profile: {p, user: u}}],
         order_by: [desc: m.inserted_at],
         # Ensure full message struct is selected
@@ -155,8 +157,8 @@ defmodule DiscordClone.Messages.Messages do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          {:ok, server} <- find_server(profile.id, server_id),
          {:ok, channel} <- find_channel(channel_id, server_id),
-         {:ok, member} <- find_member(server, profile.id),
-         :ok <- validate_content(content) do
+         {:ok, member} <- find_member(server, profile.id) do
+      #  :ok <- validate_content(content)
       insert_message(channel_id, member.id, content, file)
     end
   end
@@ -203,9 +205,10 @@ defmodule DiscordClone.Messages.Messages do
   @doc """
   Validates that the content is present.
   """
-  defp validate_content(nil), do: {:error, "Content missing"}
-  defp validate_content(""), do: {:error, "Content missing"}
-  defp validate_content(_), do: :ok
+
+  # defp validate_content(nil), do: {:error, "Content missing"}
+  # defp validate_content(""), do: {:error, "Content missing"}
+  # defp validate_content(_), do: :ok
 
   @doc """
   Inserts a new message into the database.
@@ -222,18 +225,30 @@ defmodule DiscordClone.Messages.Messages do
     |> Repo.insert()
     |> case do
       {:ok, message} ->
-        # Preloading profile for frontend needs
-        {:ok, Repo.preload(message, member: [:profile])}
+        message = Repo.preload(message, member: [profile: :user])
+
+        Phoenix.PubSub.broadcast(
+          DiscordClone.PubSub,
+          "channel:#{channel_id}",
+          {:new_message, message}
+        )
+
+        {:ok, message}
 
       {:error, changeset} ->
-        {:error, "Failed to create message: #{inspect(changeset.errors)}"}
+        # {:error, "Failed to create message: #{format_errors(changeset)}"}
+        {:error, "Failed to create message: #{IO.inspect(changeset)}"}
     end
   end
 
-  def get_all_messgaes() do
-    query = from(u in Message)
+  # defp format_errors(changeset) do
+  #   changeset
+  #   |> Ecto.Changeset.traverse_errors(&translate_error/1)
+  #   |> Enum.map(fn {field, msg} -> "#{field}: #{msg}" end)
+  #   |> Enum.join(", ")
+  # end
 
-    # Send the query to the repository
-    Repo.all(query)
-  end
+  # defp translate_error({msg, opts}) do
+  #   Changeset.default_error_message(msg, opts)
+  # end
 end

@@ -20,7 +20,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatMessages do
         <.live_component
           module={DiscordCloneWeb.CustomComponents.Chat.ChatWelcomeMessage}
           id={:chat_welcome_message}
-          type="channel"
+          type={@type}
           name={@name}
         />
       </div>

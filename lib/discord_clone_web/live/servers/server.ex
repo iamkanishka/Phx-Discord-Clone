@@ -254,4 +254,15 @@ defmodule DiscordCloneWeb.Servers.Server do
     end
   end
 
+  defp load_conversations(socket) do
+    %{messages: messages, next_cursor: next_cursor} =
+      DirectMessages.fetch_messages(socket.assigns.conversation.id)
+
+    IO.inspect(messages, label: "Messages")
+
+    socket
+    |> assign(:next_cursor, next_cursor)
+    |> assign(:messages, messages)
+  end
+
 end

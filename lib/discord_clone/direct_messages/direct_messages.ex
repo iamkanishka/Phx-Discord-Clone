@@ -30,7 +30,10 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
         where: dm.conversation_id == ^conversation_id,
         join: m in assoc(dm, :member),
         join: p in assoc(m, :profile),
-        preload: [member: {m, profile: p}],
+        join: u in assoc(p, :user),
+
+        # preload: [member: {m, profile: p}],
+        preload: [member: {m, profile: {p, user: u}}],
         order_by: [desc: dm.inserted_at],
         limit: @messages_batch
 
@@ -54,7 +57,58 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
         nil
       end
 
-    {messages, next_cursor}
+    %{messages: messages, next_cursor: next_cursor}
+  end
+
+  @doc """
+  Sends a direct message in a conversation, ensuring the user is a participant.
+
+  ## Params:
+    - `conversation_id` (Binary ID): The ID of the conversation.
+    - `profile_id` (Binary ID): The ID of the user's profile.
+    - `content` (String): The message content.
+    - `file_url` (String | nil): The URL of an attached file (if any).
+
+  ## Returns:
+    - `{:ok, message}` on success.
+    - `{:error, reason}` if the conversation or member is not found.
+  """
+  def send_message(conversation_id, profile_id, content, file_url \\ nil) do
+    with {:ok, conversation} <- get_conversation(conversation_id, profile_id),
+         {:ok, member} <- get_member(conversation, profile_id),
+         {:ok, message} <- create_message(conversation_id, member.id, content, file_url) do
+      {:ok, message}
+    else
+      {:error, _} = error -> error
+    end
+  end
+
+  # Creates the message in the database.
+  defp create_message(conversation_id, member_id, content, file_url) do
+    %DirectMessage{}
+    |> DirectMessage.changeset(%{
+      content: content,
+      file_url: file_url,
+      conversation_id: conversation_id,
+      member_id: member_id
+    })
+    |> Repo.insert()
+    |> case do
+      {:ok, message} ->
+        message = Repo.preload(message, member: [profile: :user])
+
+        Phoenix.PubSub.broadcast(
+          DiscordClone.PubSub,
+          "conversation:#{conversation_id}",
+          {:new_conversation, message}
+        )
+
+        {:ok, message}
+
+      {:error, changeset} ->
+        # {:error, "Failed to create message: #{format_errors(changeset)}"}
+        {:error, "Failed to create message: #{IO.inspect(changeset)}"}
+    end
   end
 
   @doc """

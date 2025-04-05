@@ -8,6 +8,7 @@ defmodule DiscordClone.DirectMessages.DirectMessage do
   schema "direct_messages" do
     field :content, :string
     field :file_url, :string
+    field :file_type, :string
     field :deleted, :boolean, default: false
 
     belongs_to :member, DiscordClone.Members.Member, foreign_key: :member_id, on_replace: :delete
@@ -19,8 +20,8 @@ defmodule DiscordClone.DirectMessages.DirectMessage do
   @doc false
   def changeset(direct_message, attrs) do
     direct_message
-    |> cast(attrs, [:content, :file_url, :member_id, :conversation_id, :deleted])
-    |> validate_required([:content, :member_id, :conversation_id])
+    |> cast(attrs, [:content, :file_url, :file_type, :member_id, :conversation_id, :deleted])
+    |> validate_required([:member_id, :conversation_id])
     |> foreign_key_constraint(:member_id)
     |> foreign_key_constraint(:conversation_id)
   end

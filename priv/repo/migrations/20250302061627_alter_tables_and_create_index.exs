@@ -39,9 +39,9 @@ defmodule DiscordClone.Repo.Migrations.AlterTablesAndCreateIndex do
 
     # Direct Messages
     alter table(:direct_messages) do
-      add :member, references(:members, type: :binary_id, on_delete: :delete_all), null: false
+      add :member_id, references(:members, type: :binary_id, on_delete: :delete_all), null: false
 
-      add :conversation, references(:conversations, type: :binary_id, on_delete: :delete_all),
+      add :conversation_id, references(:conversations, type: :binary_id, on_delete: :delete_all),
         null: false
     end
 
@@ -85,7 +85,7 @@ defmodule DiscordClone.Repo.Migrations.AlterTablesAndCreateIndex do
 
     # Direct Messages
 
-    create index(:direct_messages, [:member])
-    create index(:direct_messages, [:conversation])
+    create index(:direct_messages, [:member_id])
+    create index(:direct_messages, [:conversation_id])
   end
 end

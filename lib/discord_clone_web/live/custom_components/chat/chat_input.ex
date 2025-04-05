@@ -16,9 +16,9 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
           phx-submit="save"
           class="space-y-8"
         >
-        <div class="relative p-4 pb-6 flex items-center w-full gap-2">
+        <div class="relative p-4 pb-6 flex w-full items-center  gap-2">
   <!-- Attachment Button -->
-  <.button
+ <.button
     type="button"
     phx-click="message_file"
     phx-target={@myself}
@@ -32,12 +32,12 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
     readonly={@is_loading}
     field={@form[:input_text]}
     type="text"
-    class="flex-grow px-4 py-3 bg-zinc-200/90 dark:bg-zinc-700/75 border-none focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 w-full rounded-lg"
+    class="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
     placeholder={"Message #{if @type == "conversation", do:  @name, else: "#" <> @name}"}
   />
 
   <!-- Send Button -->
-  <.button
+    <.button
     type="button"
     phx-click="save"
     phx-target={@myself}

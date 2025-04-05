@@ -8,7 +8,7 @@ defmodule DiscordClone.Members.Members do
   def get_member_by_server_and_user(server_id, user_id) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          {:ok, member} <- get_member_by_server_and_profile(server_id, profile.id) do
-      {:ok, member}
+      {:ok, member, profile.id}
     else
       {:error, error} ->
         {:error, error}

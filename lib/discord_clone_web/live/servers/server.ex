@@ -1,4 +1,8 @@
 defmodule DiscordCloneWeb.Servers.Server do
+  alias DiscordClone.DirectMessages.DirectMessages
+  alias DiscordClone.DirectMessages.DirectMessage
+  alias DiscordClone.Conversations
+  alias DiscordClone.Conversations.Conversations
   alias DiscordClone.Messages.Messages
   alias DiscordClone.Members.Members
   alias DiscordClone.Channels.Channels
@@ -43,13 +47,14 @@ defmodule DiscordCloneWeb.Servers.Server do
             <% :TEXT -> %>
               <.live_component
                 module={DiscordCloneWeb.CustomComponents.Chat.ChatMessages}
-                id={"chat_#{@channel.id}"}
+                id={"chat_#{if @chat_type == ~c"channel", do: @channel.id, else: @conversation.id}"}
                 member={@member}
-                name={@channel.name}
+                name={if @chat_type == ~c"channel", do: @channel.name, else: @member.profile.name}
                 user_id={@user_id}
-                channel_id={@channel.id}
-                server_id={@channel.server_id}
-                type="channel"
+                channel_id={if @chat_type == ~c"channel", do: @channel.id, else: ""}
+                conversation_id={@conversation.id}
+                server_id={if @chat_type == ~c"channel", do: @channel.server_id, else: ""}
+                type={@chat_type}
                 messages={@messages}
                 next_cursor={@next_cursor}
               />
@@ -57,7 +62,7 @@ defmodule DiscordCloneWeb.Servers.Server do
                 module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
                 id={"chat_input-#{@channel.id}"}
                 name={@channel.name}
-                type="channel"
+                type={@chat_type}
                 user_id={@user_id}
                 channel_id={@channel.id}
                 server_id={@channel.server_id}
@@ -84,7 +89,6 @@ defmodule DiscordCloneWeb.Servers.Server do
     </div>
 
     <%= if @selected_modal != nil  do %>
-
       <.modal id={"#{@selected_modal.id}"} show>
         <.live_component
           module={@selected_modal.module}
@@ -113,6 +117,7 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign_user_id(session)
      |> init_file_content()
      |> assign_user_profile_image(session)
+     |> assign(:chat_type, "")
      |> assign(:messages, [])
      |> assign(:next_cursor, "")}
   end
@@ -138,6 +143,11 @@ defmodule DiscordCloneWeb.Servers.Server do
   @impl true
   def handle_info({:new_message, message}, socket) do
     {:noreply, assign(socket, messages: [socket.assigns.messages | message])}
+  end
+
+  @impl true
+  def handle_info({:new_conversation, conversation}, socket) do
+    {:noreply, assign(socket, messages: [socket.assigns.conversation | conversation])}
   end
 
   defp init_file_content(socket) do
@@ -175,12 +185,21 @@ defmodule DiscordCloneWeb.Servers.Server do
   end
 
   @impl true
-  def handle_params(params, _uri, socket) do
-    {:noreply, socket |> assign_channel_and_members(params)}
+  def handle_params(params, uri, socket) do
+    socket =
+      if String.contains?(uri, "channel") and params["channel_id"] do
+        socket
+        |> assign_channel_and_members(params)
+      else
+        socket
+        |> assign_conversation_and_members(params)
+      end
+
+    {:noreply, socket}
   end
 
   defp assign_channel_and_members(socket, params) do
-    with {:ok, member} <-
+    with {:ok, member, profile_id} <-
            Members.get_member_by_server_and_user(params["server_id"], socket.assigns.user_id),
          {:ok, channel} <-
            Channels.get_channel_by_id(params["channel_id"]) do
@@ -188,6 +207,7 @@ defmodule DiscordCloneWeb.Servers.Server do
         do: Phoenix.PubSub.subscribe(DiscordClone.PubSub, "channel:#{params["channel_id"]}")
 
       socket
+      |> assign(:chat_type, "channel")
       |> assign(:channel, channel)
       |> assign(:member, member)
       |> load_messages()
@@ -195,6 +215,7 @@ defmodule DiscordCloneWeb.Servers.Server do
       {:error, error} ->
         # This now correctly handles errors
         {:error, error}
+        socket
     end
   end
 
@@ -206,4 +227,31 @@ defmodule DiscordCloneWeb.Servers.Server do
     |> assign(:next_cursor, next_cursor)
     |> assign(:messages, messages)
   end
+
+  defp assign_conversation_and_members(socket, params) do
+    with {:ok, member, profile_id} <-
+           Members.get_member_by_server_and_user(params["server_id"], socket.assigns.user_id),
+         {:ok, conversation} <-
+           Conversations.get_or_create_conversation(member.id, params["member_id"]) do
+      other_member =
+        if conversation.member_one.profile_id == profile_id,
+          do: conversation.member_two,
+          else: conversation.member_one
+
+      if connected?(socket),
+        do: Phoenix.PubSub.subscribe(DiscordClone.PubSub, "conversation:#{conversation.id}")
+
+      socket
+      |> assign(:chat_type, "conversation")
+      |> assign(:conversation, conversation)
+      |> assign(:member, other_member)
+      |> load_conversations()
+    else
+      {:error, error} ->
+        # This now correctly handles errors
+        {:error, error}
+        socket
+    end
+  end
+
 end

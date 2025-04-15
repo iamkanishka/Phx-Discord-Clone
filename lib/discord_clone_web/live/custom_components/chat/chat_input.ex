@@ -1,6 +1,8 @@
 defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
+  alias DiscordClone.DirectMessages.DirectMessages
   alias Appwrite.Services.Storage
   alias DiscordClone.Messages.Messages
+
   use DiscordCloneWeb, :live_component
 
   @impl true
@@ -16,37 +18,36 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
           phx-submit="save"
           class="space-y-8"
         >
-        <div class="relative p-4 pb-6 flex w-full items-center  gap-2">
-  <!-- Attachment Button -->
- <.button
-    type="button"
-    phx-click="message_file"
-    phx-target={@myself}
-    class="h-10 w-10 bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full flex justify-center items-center"
-  >
-    <.icon name="hero-plus" class="text-white dark:text-[#313338] w-5 h-5" />
-  </.button>
+          <div class="relative p-4 pb-6 flex w-full items-center  gap-2">
+            <!-- Attachment Button -->
+            <.button
+              type="button"
+              phx-click="message_file"
+              phx-target={@myself}
+              class="h-10 w-10 bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full flex justify-center items-center"
+            >
+              <.icon name="hero-plus" class="text-white dark:text-[#313338] w-5 h-5" />
+            </.button>
 
-  <!-- Input Field (Stretch to Full Width) -->
-  <.input
-    readonly={@is_loading}
-    field={@form[:input_text]}
-    type="text"
-    class="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
-    placeholder={"Message #{if @type == "conversation", do:  @name, else: "#" <> @name}"}
-  />
+    <!-- Input Field (Stretch to Full Width) -->
+            <.input
+              readonly={@is_loading}
+              field={@form[:input_text]}
+              type="text"
+              class="px-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+              placeholder={"Message #{if @type == "conversation", do:  @name, else: "#" <> @name}"}
+            />
 
-  <!-- Send Button -->
-    <.button
-    type="button"
-    phx-click="save"
-    phx-target={@myself}
-    class="h-10 w-10 bg-blue-500 hover:bg-blue-600 transition rounded-full flex justify-center items-center"
-  >
-    <.icon name="hero-paper-airplane" class="text-white w-5 h-5" />
-  </.button>
-</div>
-
+    <!-- Send Button -->
+            <.button
+              type="button"
+              phx-click="save"
+              phx-target={@myself}
+              class="h-10 w-10 bg-blue-500 hover:bg-blue-600 transition rounded-full flex justify-center items-center"
+            >
+              <.icon name="hero-paper-airplane" class="text-white w-5 h-5" />
+            </.button>
+          </div>
         </.simple_form>
       </div>
     </div>
@@ -88,40 +89,59 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
   def handle_event("save", %{"form" => params}, socket) do
     socket = assign(socket, :is_loading, true)
 
-    IO.inspect(socket.assigns.value)
-
     socket =
-      if socket.assigns.value["data"] != "" do
-        with {:ok, uploaded_file} <- upload_file(socket),
-             server_image_url <- create_server_image_url(uploaded_file["$id"]),
-             {:ok, _message} <-
-               Messages.create_message(
-                 socket.assigns.user_id,
-                 socket.assigns.server_id,
-                 socket.assigns.channel_id,
-                 params["input_text"],
-                 %{file_URL: server_image_url, file_type: socket.assigns.value["type"]}
-               ) do
-          socket
-        else
-          {:error, error} ->
-            {:error, error}
-
+      if @type == "channel" do
+        if socket.assigns.value["data"] != "" do
+          with {:ok, uploaded_file} <- upload_file(socket),
+               server_image_url <- create_server_image_url(uploaded_file["$id"]),
+               {:ok, _message} <-
+                 Messages.create_message(
+                   socket.assigns.user_id,
+                   socket.assigns.server_id,
+                   socket.assigns.channel_id,
+                   params["input_text"],
+                   %{file_URL: server_image_url, file_type: socket.assigns.value["type"]}
+                 ) do
             socket
-            |> assign(:is_loading, false)
+          else
+            {:error, error} ->
+              {:error, error}
+
+              socket
+              |> assign(:is_loading, false)
+          end
+        else
+          with {:ok, _message} <-
+                 Messages.create_message(
+                   socket.assigns.user_id,
+                   socket.assigns.server_id,
+                   socket.assigns.channel_id,
+                   params["input_text"],
+                   %{file_URL: nil, file_type: nil}
+                 ) do
+            socket
+          else
+            {:error, error} ->
+              {:error, error}
+
+              socket
+              |> assign(:is_loading, false)
+          end
         end
       else
+        IO.inspect("Conversation Message Send")
+        IO.inspect(socket.assigns.conversation_id, label: "Conversation ID")
         with {:ok, _message} <-
-               Messages.create_message(
+               DirectMessages.send_message(
+                 socket.assigns.conversation_id,
                  socket.assigns.user_id,
-                 socket.assigns.server_id,
-                 socket.assigns.channel_id,
                  params["input_text"],
                  %{file_URL: nil, file_type: nil}
                ) do
           socket
         else
           {:error, error} ->
+              IO.inspect(error, label: "Error in Conversation Message Send")
             {:error, error}
 
             socket

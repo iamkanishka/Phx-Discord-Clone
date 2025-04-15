@@ -31,32 +31,30 @@ defmodule DiscordCloneWeb.Servers.Server do
         user_id={@user_id}
         user_image={@user_image}
         server_id={@server_id}
-
       >
-
-
-        <%= IO.inspect(!@is_loading) %>
-        <%= if !@is_loading do %>
+       <%= if !@is_loading do %>
           <div class="bg-white dark:bg-[#313338] flex flex-col h-full me-6">
             <.live_component
               module={DiscordCloneWeb.CustomComponents.Chat.ChatHeader}
-              id={"chat_header_#{if @chat_type == ~c"channel", do: @channel.id, else: @conversation.id}"}
-              name={if @chat_type == ~c"channel", do: @channel.name, else: @member.profile.name}
+              id={"chat_header_#{if @chat_type == "channel", do: @channel.id, else: @conversation.id}"}
+              name={if @chat_type == "channel", do: @channel.name, else: @member.profile.user.name}
               serverId={@server_id}
               is_video={false}
               user_image={@user_image}
               type={@chat_type}
             />
-            <%= case @channel.type do %>
+            <%= case @channel_communication_type do %>
               <% :TEXT -> %>
                 <.live_component
                   module={DiscordCloneWeb.CustomComponents.Chat.ChatMessages}
-                  id={"chat_#{if @chat_type == ~c"channel", do: @channel.id, else: @conversation.id}"}
+                  id={"chat_header_#{if @chat_type == "channel", do: @channel.id, else: @conversation.id}"}
                   member={@member}
-                  name={if @chat_type == ~c"channel", do: @channel.name, else: @member.profile.name}
+                  name={
+                    if @chat_type == "channel", do: @channel.name, else: @member.profile.user.name
+                  }
                   user_id={@user_id}
-                  channel_id={if @chat_type == ~c"channel", do: @channel.id, else: ""}
-                  conversation_id={@conversation.id}
+                  channel_id={if @chat_type == "channel", do: @channel.id, else: ""}
+                  conversation_id={if @chat_type == "channel", do: "", else: @conversation.id}
                   server_id={@server_id}
                   type={@chat_type}
                   messages={@messages}
@@ -64,14 +62,16 @@ defmodule DiscordCloneWeb.Servers.Server do
                 />
                 <.live_component
                   module={DiscordCloneWeb.CustomComponents.Chat.ChatInput}
-                  id={"chat_input-#{if @chat_type == ~c"channel", do: @channel.id, else: @conversation.id}"}
-                  name={if @chat_type == ~c"channel", do: @channel.name, else: @member.profile.name}
+                  id={"chat_input-#{if @chat_type == "channel", do: @channel.id, else: @conversation.id}"}
+                  name={
+                    if @chat_type == "channel", do: @channel.name, else: @member.profile.user.name
+                  }
                   type={@chat_type}
                   user_id={@user_id}
-                  channel_id={if @chat_type == ~c"channel", do: @channel.id, else: ""}
+                  channel_id={if @chat_type == "channel", do: @channel.id, else: ""}
                   server_id={@server_id}
                   value={@file_content}
-                  conversation_id={@conversation.id}
+                  conversation_id={if @chat_type == "channel", do: "", else: @conversation.id}
                 />
                 <%!--
         <% ":AUDIO" -> %>
@@ -107,7 +107,7 @@ defmodule DiscordCloneWeb.Servers.Server do
                else: %{}
           }
           user_id={@user_id}
-          channel_id={if @chat_type == ~c"channel", do: @channel.id, else: ""}
+          channel_id={if @chat_type == "channel", do: @channel.id, else: ""}
         />
       </.modal>
     <% end %>
@@ -123,7 +123,7 @@ defmodule DiscordCloneWeb.Servers.Server do
      |> assign_user_id(session)
      |> init_file_content()
      |> assign_user_profile_image(session)
-     |> assign(:chat_type, "")
+     |> assign(:conversation, %{})
      |> assign(:messages, [])
      |> assign(:next_cursor, "")
      |> assign(:is_loading, true)}
@@ -205,6 +205,7 @@ defmodule DiscordCloneWeb.Servers.Server do
       socket
       |> assign(:chat_type, "channel")
       |> assign(:channel, channel)
+      |> assign(:channel_communication_type, channel.type)
       |> assign(:member, member)
       |> load_messages()
     else
@@ -223,7 +224,6 @@ defmodule DiscordCloneWeb.Servers.Server do
     |> assign(:next_cursor, next_cursor)
     |> assign(:messages, messages)
     |> assign(:is_loading, false)
-
   end
 
   defp assign_conversation_and_members(socket, params) do
@@ -238,27 +238,29 @@ defmodule DiscordCloneWeb.Servers.Server do
           do: conversation.member_two,
           else: conversation.member_one
 
+      IO.inspect(other_member, label: "other_member")
+
       if connected?(socket),
         do: Phoenix.PubSub.subscribe(DiscordClone.PubSub, "conversation:#{conversation.id}")
+
+      IO.inspect("entering load_conversations other_member")
 
       socket
       |> assign(:chat_type, "conversation")
       |> assign(:conversation, conversation)
+      |> assign(:channel_communication_type, :TEXT)
       |> assign(:member, other_member)
       |> load_conversations()
     else
       {:error, error} ->
-        # This now correctly handles errorss
+        IO.inspect(error, label: "assign_conversation_and_members error")
         {:error, error}
-        socket
     end
   end
 
   defp load_conversations(socket) do
     %{messages: messages, next_cursor: next_cursor} =
       DirectMessages.fetch_messages(socket.assigns.conversation.id)
-
-    IO.inspect(messages, label: "convMessages")
 
     socket
     |> assign(:next_cursor, next_cursor)

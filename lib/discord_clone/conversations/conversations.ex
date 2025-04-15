@@ -23,7 +23,10 @@ defmodule DiscordClone.Conversations.Conversations do
     Repo.one(
       from c in Conversation,
         where: c.member_one_id == ^member_one_id and c.member_two_id == ^member_two_id,
-        preload: [:member_one, :member_two]
+        preload: [
+          member_one: [profile: [:user]],
+          member_two: [profile: [:user]]
+        ]
     )
   end
 

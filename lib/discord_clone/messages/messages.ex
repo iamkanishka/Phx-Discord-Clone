@@ -156,7 +156,7 @@ defmodule DiscordClone.Messages.Messages do
   def create_message(user_id, server_id, channel_id, content, file \\ nil) do
     with {:ok, profile} <- Profiles.initial_profile(user_id),
          {:ok, server} <- find_server(profile.id, server_id),
-         {:ok, channel} <- find_channel(channel_id, server_id),
+         {:ok, _channel} <- find_channel(channel_id, server_id),
          {:ok, member} <- find_member(server, profile.id) do
       #  :ok <- validate_content(content)
       insert_message(channel_id, member.id, content, file)

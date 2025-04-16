@@ -87,38 +87,37 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
 
   # Creates the message in the database.
   defp create_message(conversation_id, member_id, content, file) do
-   try do
+    try do
+      %DirectMessage{}
+      |> DirectMessage.changeset(%{
+        content: content,
+        file_url: file.file_URL,
+        file_type: file.file_type,
+        conversation_id: conversation_id,
+        member_id: member_id
+      })
+      |> Repo.insert()
+      |> case do
+        {:ok, direct_message} ->
+          IO.inspect(direct_message, label: "Direct Message")
+          message = Repo.preload(direct_message, member: [profile: :user])
 
-    %DirectMessage{}
-    |> DirectMessage.changeset(%{
-      content: content,
-      file_url: file.file_URL,
-      file_type: file.file_type,
-      conversation_id: conversation_id,
-      member_id: member_id
-    })
-    |> Repo.insert()
-    |> case do
-      {:ok, direct_message} ->
-        IO.inspect(direct_message, label: "Direct Message")
-        message = Repo.preload(direct_message, member: [profile: :user])
+          Phoenix.PubSub.broadcast(
+            DiscordClone.PubSub,
+            "conversation:#{conversation_id}",
+            {:new_conversation, message}
+          )
 
-        Phoenix.PubSub.broadcast(
-          DiscordClone.PubSub,
-          "conversation:#{conversation_id}",
-          {:new_conversation, message}
-        )
+          {:ok, message}
 
-        {:ok, message}
-
-      {:error, changeset} ->
-        # {:error, "Failed to create message: #{format_errors(changeset)}"}
-        {:error, "Failed to create message: #{IO.inspect(changeset)}"}
+        {:error, changeset} ->
+          # {:error, "Failed to create message: #{format_errors(changeset)}"}
+          {:error, "Failed to create message: #{IO.inspect(changeset)}"}
+      end
+    catch
+      error ->
+        {:error, error}
     end
-  catch
-    error ->
-      {:error, error}
-  end
   end
 
   @doc """
@@ -162,36 +161,55 @@ defmodule DiscordClone.DirectMessages.DirectMessages do
   #   end
   # end
 
-
   # Fetch a conversation by ID and ensure the given profile is a participant
-defp get_conversation(conversation_id, profile_id) do
-  query =
-    from c in Conversation,
-      # Look up the conversation by its ID
-      where: c.id == ^conversation_id,
-      # Preload the associated member_one and member_two profiles
-      preload: [:member_one, :member_two]
+  # defp get_conversation(conversation_id, profile_id) do
+  #   query =
+  #     from c in Conversation,
+  #       # Look up the conversation by its ID
+  #       where: c.id == ^conversation_id,
+  #       # Preload the associated member_one and member_two profiles
+  #       preload: [:member_one, :member_two]
 
-  case Repo.one(query) do
-    # Return error if no conversation with the given ID exists
-    nil ->
-      {:error, "Conversation not found"}
+  #   case Repo.one(query) do
+  #     # Return error if no conversation with the given ID exists
+  #     nil ->
+  #       {:error, "Conversation not found"}
 
-    # If the profile is member_one, return the conversation
-    %Conversation{member_one: %{id: ^profile_id}} = conversation ->
-      {:ok, conversation}
+  #     # If the profile is member_one, return the conversation
+  #     %Conversation{member_one: %{id: ^profile_id}} = conversation ->
+  #        IO.inspect(conversation, label: "Member One")
+  #       {:ok, conversation}
 
-    # If the profile is member_two, return the conversation
-    %Conversation{member_two: %{id: ^profile_id}} = conversation ->
-      {:ok, conversation}
+  #     # If the profile is member_two, return the conversation
+  #     %Conversation{member_two: %{id: ^profile_id}} = conversation ->
+  #       IO.inspect(conversation, label: "Member Two")
 
-    # If the profile is not a participant, return an error
-    _ ->
-      {:error, "Profile is not a participant in the conversation"}
+  #       {:ok, conversation}
+
+  #     # If the profile is not a participant, return an error
+  #     _ ->
+  #       {:error, "Profile is not a participant in the conversation"}
+  #   end
+  # end
+
+  defp get_conversation(conversation_id, profile_id) do
+    query =
+      from c in Conversation,
+        where: c.id == ^conversation_id,
+        preload: [:member_one, :member_two]
+
+    case Repo.one(query) do
+      nil ->
+        {:error, "Conversation not found"}
+
+      %Conversation{member_one: m1, member_two: m2} = conversation ->
+        if m1.profile_id == profile_id or m2.profile_id == profile_id do
+          {:ok, conversation}
+        else
+          {:error, "You are not a participant in this conversation"}
+        end
+    end
   end
-end
-
-
 
   # Determines which member the profile belongs to in the conversation
   defp get_member(%Conversation{member_one: %{profile_id: pid}} = conv, pid),

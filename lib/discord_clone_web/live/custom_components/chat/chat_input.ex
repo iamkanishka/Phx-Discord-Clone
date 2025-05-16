@@ -131,6 +131,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
       else
         IO.inspect("Conversation Message Send")
         IO.inspect(socket.assigns.conversation_id, label: "Conversation ID")
+
         with {:ok, _message} <-
                DirectMessages.send_message(
                  socket.assigns.conversation_id,
@@ -141,7 +142,7 @@ defmodule DiscordCloneWeb.CustomComponents.Chat.ChatInput do
           socket
         else
           {:error, error} ->
-              IO.inspect(error, label: "Error in Conversation Message Send")
+            IO.inspect(error, label: "Error in Conversation Message Send")
             {:error, error}
 
             socket
